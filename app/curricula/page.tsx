@@ -1,5 +1,5 @@
 import { InnerPageShell } from "../components/InnerPageShell";
-import { CurriculumIcon } from "../components/CurriculumIcon";
+import { CurriculumCover } from "../components/CurriculumCover";
 
 const grades = [1, 2, 3, 4, 5, 6];
 
@@ -32,7 +32,7 @@ export default function CurriculaPage() {
 
               <div className="curriculum-options">
                 <div className="curriculum-option english-option">
-                  <CurriculumIcon type="english" grade={grade} />
+                  <CurriculumCover type="english" grade={grade} />
                   <div>
                     <strong>English Primary {grade}</strong>
                     <small>English Curriculum</small>
@@ -42,7 +42,7 @@ export default function CurriculaPage() {
                   </div>
                 </div>
                 <div className="curriculum-option connect-option">
-                  <CurriculumIcon type="connect" grade={grade} />
+                  <CurriculumCover type="connect" grade={grade} />
                   <div>
                     <strong>Connect Plus Primary {grade}</strong>
                     <small>Connect Plus Curriculum</small>

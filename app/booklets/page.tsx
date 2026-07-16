@@ -1,5 +1,5 @@
 import { InnerPageShell } from "../components/InnerPageShell";
-import { CurriculumIcon } from "../components/CurriculumIcon";
+import { CurriculumCover } from "../components/CurriculumCover";
 
 const grades = [1, 2, 3, 4, 5, 6];
 const terms = ["First Term", "Second Term"];
@@ -30,7 +30,7 @@ export default function BookletsPage() {
 
               <div className="booklet-resources">
                 <section className="booklet-resource english-booklet">
-                  <CurriculumIcon type="english" grade={grade} />
+                  <CurriculumCover type="english" grade={grade} />
                   <div>
                     <h3>English Primary {grade}</h3>
                     <p>Explanations and printable booklets</p>
@@ -46,7 +46,7 @@ export default function BookletsPage() {
                 </section>
 
                 <section className="booklet-resource connect-booklet">
-                  <CurriculumIcon type="connect" grade={grade} />
+                  <CurriculumCover type="connect" grade={grade} />
                   <div>
                     <h3>Connect Plus Primary {grade}</h3>
                     <p>Explanations and printable booklets</p>

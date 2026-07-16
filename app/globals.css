@@ -1093,6 +1093,34 @@ body { font-size: 17px; }
 .connect-curriculum-art.grade-6 { --icon-start: #8975e7; --icon-end: #554cb7; }
 
 .booklet-resource > .curriculum-art { margin-top: 2px; }
+
+.curriculum-cover {
+  position: relative;
+  width: 78px;
+  height: 98px;
+  display: block;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border: 3px solid rgba(255, 255, 255, 0.86);
+  border-radius: 13px 18px 18px 13px;
+  background: #4d8ef5;
+  box-shadow: 7px 9px 18px rgba(43, 78, 132, 0.22);
+}
+.curriculum-cover img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+.curriculum-cover-shade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgba(9, 22, 66, 0.9) 100%); }
+.curriculum-cover-title { position: absolute; z-index: 1; right: 7px; bottom: 8px; left: 7px; display: grid; gap: 2px; color: #fff; text-shadow: 0 1px 3px rgba(8, 26, 56, 0.55); }
+.curriculum-cover-title span { font-size: 11px; font-weight: 950; line-height: 1.05; letter-spacing: -0.35px; }
+.curriculum-cover-title strong { font-size: 9px; font-weight: 800; line-height: 1; color: #eef7ff; }
+.connect-curriculum-cover { border-radius: 18px 13px 18px 13px; background: #35c7ac; }
+.curriculum-option { min-height: 111px; }
+.booklet-resource > .curriculum-cover { margin-top: 2px; }
+
+@media (max-width: 560px) {
+  .curriculum-cover { width: 66px; height: 84px; }
+  .curriculum-cover-title span { font-size: 9px; }
+  .curriculum-cover-title strong { font-size: 8px; }
+  .curriculum-option { min-height: 97px; }
+}
 .term-entry > span { font-size: 12px; }
 .term-entry small { font-size: 11px; }
 .booklet-resource h3 { font-size: 18px; }
