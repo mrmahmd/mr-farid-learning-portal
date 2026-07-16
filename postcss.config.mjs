@@ -1,5 +1,7 @@
-{
-  "version": "7",
-  "dialect": "sqlite",
-  "entries": []
-}
+const config = {
+  plugins: {
+    "@tailwindcss/postcss": {},
+  },
+};
+
+export default config;
