@@ -817,7 +817,7 @@
     merged.rewards={...local.rewards,...remote.rewards};merged.pointAwards={...local.pointAwards,...remote.pointAwards};merged.badges=[...new Set([...(local.badges||[]),...(remote.badges||[])])];merged.xp=Math.max(Number(local.xp||0),Number(remote.xp||0));merged.coins=Math.max(Number(local.coins||0),Number(remote.coins||0));merged.stars=Math.max(Number(local.stars||0),Number(remote.stars||0));merged.updatedAt=Math.max(Number(local.updatedAt||0),Number(remote.updatedAt||0));return merged;
   }
   function setCloudStatus(text,online){const status=$('#cloudStatus');if(!status)return;status.className=`cloud-status ${online?'online':'local'}`;status.innerHTML=`<i></i><b>${text}</b>`}
-  async function connectPlusCloudProgress(){try{const result=await window.MrFaridCourseProgress?.connect({courseId:'connect-plus-primary-4-first-term',getState:()=>state,setState:next=>{state=mergeConnectCloudState(state,next);state.profile.name=(new URLSearchParams(window.location.search).get('student')||state.profile.name||'Student').slice(0,80);state.profile.className='Primary 4';},mergeState:mergeConnectCloudState,onReady:()=>{setCloudStatus('Progress saved to your account',true);render()}});if(!result?.connected)setCloudStatus('Progress will sync after the database is connected',false)}catch(error){setCloudStatus('Progress will sync after the database is connected',false)}}
+  async function connectPlusCloudProgress(){try{const result=await window.MrFaridCourseProgress?.connect({courseId:'connect-plus-primary-4-first-term',getState:()=>state,setState:next=>{state=mergeConnectCloudState(state,next);state.profile.name=(new URLSearchParams(window.location.search).get('student')||state.profile.name||'Student').slice(0,80);state.profile.className='Primary 4';state.view='dashboard';state.nav.boss=false;},mergeState:mergeConnectCloudState,onReady:()=>{setCloudStatus('Progress saved to your account',true);render()}});if(!result?.connected)setCloudStatus('Progress will sync after the database is connected',false)}catch(error){setCloudStatus('Progress will sync after the database is connected',false)}}
   const renderConnectDashboardLocal=renderDashboard;
   renderDashboard=function(){
     const base=renderConnectDashboardLocal();
@@ -828,6 +828,8 @@
   function init(){
     const portalStudent=new URLSearchParams(window.location.search).get('student');
     state.profile={name:(portalStudent||state.profile.name||'Student').slice(0,80),className:'Primary 4'};
+    state.view='dashboard';
+    state.nav.boss=false;
     document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$('#'+b.dataset.close).classList.add('hidden'));
     $('#cancelReset').onclick=()=>$('#confirmModal').classList.add('hidden');
     $('#confirmReset').onclick=resetStudentProgress;

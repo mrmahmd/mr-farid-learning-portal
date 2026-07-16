@@ -535,7 +535,9 @@ function renderEnglishProgressDashboard(){
   }).join('');
   const panel=document.createElement('section');panel.className='glass';panel.style.cssText='padding:22px;margin:22px 0;border:2px solid #dce7ff';panel.innerHTML=`<div class="section-title" style="margin:0"><div><div class="dashboard-kicker" style="color:#5368c7">YOUR SAVED PROGRESS</div><h2>Continue where you stopped</h2></div></div><p class="muted">Each button opens the exact lesson or question bank where you last stopped.</p>${cards}`;shell.prepend(panel);
 }
-async function connectEnglishProgress(){try{await window.MrFaridCourseProgress?.connect({courseId:'english-primary-4-first-term',getState:()=>state,setState:next=>{state=normaliseState(next);state.studentName=new URLSearchParams(window.location.search).get('student')||state.studentName;state.className='Primary 4';},mergeState:(local,remote)=>mergeEnglish4States(local,remote),onReady:()=>{if(!restoreSavedRoute())render()}})}catch(error){console.warn('Cloud progress is not ready yet.',error)}}
+const renderEnglishProgressDashboardCore=renderEnglishProgressDashboard;
+renderEnglishProgressDashboard=function(){renderEnglishProgressDashboardCore();const shell=document.querySelector('#app .shell'),progressPanel=shell?.firstElementChild;if(progressPanel)shell.append(progressPanel)}
+async function connectEnglishProgress(){try{await window.MrFaridCourseProgress?.connect({courseId:'english-primary-4-first-term',getState:()=>state,setState:next=>{state=normaliseState(next);state.studentName=new URLSearchParams(window.location.search).get('student')||state.studentName;state.className='Primary 4';current={unit:null,lesson:null,tab:'overview'};quiz=null;},mergeState:(local,remote)=>mergeEnglish4States(local,remote),onReady:()=>renderMap()})}catch(error){console.warn('Cloud progress is not ready yet.',error)}}
 function launchFromMrFaridPortal(){
   const studentName=new URLSearchParams(window.location.search).get('student')||'Student';
   state=normaliseState(loadState());
@@ -543,8 +545,11 @@ function launchFromMrFaridPortal(){
   state.className='Primary 4';
   state.unlockedUnits=CURRICULUM.units.map(unit=>unit.number);
   state.unlockedLessons=Object.fromEntries(CURRICULUM.units.map(unit=>[unit.id,unit.lessons.map((_,index)=>index+1)]));
+  state.lastRoute={type:'dashboard'};
+  current={unit:null,lesson:null,tab:'overview'};
+  quiz=null;
   save({cloud:false});
-  if(!restoreSavedRoute())render();
+  renderMap();
   void connectEnglishProgress();
 }
 function isActivityFinished(mode,id){return false}
