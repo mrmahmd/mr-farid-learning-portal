@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#5b42f3">
   <title>Connect Plus Primary 4 - Term 1 | Mr.Farid Learning Portal</title>
-  <link rel="stylesheet" href="styles.css?v=20260716-header-support-4">
+  <link rel="stylesheet" href="styles.css?v=20260717-header-menu-1">
 </head>
 <body data-app-build="20260716-portal-1">
   <section id="app" class="app">
@@ -26,6 +26,16 @@
         <button id="courseSwitchBtn" class="course-switch-btn" title="Choose another curriculum">← CURRICULA</button>
         <button id="portalHomeBtn" class="course-switch-btn portal-home-btn" title="Return to portal home">⌂ PORTAL HOME</button>
       </div>
+        <button id="resumeHeaderBtn" class="course-switch-btn resume-header-btn" title="Return to your last saved activity">↻ RESUME</button>
+        <select id="curriculumPicker" class="course-picker" aria-label="Choose a curriculum">
+          <option value="">ALL CURRICULA</option>
+          <option value="english-primary-1">English Primary 1</option><option value="connect-plus-primary-1">Connect Plus Primary 1</option>
+          <option value="english-primary-2">English Primary 2</option><option value="connect-plus-primary-2">Connect Plus Primary 2</option>
+          <option value="english-primary-3">English Primary 3</option><option value="connect-plus-primary-3">Connect Plus Primary 3</option>
+          <option value="english-primary-4">English Primary 4</option><option value="connect-plus-primary-4">Connect Plus Primary 4</option>
+          <option value="english-primary-5">English Primary 5</option><option value="connect-plus-primary-5">Connect Plus Primary 5</option>
+          <option value="english-primary-6">English Primary 6</option><option value="connect-plus-primary-6">Connect Plus Primary 6</option>
+        </select>
     </header>
     <div class="layout"><aside id="sidebar" class="sidebar"></aside><main id="main" class="main"></main></div>
   </section>
@@ -41,6 +51,6 @@
   <div id="toast" class="toast"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../portal-progress.js?v=20260717-nav-1"></script>
-  <script src="app.js?v=20260717-nav-1" defer></script>
+  <script src="app.js?v=20260717-header-menu-1" defer></script>
 </body>
 </html>

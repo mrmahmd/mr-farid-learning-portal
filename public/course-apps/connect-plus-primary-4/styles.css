@@ -80,6 +80,7 @@ body{background:radial-gradient(circle at 10% 5%,rgba(113,87,255,.13),transparen
 
 /* Unified course switcher */
 .course-switch-btn{border:0;border-radius:13px;padding:10px 13px;color:#fff;background:linear-gradient(135deg,#6547f5,#00a99d);box-shadow:0 9px 20px rgba(70,62,185,.22);font-weight:1000;white-space:nowrap;transition:.2s}.course-switch-btn:hover{transform:translateY(-2px);box-shadow:0 13px 26px rgba(70,62,185,.3)}
+.resume-header-btn{background:linear-gradient(135deg,#315efb,#7c5cff)}.course-picker{max-width:178px;border:1px solid #d9d4ff;border-radius:13px;padding:10px 31px 10px 12px;background:#fff;color:#3f397c;font:900 12px Arial,sans-serif;box-shadow:0 8px 18px rgba(58,53,128,.12);cursor:pointer}.course-picker:focus{outline:3px solid rgba(101,71,245,.2);outline-offset:2px}#courseSwitchBtn,#portalHomeBtn{display:none!important}
 .course-nav-btn{background:linear-gradient(135deg,rgba(101,71,245,.15),rgba(0,169,157,.15));border-color:rgba(101,71,245,.25)}.course-nav-btn .unit-icon{color:#fff;background:linear-gradient(135deg,#6547f5,#00a99d)}
 @media(max-width:760px){.course-switch-btn{padding:9px 10px;font-size:11px}.teacher-area{gap:6px}.who-btn{padding:9px 9px;font-size:11px}}
 
@@ -156,3 +157,4 @@ body{background:radial-gradient(circle at 10% 5%,rgba(113,87,255,.13),transparen
 @media(max-width:900px){#mrFaridSupport{width:40px!important;height:40px!important;padding:0!important;justify-content:center!important;border-radius:12px!important}#mrFaridSupport span{display:none!important}#mrFaridSupport svg{width:22px!important;height:22px!important}}
 @media print{#mrFaridSupport{display:none!important}}
 @media(max-width:760px){.topbar{grid-template-columns:auto minmax(0,1fr)!important;overflow:visible!important}.teacher-area{min-width:0!important;width:100%;justify-self:stretch!important;justify-content:flex-end!important;gap:5px!important}.teacher-area #cloudStatus{display:none!important}#mrFaridSupport{order:-1;display:flex!important;visibility:visible!important;opacity:1!important;flex:0 0 40px!important}.course-switch-btn{flex:0 1 auto;min-width:0;padding:8px 6px!important;font-size:8px!important}.brand{gap:6px!important}.brand-badge{width:36px;height:36px;border-radius:11px}.mobile-menu{width:36px!important;height:36px!important}}
+@media(max-width:760px){.course-picker{width:108px;max-width:108px;padding:8px 22px 8px 7px;font-size:9px}.resume-header-btn{font-size:9px!important;padding:8px 7px!important}}

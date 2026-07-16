@@ -3,6 +3,7 @@
   const APP_OPEN_KEY=APP_KEY+'_open';
   const CURRICULA_URL='../../student/curricula/';
   const PORTAL_HOME_URL='../../';
+  const PORTAL_COURSE_SLUGS=['english-primary-1','connect-plus-primary-1','english-primary-2','connect-plus-primary-2','english-primary-3','connect-plus-primary-3','english-primary-4','connect-plus-primary-4','english-primary-5','connect-plus-primary-5','english-primary-6','connect-plus-primary-6'];
   const C=(word,pos,def,example)=>({word,pos,def,example});
   const Q=(prompt,options,answer,explain,type='choice')=>({prompt,options,answer,explain,type});
   const L=(id,title,subtitle,vocab,definitions,notes,grammar,reading,manual)=>({id,title,subtitle,vocab,definitions,notes,grammar,reading,manual});
@@ -770,6 +771,11 @@
   function navigatePortal(url){rememberAppOpen(false);try{window.top.location.href=url}catch(error){window.location.href=url}}
   function returnToCurricula(){navigatePortal(CURRICULA_URL)}
   function returnToPortalHome(){navigatePortal(PORTAL_HOME_URL)}
+  function openPortalCourse(slug){
+    if(!slug){returnToCurricula();return}
+    if(!PORTAL_COURSE_SLUGS.includes(slug))return;
+    navigatePortal(new URL(`../../courses/${slug}/`,window.location.href).href);
+  }
   function renderSidebar(){
     const done=completedCount(),total=totalLessonCount(),pct=total?Math.round(done/total*100):0;
     let html=`<div class="student-chip"><div class="student-identity portal-student-identity"><div><strong>${esc(state.profile.name)}</strong><small>${esc(state.profile.className)}</small><em>Mr.Farid Learning Portal</em></div></div><div class="overall"><span style="width:${pct}%"></span></div><small>${done} of ${total} lessons completed</small><div class="photo-hint">Progress is saved on this device</div></div><button id="dashboardBtn" class="unit-btn dashboard-btn ${state.view==='dashboard'?'active':''}"><span class="unit-icon">${uiIcon('dashboard')}</span><span class="unit-copy"><strong>Dashboard</strong><small>Progress & quick resume</small></span></button>`;
@@ -844,8 +850,10 @@
     $('#cancelReset').onclick=()=>$('#confirmModal').classList.add('hidden');
     $('#confirmReset').onclick=resetStudentProgress;
     $('#menuBtn').onclick=()=>$('#sidebar').classList.toggle('open');
-    $('#courseSwitchBtn').onclick=returnToCurricula;
-    $('#portalHomeBtn').onclick=returnToPortalHome;
+    const headerArea=document.querySelector('.teacher-area');
+    if(headerArea){headerArea.append($('#resumeHeaderBtn'),$('#curriculumPicker'))}
+    $('#resumeHeaderBtn').onclick=()=>{if(!resumeLastQuestion())resumeLastPage()};
+    $('#curriculumPicker').onchange=event=>openPortalCourse(event.target.value);
     window.addEventListener('beforeunload',()=>{state.updatedAt=Date.now();localStorage.setItem(APP_KEY,JSON.stringify(state))});
     rememberAppOpen(true);
     save();

@@ -94,6 +94,9 @@ body{background:radial-gradient(circle at 7% 7%,#dcf8ff 0 10%,transparent 29%),r
 @media print{#mrFaridSupport{display:none!important}}
 @media(max-width:700px){.course-header{position:sticky!important;top:0!important;z-index:95!important;display:grid!important;grid-template-columns:minmax(0,1fr) 40px!important;gap:8px!important;min-height:58px!important;padding:9px 10px!important}.course-header .teacher-info{min-width:0!important;overflow:hidden}.course-header .teacher-signature{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.88rem!important}.course-header .course-name{display:none!important}#mrFaridSupport{grid-column:2;grid-row:1;flex:0 0 40px!important;visibility:visible!important;opacity:1!important}}
 </style>
+<style>
+.course-header-actions{display:flex;align-items:center;gap:9px;margin-left:auto}.course-resume{border:0;border-radius:12px;padding:10px 12px;color:#fff;background:linear-gradient(135deg,#315efb,#7c5cff);box-shadow:0 8px 18px rgba(71,83,210,.24);font-weight:1000;white-space:nowrap}.course-picker{max-width:178px;border:1px solid #d9d4ff;border-radius:12px;padding:10px 30px 10px 11px;background:#fff;color:#465275;font:900 12px Arial,sans-serif;box-shadow:0 7px 16px rgba(50,70,120,.13);cursor:pointer}.course-picker:focus{outline:3px solid rgba(49,94,251,.2);outline-offset:2px}@media(max-width:700px){.course-header{display:flex!important;align-items:center!important;gap:6px!important}.course-header .teacher-info{max-width:76px!important;flex:0 1 76px}.course-header-actions{gap:5px;margin-left:auto;min-width:0}.course-resume{padding:8px 7px;font-size:.64rem}.course-picker{width:106px;max-width:106px;padding:8px 20px 8px 6px;font-size:.58rem}#mrFaridSupport{grid-column:auto!important;grid-row:auto!important;flex:0 0 36px!important;width:36px!important;height:36px!important;padding:0!important;justify-content:center!important}#mrFaridSupport span{display:none!important}}
+</style>
 </head>
 <body>
 <div id="app"></div>
@@ -524,10 +527,16 @@ document.addEventListener('keydown',event=>{if(event.key==='Escape'&&document.ge
 /* Mr.Farid Learning Portal integration: no external course portal, progress gate, or teacher controls. */
 function portalUrl(){return new URL('../../student/curricula/',window.location.href).href}
 function returnToPortal(){window.top.location.href=portalUrl()}
+const PORTAL_COURSES=['english-primary-1','connect-plus-primary-1','english-primary-2','connect-plus-primary-2','english-primary-3','connect-plus-primary-3','english-primary-4','connect-plus-primary-4','english-primary-5','connect-plus-primary-5','english-primary-6','connect-plus-primary-6'];
+function coursePickerOptions(){return `<option value="">ALL CURRICULA</option>${PORTAL_COURSES.map(slug=>{const grade=slug.split('-').pop();return `<option value="${slug}">${slug.startsWith('english')?'English':'Connect Plus'} Primary ${grade}</option>`}).join('')}`}
+function openPortalCourse(slug){if(!slug){returnToPortal();return}if(PORTAL_COURSES.includes(slug))window.top.location.href=new URL(`../../courses/${slug}/`,window.location.href).href}
+function resumeLastEnglishActivity(){const openedQuiz=restoreSavedRoute();if(openedQuiz)return;if(current.lesson){renderLesson();return}if(current.unit){renderUnit();return}toast('Choose a lesson to start learning.')}
 function courseHeader(){return `<header class="course-header no-print" aria-label="Course information"><div class="teacher-info"><div class="teacher-signature">Mr.Farid Learning Portal</div></div><div class="course-name">English Primary 4 — First Term</div></header>`}
 courseHeader=function(){return `<header class="course-header no-print" aria-label="Course information"><div class="teacher-info"><div class="teacher-signature">Mr.Farid Learning Portal</div></div><div class="course-name">English Primary 4 — First Term</div><a id="mrFaridSupport" href="https://wa.me/966552019074" target="_blank" rel="noreferrer" aria-label="Contact Mr.Farid on WhatsApp for technical support" title="Technical support on WhatsApp"><svg viewBox="0 0 32 32" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M16 4a11.5 11.5 0 0 0-9.8 17.5L4.7 27l5.7-1.5A11.6 11.6 0 1 0 16 4Zm0 20.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.3.9.9-3.2-.2-.4A9.1 9.1 0 1 1 16 24.8Zm5-6.8c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.2l-.9 1.1c-.2.2-.3.2-.6.1a7.5 7.5 0 0 1-3.7-3.2c-.3-.5.3-.5.8-1.5.1-.2 0-.4 0-.6l-.9-2.1c-.2-.5-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.4-1.2 1.2-1.2 2.9s1.2 3.3 1.4 3.5c.1.2 2.4 3.7 5.9 5.2 2.2.9 3 .9 4.1.7.7-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.1-1.4-.2-.3-.4-.4-.7-.5Z"/></svg><span>Support</span></a></header>`}
 function sideNavigation(activeUnit){return `<button id="sidebarBackdrop" class="sidebar-backdrop hidden" onclick="closeSidebar()" aria-label="Close menu"></button><aside id="learningSidebar" class="learning-sidebar no-print"><div class="sidebar-title"><small>ENGLISH PRIMARY 4</small><strong>First Term</strong></div><nav class="unit-nav"><button class="unit-nav-btn ${!activeUnit?'active':''}" onclick="goHome();closeSidebar()"><img src="u1.webp" alt=""><span>All Units<small>Course home</small></span><b>⌂</b></button>${CURRICULUM.units.map(u=>`<button class="unit-nav-btn ${activeUnit===u.id?'active':''}" onclick="openUnit(${u.number});closeSidebar()"><img src="${unitCover(u)}" alt=""><span>Unit ${u.number}<small>${esc(u.title)}</small></span><b>›</b></button>`).join('')}</nav><button class="sidebar-portal" onclick="returnToPortal()">← Back to Portal</button></aside>`}
 function topbar(){return `${courseHeader()}<div class="topbar no-print"><button class="nav-menu" onclick="toggleSidebar()" aria-label="Open units menu">☰</button><button class="icon-btn" onclick="goHome()" aria-label="All units">⌂</button><button class="portal-btn" onclick="returnToPortal()" aria-label="Return to portal">Portal Home</button><div class="brand">English Primary 4 — First Term</div><button class="icon-btn" onclick="toggleSound()" aria-label="Toggle sound">${state.sound?'🔊':'🔇'}</button></div>`}
+const renderEnglishTopbarBase=topbar;
+topbar=function(){return renderEnglishTopbarBase().replace('</header>',`<div class="course-header-actions"><button type="button" class="course-resume" onclick="resumeLastEnglishActivity()" title="Return to your last saved activity">↻ RESUME</button><select class="course-picker" onchange="openPortalCourse(this.value)" aria-label="Choose a curriculum">${coursePickerOptions()}</select></div></header>`)}
 const saveEnglishProgressLocal=save;
 save=function(options={}){saveEnglishProgressLocal(options);window.MrFaridCourseProgress?.queueSave()}
 const renderEnglishMapLocal=renderMap;
@@ -562,7 +571,6 @@ async function launchFromMrFaridPortal(){
   state.className='Primary 4';
   state.unlockedUnits=CURRICULUM.units.map(unit=>unit.number);
   state.unlockedLessons=Object.fromEntries(CURRICULUM.units.map(unit=>[unit.id,unit.lessons.map((_,index)=>index+1)]));
-  state.lastRoute={type:'dashboard'};
   current={unit:null,lesson:null,tab:'overview'};
   quiz=null;
   save({cloud:false});
@@ -586,7 +594,6 @@ function openEnglishDashboardOnEntry(){
   clearPendingAdvance();
   quiz=null;
   current={unit:null,lesson:null,tab:'overview'};
-  state.lastRoute={type:'dashboard'};
   localStorage.setItem(STORE_KEY,JSON.stringify(state));
   renderMap();
 }
