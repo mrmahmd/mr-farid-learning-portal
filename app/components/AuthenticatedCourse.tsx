@@ -46,8 +46,15 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
     );
   }
 
-  if (curriculum.slug === "connect-plus-primary-4") {
-    const appUrl = `${portalAsset("/course-apps/connect-plus-primary-4/index.html")}?student=${encodeURIComponent(studentName)}`;
+  const embeddedApps: Record<string, string> = {
+    "connect-plus-primary-4": "/course-apps/connect-plus-primary-4/index.html",
+    "english-primary-4": "/course-apps/english-primary-4/index.html",
+  };
+
+  const embeddedApp = embeddedApps[curriculum.slug];
+
+  if (embeddedApp) {
+    const appUrl = `${portalAsset(embeddedApp)}?student=${encodeURIComponent(studentName)}`;
 
     return (
       <section className="integrated-course-shell" aria-label={`${curriculum.title} application`}>
