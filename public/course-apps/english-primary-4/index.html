@@ -537,8 +537,30 @@ function sideNavigation(activeUnit){return `<button id="sidebarBackdrop" class="
 function topbar(){return `${courseHeader()}<div class="topbar no-print"><button class="nav-menu" onclick="toggleSidebar()" aria-label="Open units menu">☰</button><button class="icon-btn" onclick="goHome()" aria-label="All units">⌂</button><button class="portal-btn" onclick="returnToPortal()" aria-label="Return to portal">Portal Home</button><div class="brand">English Primary 4 — First Term</div><button class="icon-btn" onclick="toggleSound()" aria-label="Toggle sound">${state.sound?'🔊':'🔇'}</button></div>`}
 const renderEnglishTopbarBase=topbar;
 topbar=function(){return renderEnglishTopbarBase().replace('</header>',`<div class="course-header-actions"><button type="button" class="course-resume" onclick="resumeLastEnglishActivity()" title="Return to your last saved activity">↻ RESUME</button><select class="course-picker" onchange="openPortalCourse(this.value)" aria-label="Choose a curriculum">${coursePickerOptions()}</select></div></header>`)}
+function englishPortalActivity(){
+  const route=state.lastRoute||{};
+  if(!route.type||route.type==='dashboard')return null;
+  const activityId=route.activityId||route.lessonId||'';
+  const unitNumber=String(activityId||route.unit||'').match(/(\d+)/)?.[1]||'';
+  const unit=route.type==='unit'?getUnit(Number(route.unit)):getLesson(activityId)?.unit;
+  const parts=[unit?`Unit ${unit.number}: ${unit.title}`:`Unit ${unitNumber||'1'}`];
+  if(route.type==='unit')parts.push('Unit overview');
+  else if(route.mode==='bank'){
+    const saved=state.quizProgress?.[`${route.mode}:${activityId}`];
+    parts.push('Unit Question Bank');
+    if(Number.isFinite(Number(saved?.index)))parts.push(`Practice question ${Number(saved.index)+1}`);
+  }else{
+    const found=getLesson(activityId),lesson=found?.lesson;
+    if(lesson)parts.push(`Lesson ${found.index}: ${lesson.title}`);
+    if(route.type==='quiz'){
+      const saved=state.quizProgress?.[`${route.mode}:${activityId}`];
+      parts.push(Number.isFinite(Number(saved?.index))?`Practice question ${Number(saved.index)+1}`:'Practice');
+    }else parts.push(({overview:'Overview',vocabulary:'Vocabulary',language:'Language Lab',reading:'Reading',practice:'Practice'}[route.tab]||'Learning page'));
+  }
+  return {courseTitle:'English Primary 4 – First Term',detail:parts.join(' • '),savedAt:Date.now()};
+}
 const saveEnglishProgressLocal=save;
-save=function(options={}){saveEnglishProgressLocal(options);window.MrFaridCourseProgress?.queueSave()}
+save=function(options={}){const activity=englishPortalActivity();if(activity)state.portalLastActivity=activity;saveEnglishProgressLocal(options);window.MrFaridCourseProgress?.queueSave()}
 const renderEnglishMapLocal=renderMap;
 renderMap=function(){renderEnglishMapLocal();renderEnglishProgressDashboard()}
 function englishActivityProgress(mode,id,total){const completed=!!state.finishedActivities?.[mode]?.[id],saved=state.quizProgress?.[`${mode}:${id}`],answered=completed?total:Math.min(total,Number(saved?.index||0));return {completed,answered,total,percent:Math.round(answered/Math.max(1,total)*100)}}

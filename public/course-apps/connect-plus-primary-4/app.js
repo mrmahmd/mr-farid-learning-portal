@@ -814,8 +814,20 @@
   function continueJourney(){const currentIndex=NAV_ORDER.indexOf(state.nav.module),nextId=NAV_ORDER[currentIndex+1];if(nextId)setModule(nextId);else goDashboard()}
   function showCertificate(){const w=window.open('','_blank');w.document.write(`<!doctype html><html><head><title>Certificate</title><style>body{font-family:Trebuchet MS,Arial;text-align:center;padding:40px;color:#17203b}.c{max-width:900px;margin:auto;border:14px double #5b42f3;padding:70px 45px;background:linear-gradient(145deg,#fff,#f5f2ff)}h1{font-size:54px;color:#5b42f3;margin:10px}h2{font-size:34px}.name{font-size:44px;color:#0b8f82;border-bottom:2px solid #0b8f82;display:inline-block;padding:5px 35px}@media print{button{display:none}}</style></head><body><div class="c"><div>CONNECT PLUS PRIMARY 4 • TERM 1</div><h1>Certificate of Achievement</h1><p>This certificate is proudly presented to</p><div class="name">${esc(state.profile.name)}</div><h2>Outstanding English Learner</h2><p>for successfully completing the interactive Connect Plus learning journey, including all six units and the fiction reader.</p><p>Class: ${esc(state.profile.className)}</p><br><button onclick="print()">Print Certificate</button></div></body></html>`);w.document.close()}
   function resetStudentProgress(){const profile={...state.profile};state={...defaultState(),profile,view:'dashboard'};localStorage.setItem(APP_KEY,JSON.stringify(state));$('#confirmModal').classList.add('hidden');render();toast('Local course progress has been reset. All lessons are still open.')}
+  function connectPortalActivity(){
+    const question=state.lastQuestion||null,page=state.lastPage||null,target=question||page;
+    if(!target)return null;
+    const m=moduleById(target.module),lesson=m&&m.lessons[Math.max(0,Number(target.lesson)||0)];
+    if(!m||(!target.boss&&!lesson))return null;
+    const parts=[`Unit ${m.number}: ${m.title}`];
+    if(target.boss)parts.push('Unit Question Bank');
+    else parts.push(`Lesson ${Math.max(0,Number(target.lesson)||0)+1}: ${lesson.title}`);
+    if(question&&Number.isFinite(Number(question.index)))parts.push(`Practice question ${Number(question.index)+1}`);
+    else parts.push(({overview:'Overview',vocabulary:'Vocabulary',language:'Language Lab',reading:'Reading',practice:'Practice'}[target.tab]||'Learning page'));
+    return {courseTitle:'Connect Plus Primary 4 – First Term',detail:parts.join(' • '),savedAt:Date.now()};
+  }
   const saveConnectProgressLocal=save;
-  save=function(){saveConnectProgressLocal();window.MrFaridCourseProgress?.queueSave()}
+  save=function(){const activity=connectPortalActivity();if(activity)state.portalLastActivity=activity;saveConnectProgressLocal();window.MrFaridCourseProgress?.queueSave()}
   function mergeConnectCloudState(local,remote){
     const newer=Number(remote?.updatedAt||0)>Number(local?.updatedAt||0)?remote:local;
     const merged=normalizeState(newer);

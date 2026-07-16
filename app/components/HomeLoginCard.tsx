@@ -59,6 +59,14 @@ function describeLastActivity(appId: string, rawState: unknown): ResumeActivity 
   const course = COURSE_DETAILS[appId];
   if (!course) return null;
   const state = record(rawState);
+  const savedActivity = record(state.portalLastActivity);
+  if (typeof savedActivity.detail === "string" && savedActivity.detail.trim()) {
+    return {
+      courseTitle: typeof savedActivity.courseTitle === "string" ? savedActivity.courseTitle : course.title,
+      detail: savedActivity.detail,
+      href: `${portalAsset(`/courses/${course.slug}/`)}?resume=1`,
+    };
+  }
   let detail = "";
 
   if (appId === "connect-plus-primary-4-first-term") {
