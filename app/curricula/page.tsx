@@ -32,11 +32,23 @@ export default function CurriculaPage() {
               <div className="curriculum-options">
                 <div className="curriculum-option english-option">
                   <span className="book-icon">E</span>
-                  <div><strong>English Primary {grade}</strong><small>English Curriculum</small></div>
+                  <div>
+                    <strong>English Primary {grade}</strong>
+                    <small>English Curriculum</small>
+                    <div className="term-badges" aria-label="Available terms">
+                      <span>First Term</span><span>Second Term</span>
+                    </div>
+                  </div>
                 </div>
                 <div className="curriculum-option connect-option">
                   <span className="book-icon">C+</span>
-                  <div><strong>Connect Plus Primary {grade}</strong><small>Connect Plus Curriculum</small></div>
+                  <div>
+                    <strong>Connect Plus Primary {grade}</strong>
+                    <small>Connect Plus Curriculum</small>
+                    <div className="term-badges connect-term-badges" aria-label="Available terms">
+                      <span>First Term</span><span>Second Term</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </article>

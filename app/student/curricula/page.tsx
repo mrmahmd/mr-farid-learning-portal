@@ -110,21 +110,24 @@ export default function StudentCurriculaPage() {
                 </div>
               </header>
 
-              <div className="student-course-options">
-                {curricula.filter((curriculum) => curriculum.grade === grade).map((curriculum) => (
-                  <Link
-                    className={`student-course-link ${curriculum.type}-course-link`}
-                    href={`/courses/${curriculum.slug}`}
-                    key={curriculum.slug}
-                  >
-                    <span className="course-mini-cover">{curriculum.type === "english" ? "EN" : "C+"}</span>
-                    <span>
-                      <strong>{curriculum.title}</strong>
-                      <small>Enter curriculum →</small>
-                    </span>
-                  </Link>
-                ))}
-              </div>
+                <div className="student-course-options">
+                  {curricula.filter((curriculum) => curriculum.grade === grade).map((curriculum) => (
+                    <section className={`student-course-group ${curriculum.type}-course-group`} key={curriculum.slug}>
+                      <div className="student-course-group-title">
+                        <span className="course-mini-cover">{curriculum.type === "english" ? "EN" : "C+"}</span>
+                        <strong>{curriculum.title}</strong>
+                      </div>
+                      <div className="term-entry-options">
+                        <Link className="term-entry first-term-entry" href={`/courses/${curriculum.slug}`}>
+                          <span>First Term</span><small>Open →</small>
+                        </Link>
+                        <span className="term-entry second-term-entry" aria-label="Second Term will be available soon">
+                          <span>Second Term</span><small>Coming soon</small>
+                        </span>
+                      </div>
+                    </section>
+                  ))}
+                </div>
             </article>
           ))}
         </div>
