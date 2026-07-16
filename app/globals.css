@@ -497,6 +497,12 @@ input::placeholder { color: #9aacc0; }
 .privacy-note { margin: 16px 0 0; color: #8398b2; font-size: 9px; text-align: center; }
 .returning-student-copy { margin: 22px 0 4px; color: var(--ink-soft); font-size: 12px; line-height: 1.7; text-align: center; }
 .returning-student-card .secondary-button { margin-top: 12px; }
+.returning-curricula-link { display: flex; align-items: center; justify-content: center; text-decoration: none; }
+.last-activity-card { margin: 20px 0 4px; padding: 15px; border: 1px solid rgba(105, 145, 233, 0.28); border-radius: 17px; background: rgba(255, 255, 255, 0.48); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7); text-align: center; }
+.last-activity-card > span { display: block; color: #637fb7; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.last-activity-card strong { display: block; margin-top: 6px; color: var(--blue-deep); font-size: 15px; line-height: 1.35; }
+.last-activity-card p { margin: 7px 0 13px; color: var(--ink-soft); font-size: 13px; font-weight: 700; line-height: 1.5; }
+.last-activity-card .primary-button { text-decoration: none; }
 
 .hero-footer {
   position: absolute;

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { Curriculum } from "../data/curricula";
 import { portalAsset } from "../asset-path";
 import { getSupabaseBrowserClient } from "../lib/supabase";
@@ -13,6 +13,8 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
   const [sessionBridge, setSessionBridge] = useState<{ accessToken: string; refreshToken: string } | null>(null);
   const courseFrame = useRef<HTMLIFrameElement>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const shouldResume = searchParams.get("resume") === "1";
 
   useEffect(() => {
     let isActive = true;
@@ -79,8 +81,8 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
   const embeddedApp = embeddedApps[curriculum.slug];
 
   if (embeddedApp) {
-    const cacheVersion = curriculum.slug === "english-primary-4" ? "&v=20260717-10" : curriculum.slug === "connect-plus-primary-4" ? "&v=20260717-8" : "";
-    const appUrl = `${portalAsset(embeddedApp)}?student=${encodeURIComponent(studentName)}${cacheVersion}`;
+    const cacheVersion = curriculum.slug === "english-primary-4" ? "&v=20260717-11" : curriculum.slug === "connect-plus-primary-4" ? "&v=20260717-9" : "";
+    const appUrl = `${portalAsset(embeddedApp)}?student=${encodeURIComponent(studentName)}${cacheVersion}${shouldResume ? "&resume=1" : ""}`;
 
     return (
       <section className="integrated-course-shell" aria-label={`${curriculum.title} application`}>
@@ -101,7 +103,7 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
               window.location.origin,
             );
             courseFrame.current.contentWindow.postMessage(
-              { type: "mrfarid-course-entry", destination: "dashboard" },
+              { type: "mrfarid-course-entry", destination: shouldResume ? "resume" : "dashboard" },
               window.location.origin,
             );
           }}

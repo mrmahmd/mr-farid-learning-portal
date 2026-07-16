@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { portalAsset } from "../asset-path";
 import {
   friendlyAuthError,
   getSupabaseBrowserClient,
@@ -10,23 +11,147 @@ import {
   usernameToStudentEmail,
 } from "../lib/supabase";
 
+type ResumeActivity = {
+  courseTitle: string;
+  detail: string;
+  href: string;
+};
+
+const COURSE_DETAILS: Record<string, { title: string; slug: string }> = {
+  "connect-plus-primary-4-first-term": {
+    title: "Connect Plus Primary 4 – First Term",
+    slug: "connect-plus-primary-4",
+  },
+  "english-primary-4-first-term": {
+    title: "English Primary 4 – First Term",
+    slug: "english-primary-4",
+  },
+};
+
+function record(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" ? (value as Record<string, unknown>) : {};
+}
+
+function unitLabel(value: unknown) {
+  const match = String(value ?? "").match(/(\d+)/);
+  return match ? `Unit ${match[1]}` : "Unit";
+}
+
+function lessonLabel(value: unknown, isZeroBased = false) {
+  const match = String(value ?? "").match(/(\d+)/);
+  if (!match) return "";
+  const number = Number(match[1]) + (isZeroBased ? 1 : 0);
+  return `Lesson ${number}`;
+}
+
+function pageLabel(value: unknown) {
+  const labels: Record<string, string> = {
+    overview: "Overview",
+    vocabulary: "Vocabulary",
+    language: "Language Lab",
+    reading: "Reading",
+    practice: "Practice",
+  };
+  return labels[String(value ?? "")] ?? "Learning page";
+}
+
+function describeLastActivity(appId: string, rawState: unknown): ResumeActivity | null {
+  const course = COURSE_DETAILS[appId];
+  if (!course) return null;
+  const state = record(rawState);
+  let detail = "";
+
+  if (appId === "connect-plus-primary-4-first-term") {
+    const question = record(state.lastQuestion);
+    const page = record(state.lastPage);
+    const target = Object.keys(question).length ? question : page;
+    if (!Object.keys(target).length) return null;
+    const parts = [unitLabel(target.module)];
+    if (Boolean(target.boss)) {
+      parts.push("Unit Question Bank");
+    } else {
+      const lesson = lessonLabel(target.lesson, true);
+      if (lesson) parts.push(lesson);
+    }
+    if (Object.keys(question).length && Number.isFinite(Number(question.index))) {
+      parts.push(`Practice question ${Number(question.index) + 1}`);
+    } else {
+      parts.push(pageLabel(target.tab));
+    }
+    detail = parts.join(" • ");
+  }
+
+  if (appId === "english-primary-4-first-term") {
+    const route = record(state.lastRoute);
+    if (!route.type || route.type === "dashboard") return null;
+    const activityId = String(route.activityId ?? route.lessonId ?? "");
+    const unit = unitLabel(activityId || route.unit);
+    const parts = [unit];
+
+    if (route.type === "unit") {
+      parts.push("Unit overview");
+    } else if (route.mode === "bank") {
+      parts.push("Unit Question Bank");
+    } else {
+      const lesson = lessonLabel(activityId);
+      if (lesson) parts.push(lesson);
+      if (route.type === "quiz") {
+        const quizProgress = record(state.quizProgress);
+        const savedQuiz = record(quizProgress[`${String(route.mode)}:${activityId}`]);
+        const question = Number(savedQuiz.index);
+        parts.push(Number.isFinite(question) ? `Practice question ${question + 1}` : "Practice");
+      } else {
+        parts.push(pageLabel(route.tab));
+      }
+    }
+    detail = parts.join(" • ");
+  }
+
+  return detail
+    ? { courseTitle: course.title, detail, href: `${portalAsset(`/courses/${course.slug}/`)}?resume=1` }
+    : null;
+}
+
 export function HomeLoginCard() {
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
+  const [resumeActivity, setResumeActivity] = useState<ResumeActivity | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
     let isActive = true;
 
-    void supabase.auth.getSession().then(({ data }) => {
-      if (isActive) setIsSignedIn(Boolean(data.session));
-    });
+    async function loadStudentSession() {
+      const { data } = await supabase.auth.getSession();
+      if (!isActive) return;
+      setIsSignedIn(Boolean(data.session));
+      if (!data.session) {
+        setResumeActivity(null);
+        return;
+      }
+
+      const { data: progressRows } = await supabase
+        .from("course_progress")
+        .select("app_id, state, updated_at")
+        .order("updated_at", { ascending: false });
+
+      if (!isActive) return;
+      const latestActivity = (progressRows ?? [])
+        .map((row) => describeLastActivity(String(row.app_id), row.state))
+        .find((activity): activity is ResumeActivity => Boolean(activity));
+      setResumeActivity(latestActivity ?? null);
+    }
+
+    void loadStudentSession();
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (isActive) setIsSignedIn(Boolean(session));
+      if (!isActive) return;
+      setIsSignedIn(Boolean(session));
+      if (!session) setResumeActivity(null);
+      else void loadStudentSession();
     });
 
     return () => {
@@ -64,12 +189,14 @@ export function HomeLoginCard() {
     }
 
     setIsSignedIn(true);
+    setResumeActivity(null);
     router.push("/student/curricula");
   }
 
   async function handleSignOut() {
     await getSupabaseBrowserClient().auth.signOut();
     setIsSignedIn(false);
+    setResumeActivity(null);
     setMessage("");
   }
 
@@ -84,12 +211,23 @@ export function HomeLoginCard() {
           </div>
         </div>
 
-        <p className="returning-student-copy">
-          Your session is saved. Continue to your curricula without entering your username and password again.
-        </p>
+        {resumeActivity ? (
+          <div className="last-activity-card">
+            <span>Last activity</span>
+            <strong>{resumeActivity.courseTitle}</strong>
+            <p>{resumeActivity.detail}</p>
+            <a className="primary-button" href={resumeActivity.href}>
+              Continue <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        ) : (
+          <p className="returning-student-copy">
+            Your session is saved. Choose a curriculum and start learning.
+          </p>
+        )}
 
-        <Link className="primary-button" href="/student/curricula">
-          Continue to My Curricula <span aria-hidden="true">→</span>
+        <Link className="secondary-button returning-curricula-link" href="/student/curricula">
+          My Curricula
         </Link>
 
         <button className="secondary-button" type="button" onClick={handleSignOut}>

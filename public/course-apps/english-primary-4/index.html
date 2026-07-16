@@ -115,7 +115,7 @@ const PORTAL_URL_KEY='mr_farid_portal_url';
 const PORTAL_FALLBACK='';
 const APP_ID='english-primary-4-first-term';
 const baseState={studentName:'',className:'',avatar:'🦸',unlockedUnits:[1],unlockedLessons:{u1:[1],u2:[1],u3:[1],u4:[1],u5:[1],u6:[1]},lessonScores:{},grammarScores:{},completedLessons:{},unitBankScores:{},completedUnits:{},finishedActivities:{lesson:{},grammar:{},bank:{}},rewardedQuestions:{},quizProgress:{},xp:0,stars:0,coins:0,badges:[],streak:0,sound:true,lastRoute:{type:'dashboard'},updatedAt:0};
-let state=loadState(); let current={unit:null,lesson:null,tab:'overview'}; let quiz=null; let audioCtx=null; let clickBound=false; let pendingAdvanceTimer=null; let portalProgressOwner='';
+let state=loadState(); let current={unit:null,lesson:null,tab:'overview'}; let quiz=null; let audioCtx=null; let clickBound=false; let pendingAdvanceTimer=null; let portalProgressOwner=''; let requestedCourseEntry=new URLSearchParams(window.location.search).get('resume')==='1'?'resume':'dashboard';
 let english4Client=null; let english4Session=null; let english4CloudTimer=null; let english4TeacherTimer=null; let english4CloudReady=false;
 let teacherCourseAccess={student:{},class:{}};
 function normaliseState(saved={}){const fresh=structuredClone(baseState),merged={...fresh,...saved};merged.unlockedUnits=unique([...(fresh.unlockedUnits||[]),...(saved.unlockedUnits||[])]).map(Number);merged.unlockedLessons={...fresh.unlockedLessons,...(saved.unlockedLessons||{})};Object.keys(merged.unlockedLessons).forEach(k=>merged.unlockedLessons[k]=unique(merged.unlockedLessons[k]||[]).map(Number));merged.finishedActivities={lesson:{...((saved.finishedActivities&&saved.finishedActivities.lesson)||{})},grammar:{...((saved.finishedActivities&&saved.finishedActivities.grammar)||{})},bank:{...((saved.finishedActivities&&saved.finishedActivities.bank)||{})}};merged.rewardedQuestions={...(saved.rewardedQuestions||{})};merged.quizProgress={...(saved.quizProgress||{})};merged.lastRoute=saved.lastRoute&&saved.lastRoute.type?saved.lastRoute:{type:'dashboard'};return merged}
@@ -575,7 +575,8 @@ async function launchFromMrFaridPortal(){
   quiz=null;
   save({cloud:false});
   renderMap();
-  void connectEnglishProgress();
+  await connectEnglishProgress();
+  if(requestedCourseEntry==='resume')openEnglishDashboardOnEntry('resume');
 }
 function isActivityFinished(mode,id){return false}
 function startUnitBank(uid){
@@ -589,16 +590,18 @@ function renderUnit(){
   const content=`<section class="unit-hero glass"><img class="unit-hero-cover" src="${unitCover(unit)}" alt=""><div class="unit-hero-copy"><div class="muted">UNIT ${unit.number}</div><h1 class="rainbow">${esc(unit.title)}</h1><p>${esc(unit.theme)}</p><div class="tag-row">${unit.lifeSkills.map(skill=>`<span class="tag">🌟 ${esc(skill)}</span>`).join('')}</div></div></section><div class="section-title"><div><div class="dashboard-kicker" style="color:#5368c7">OPEN LEARNING</div><h2>Choose a Lesson</h2></div><b>${unit.lessons.length} lessons available</b></div><div class="lesson-grid">${lessons}</div><section class="glass panel" style="margin-top:20px"><h2>🏦 Unit Question Bank</h2><p>80 mixed questions from the whole unit. You can open this bank at any time.</p><button class="big-action bank" onclick="startUnitBank('${unit.id}')">Start Unit Bank — 80 Questions</button></section><div class="action-row"><button class="secondary" onclick="goHome()">← All Units</button></div>`;
   document.getElementById('app').innerHTML=pageLayout(content,unit.id);
 }
-function openEnglishDashboardOnEntry(){
+function openEnglishDashboardOnEntry(destination='dashboard'){
+  requestedCourseEntry=destination==='resume'?'resume':'dashboard';
   if(!portalProgressOwner)return;
+  if(requestedCourseEntry==='resume'){resumeLastEnglishActivity();return}
   clearPendingAdvance();
   quiz=null;
   current={unit:null,lesson:null,tab:'overview'};
   localStorage.setItem(STORE_KEY,JSON.stringify(state));
   renderMap();
 }
-window.addEventListener('message',event=>{if(event.origin===window.location.origin&&event.data?.type==='mrfarid-course-entry')openEnglishDashboardOnEntry()});
-window.addEventListener('pageshow',event=>{if(event.persisted)openEnglishDashboardOnEntry()});
+window.addEventListener('message',event=>{if(event.origin===window.location.origin&&event.data?.type==='mrfarid-course-entry')openEnglishDashboardOnEntry(event.data.destination)});
+window.addEventListener('pageshow',event=>{if(event.persisted)openEnglishDashboardOnEntry('dashboard')});
 validate();void launchFromMrFaridPortal();
 </script>
 </body>
