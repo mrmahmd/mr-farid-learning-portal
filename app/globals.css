@@ -733,6 +733,16 @@ input::placeholder { color: #9aacc0; }
 .curricula-heading .eyebrow { justify-content: center; }
 .curricula-heading h1 { margin: 14px 0 10px; color: var(--ink); font-size: clamp(38px, 5vw, 62px); letter-spacing: -2px; }
 .curricula-heading > p:not(.eyebrow) { margin: 0; color: var(--ink-soft); font-size: 13px; line-height: 1.72; }
+.curricula-access-notice { width: min(940px, 100%); margin: 0 auto 30px; padding: 17px 18px; display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; align-items: center; gap: 15px; border: 1px solid rgba(72, 96, 224, 0.2); border-radius: 22px; background: linear-gradient(120deg, rgba(239, 244, 255, 0.96), rgba(246, 240, 255, 0.96), rgba(235, 252, 248, 0.96)); box-shadow: 0 14px 32px rgba(52, 76, 145, 0.1); }
+.curricula-access-icon { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 16px; color: white; background: linear-gradient(135deg, #416ff0, #795ce8); box-shadow: 0 9px 20px rgba(67, 87, 210, 0.24); font-size: 21px; }
+.curricula-access-copy { min-width: 0; display: grid; gap: 4px; }
+.curricula-access-copy strong { color: var(--ink); font-size: 16px; line-height: 1.35; }
+.curricula-access-copy span { color: var(--muted); font-size: 12px; line-height: 1.45; }
+.curricula-access-actions { display: flex; align-items: center; gap: 8px; }
+.curricula-access-actions a { min-height: 39px; padding: 10px 14px; display: inline-flex; align-items: center; justify-content: center; border-radius: 12px; text-decoration: none; white-space: nowrap; font-size: 11px; font-weight: 900; }
+.curricula-signin-link { color: #4354b8; border: 1px solid rgba(67, 84, 184, 0.2); background: white; }
+.curricula-create-link { color: white; background: linear-gradient(135deg, #3e76f0, #6959e8); box-shadow: 0 8px 18px rgba(63, 89, 217, 0.22); }
+@media(max-width:700px){.curricula-access-notice{grid-template-columns:42px minmax(0,1fr);padding:15px;gap:12px}.curricula-access-icon{width:42px;height:42px;border-radius:14px;font-size:18px}.curricula-access-copy strong{font-size:14px}.curricula-access-copy span{font-size:11px}.curricula-access-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}.curricula-access-actions a{font-size:11px}}
 .grade-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .grade-card { min-height: 250px; padding: 20px; border: 1px solid var(--line); border-radius: 23px; background: rgba(249, 253, 255, 0.86); box-shadow: 0 10px 25px rgba(52, 89, 132, 0.07); transition: 0.22s ease; }
 .grade-card:nth-child(3n + 1) { background: linear-gradient(145deg, #f3f9ff, #ffffff); }

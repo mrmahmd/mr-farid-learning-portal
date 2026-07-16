@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { InnerPageShell } from "../components/InnerPageShell";
 import { CurriculumCover } from "../components/CurriculumCover";
 
@@ -18,6 +19,18 @@ export default function CurriculaPage() {
             accounts after signing in.
           </p>
         </div>
+
+        <aside className="curricula-access-notice" aria-label="Account required to open curricula">
+          <div className="curricula-access-icon" aria-hidden="true">🔒</div>
+          <div className="curricula-access-copy">
+            <strong>Sign in or create an account to open the curricula</strong>
+            <span>Your free student account gives you access to every available curriculum.</span>
+          </div>
+          <div className="curricula-access-actions">
+            <Link className="curricula-signin-link" href="/login">Sign In</Link>
+            <Link className="curricula-create-link" href="/register">Create Account</Link>
+          </div>
+        </aside>
 
         <div className="grade-grid">
           {grades.map((grade) => (
