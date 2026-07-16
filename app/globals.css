@@ -727,7 +727,7 @@ input::placeholder { color: #9aacc0; }
 .grade-card header { width: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
 .grade-card header > div { text-align: left; }
 .grade-number { width: 49px; height: 49px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 15px; color: white; background: linear-gradient(145deg, #4a82f1, #5964dd); box-shadow: 0 9px 20px rgba(53, 105, 232, 0.22); font-size: 15px; font-weight: 900; }
-.grade-card header small { color: var(--blue); font-size: 8px; font-weight: 900; letter-spacing: 1.25px; }
+.grade-card header small { color: var(--coral); font-size: 9px; font-weight: 950; letter-spacing: 1.35px; }
 .grade-card header h2 { margin: 3px 0 0; color: var(--violet); font-size: 20px; font-weight: 900; }
 .curriculum-options { margin-top: 15px; display: grid; gap: 10px; }
 .curriculum-option { min-height: 58px; padding: 9px 11px; display: flex; align-items: center; gap: 11px; border: 1px solid transparent; border-radius: 15px; }
