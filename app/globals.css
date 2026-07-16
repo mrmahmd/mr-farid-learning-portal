@@ -215,6 +215,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 
 .nav-create:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(53, 105, 232, 0.3); }
+.nav-signout { cursor: pointer; font-family: inherit; }
 
 .mobile-menu { display: none; position: relative; }
 .mobile-menu summary { list-style: none; cursor: pointer; color: var(--ink); font-size: 25px; }
@@ -233,8 +234,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
   box-shadow: var(--shadow);
   backdrop-filter: blur(22px);
 }
-.mobile-menu-panel a { padding: 10px 12px; border-radius: 10px; font-weight: 750; }
-.mobile-menu-panel a:hover { background: #eef7ff; }
+.mobile-menu-panel a,
+.mobile-menu-panel button { padding: 10px 12px; border: 0; border-radius: 10px; color: var(--ink); background: transparent; font: inherit; font-weight: 750; text-align: left; cursor: pointer; }
+.mobile-menu-panel a:hover,
+.mobile-menu-panel button:hover { background: #eef7ff; }
 
 .hero-shade,
 .inner-shade {
@@ -492,6 +495,8 @@ input::placeholder { color: #9aacc0; }
 .divider::before,
 .divider::after { content: ""; flex: 1; height: 1px; background: rgba(64, 108, 158, 0.13); }
 .privacy-note { margin: 16px 0 0; color: #8398b2; font-size: 9px; text-align: center; }
+.returning-student-copy { margin: 22px 0 4px; color: var(--ink-soft); font-size: 12px; line-height: 1.7; text-align: center; }
+.returning-student-card .secondary-button { margin-top: 12px; }
 
 .hero-footer {
   position: absolute;

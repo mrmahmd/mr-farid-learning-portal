@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -14,7 +14,26 @@ export function HomeLoginCard() {
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSignedIn, setIsSignedIn] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const supabase = getSupabaseBrowserClient();
+    let isActive = true;
+
+    void supabase.auth.getSession().then(({ data }) => {
+      if (isActive) setIsSignedIn(Boolean(data.session));
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (isActive) setIsSignedIn(Boolean(session));
+    });
+
+    return () => {
+      isActive = false;
+      listener.subscription.unsubscribe();
+    };
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -44,7 +63,42 @@ export function HomeLoginCard() {
       return;
     }
 
+    setIsSignedIn(true);
     router.push("/student/curricula");
+  }
+
+  async function handleSignOut() {
+    await getSupabaseBrowserClient().auth.signOut();
+    setIsSignedIn(false);
+    setMessage("");
+  }
+
+  if (isSignedIn) {
+    return (
+      <aside className="glass-card login-card returning-student-card" aria-label="Continue learning">
+        <div className="card-heading">
+          <span className="mini-logo">MF</span>
+          <div>
+            <p>Welcome back</p>
+            <h2>You are signed in</h2>
+          </div>
+        </div>
+
+        <p className="returning-student-copy">
+          Your session is saved. Continue to your curricula without entering your username and password again.
+        </p>
+
+        <Link className="primary-button" href="/student/curricula">
+          Continue to My Curricula <span aria-hidden="true">→</span>
+        </Link>
+
+        <button className="secondary-button" type="button" onClick={handleSignOut}>
+          Sign Out
+        </button>
+
+        <p className="privacy-note">Your account stays signed in on this device.</p>
+      </aside>
+    );
   }
 
   return (
