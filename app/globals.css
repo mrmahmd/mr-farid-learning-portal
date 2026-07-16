@@ -775,6 +775,11 @@ input::placeholder { color: #9aacc0; }
 .booklet-resource h3 { margin: 2px 0 6px; color: var(--ink); font-size: 13px; line-height: 1.3; }
 .booklet-resource p { min-height: 34px; margin: 0; color: var(--muted); font-size: 9px; line-height: 1.5; }
 .booklet-resource button { width: 100%; margin-top: 14px; padding: 9px 10px; border: 1px dashed rgba(61, 102, 151, 0.25); border-radius: 11px; color: #7188a4; background: rgba(255, 255, 255, 0.72); font-size: 8px; font-weight: 900; cursor: not-allowed; }
+.booklet-term-options { margin-top: 14px; display: grid; gap: 9px; }
+.booklet-term-option { padding: 10px; border: 1px solid rgba(53, 105, 232, 0.12); border-radius: 13px; background: rgba(255, 255, 255, 0.56); }
+.connect-booklet .booklet-term-option { border-color: rgba(39, 189, 145, 0.18); }
+.booklet-term-option strong { display: block; color: var(--ink); font-size: 10px; font-weight: 900; }
+.booklet-term-option button { margin-top: 7px; }
 .booklets-note { margin: 25px 0 0; color: var(--muted); font-size: 10px; text-align: center; }
 
 .student-curricula-card { width: 100%; padding: 42px; border-radius: 35px; }
@@ -1009,4 +1014,51 @@ body { font-size: 16px; }
   .desktop-nav a, .header-actions a, .header-actions button { font-size: 12px; }
   .curricula-heading > p:not(.eyebrow), .booklets-heading > p:not(.eyebrow), .student-welcome p:not(.eyebrow), .form-intro > p:not(.eyebrow), .lead { font-size: 15px; }
   .profile-detail-grid p, .feature-grid p { font-size: 14px; }
+}
+
+/* Larger reading size for the portal and the teacher profile. */
+body { font-size: 17px; }
+.desktop-nav a { font-size: 15px; }
+.header-actions a, .header-actions button { font-size: 14px; }
+.hero-intro { font-size: 20px; }
+.curriculum-pills span { font-size: 14px; }
+.quiet-link, .input-shell input, .primary-button, .secondary-button, .returning-student-copy { font-size: 15px; }
+.account-form input, .account-form select, .standalone-form input { font-size: 16px; }
+.form-intro > p:not(.eyebrow), .lead, .teacher-copy > p:not(.eyebrow) { font-size: 18px; }
+.curricula-heading > p:not(.eyebrow), .booklets-heading > p:not(.eyebrow), .student-welcome p:not(.eyebrow) { font-size: 18px; }
+.feature-grid h2 { font-size: 22px; }
+.feature-grid p { font-size: 16px; }
+.curriculum-option strong, .student-course-group-title strong { font-size: 15px; }
+.curriculum-option small { font-size: 12px; }
+.term-entry > span { font-size: 12px; }
+.term-entry small { font-size: 11px; }
+.booklet-resource h3 { font-size: 18px; }
+.booklet-resource p { font-size: 14px; }
+.booklet-term-option strong { font-size: 12px; }
+.student-account-badge, .sign-out-button { font-size: 13px; }
+
+.teacher-profile-copy h1 { font-size: clamp(56px, 5.8vw, 82px); }
+.teacher-titles strong { font-size: 27px; }
+.teacher-titles span { font-size: 21px; }
+.profile-detail-grid { gap: 17px; }
+.profile-detail-grid article { min-height: 170px; padding: 21px; }
+.profile-detail-grid article > b { width: 43px; height: 43px; font-size: 12px; }
+.profile-detail-grid h2 { font-size: 21px; }
+.profile-detail-grid p { font-size: 17px; line-height: 1.68; }
+.teacher-mission small { font-size: 13px; }
+.teacher-mission p { font-size: 22px; line-height: 1.62; }
+.teacher-status { font-size: 15px; }
+.teacher-contact-panel > small { font-size: 13px; }
+
+@media (max-width: 580px) {
+  body { font-size: 16px; }
+  .hero-intro { font-size: 17px; }
+  .form-intro > p:not(.eyebrow), .lead, .curricula-heading > p:not(.eyebrow), .booklets-heading > p:not(.eyebrow), .student-welcome p:not(.eyebrow) { font-size: 16px; }
+  .feature-grid p, .booklet-resource p { font-size: 15px; }
+  .teacher-profile-copy h1 { font-size: clamp(44px, 13vw, 60px); }
+  .teacher-titles strong { font-size: 23px; }
+  .teacher-titles span { font-size: 18px; }
+  .profile-detail-grid h2 { font-size: 20px; }
+  .profile-detail-grid p { font-size: 16px; }
+  .teacher-mission p { font-size: 20px; }
 }

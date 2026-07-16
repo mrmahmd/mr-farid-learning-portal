@@ -1,6 +1,7 @@
 import { InnerPageShell } from "../components/InnerPageShell";
 
 const grades = [1, 2, 3, 4, 5, 6];
+const terms = ["First Term", "Second Term"];
 
 export default function BookletsPage() {
   return (
@@ -32,7 +33,14 @@ export default function BookletsPage() {
                   <div>
                     <h3>English Primary {grade}</h3>
                     <p>Explanations and printable booklets</p>
-                    <button type="button" disabled>Download link coming soon</button>
+                    <div className="booklet-term-options">
+                      {terms.map((term) => (
+                        <div className="booklet-term-option" key={term}>
+                          <strong>{term}</strong>
+                          <button type="button" disabled>Download link coming soon</button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </section>
 
@@ -41,7 +49,14 @@ export default function BookletsPage() {
                   <div>
                     <h3>Connect Plus Primary {grade}</h3>
                     <p>Explanations and printable booklets</p>
-                    <button type="button" disabled>Download link coming soon</button>
+                    <div className="booklet-term-options">
+                      {terms.map((term) => (
+                        <div className="booklet-term-option" key={term}>
+                          <strong>{term}</strong>
+                          <button type="button" disabled>Download link coming soon</button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </section>
               </div>
