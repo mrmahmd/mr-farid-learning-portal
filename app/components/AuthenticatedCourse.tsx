@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import type { Curriculum } from "../data/curricula";
 import { portalAsset } from "../asset-path";
 import { getSupabaseBrowserClient } from "../lib/supabase";
@@ -11,10 +11,13 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
   const [isReady, setIsReady] = useState(false);
   const [studentName, setStudentName] = useState("Student");
   const [sessionBridge, setSessionBridge] = useState<{ accessToken: string; refreshToken: string } | null>(null);
+  const [shouldResume, setShouldResume] = useState(false);
   const courseFrame = useRef<HTMLIFrameElement>(null);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const shouldResume = searchParams.get("resume") === "1";
+
+  useEffect(() => {
+    setShouldResume(new URLSearchParams(window.location.search).get("resume") === "1");
+  }, []);
 
   useEffect(() => {
     let isActive = true;
