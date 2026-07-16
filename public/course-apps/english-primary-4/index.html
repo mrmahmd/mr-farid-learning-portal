@@ -88,6 +88,10 @@ body{background:radial-gradient(circle at 7% 7%,#dcf8ff 0 10%,transparent 29%),r
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media print{body{background:#fff}.topbar,.no-print{display:none!important}.certificate{box-shadow:none;margin:0}.modal{position:static;background:#fff;padding:0}.modal-card{max-height:none;box-shadow:none}}
 .unit-card{display:block;width:100%}.unit-card-cover,.unit-card-body,.lesson-cover,.lesson-card-body,.progress-track{display:block}
+#mrFaridSupport{position:fixed!important;z-index:2147483000!important;right:max(14px,env(safe-area-inset-right))!important;bottom:max(14px,env(safe-area-inset-bottom))!important;display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;max-width:calc(100vw - 28px);transition:transform .2s ease,box-shadow .2s ease}
+#mrFaridSupport:hover{transform:translateY(-3px);box-shadow:0 15px 32px rgba(18,139,75,.4)!important}
+@media(max-width:560px){#mrFaridSupport{width:52px!important;height:52px!important;padding:0!important;justify-content:center!important;border-radius:17px!important}#mrFaridSupport span{display:none!important}#mrFaridSupport svg{width:25px!important;height:25px!important}}
+@media print{#mrFaridSupport{display:none!important}}
 </style>
 </head>
 <body>
