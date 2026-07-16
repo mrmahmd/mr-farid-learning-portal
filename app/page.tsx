@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { SiteHeader } from "./components/SiteHeader";
 import { SocialLinks } from "./components/SocialLinks";
+import { HomeLoginCard } from "./components/HomeLoginCard";
 
 export default function Home() {
   return (
@@ -28,42 +28,7 @@ export default function Home() {
           </div>
         </div>
 
-        <aside className="glass-card login-card" aria-label="Student login">
-          <div className="card-heading">
-            <span className="mini-logo">MF</span>
-            <div>
-              <p>Welcome back</p>
-              <h2>Student Login</h2>
-            </div>
-          </div>
-
-          <label className="field-label" htmlFor="home-username">Username</label>
-          <div className="input-shell">
-            <span aria-hidden="true">●</span>
-            <input id="home-username" name="username" placeholder="Enter your username" autoComplete="username" />
-          </div>
-
-          <div className="label-row">
-            <label className="field-label" htmlFor="home-password">Password</label>
-            <a href="#" className="quiet-link">Forgot password?</a>
-          </div>
-          <div className="input-shell">
-            <span aria-hidden="true">✦</span>
-            <input id="home-password" name="password" type="password" placeholder="Enter your password" autoComplete="current-password" />
-          </div>
-
-          <Link className="primary-button" href="/login">
-            Enter Learning Portal <span aria-hidden="true">→</span>
-          </Link>
-
-          <div className="divider"><span>New to our learning world?</span></div>
-
-          <Link className="secondary-button" href="/register">
-            Create New Account
-          </Link>
-
-          <p className="privacy-note">A safe learning space for every young learner.</p>
-        </aside>
+        <HomeLoginCard />
       </section>
 
       <div className="hero-footer">

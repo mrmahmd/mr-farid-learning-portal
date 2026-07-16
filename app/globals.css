@@ -469,6 +469,7 @@ input::placeholder { color: #9aacc0; }
 }
 
 .primary-button:hover { transform: translateY(-2px); box-shadow: 0 17px 34px rgba(53, 105, 232, 0.3); }
+.primary-button:disabled { opacity: 0.68; cursor: wait; transform: none; box-shadow: none; }
 
 .secondary-button {
   color: var(--blue-deep);
@@ -641,8 +642,10 @@ input::placeholder { color: #9aacc0; }
 .field-help { margin: 7px 0 0; color: var(--muted); font-size: 10px; }
 .two-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 .form-message { margin: 14px 0 0; padding: 11px 13px; border-radius: 11px; color: #14784d; background: #e9fff5; font-size: 11px; line-height: 1.5; }
+.form-message.error { color: #a62a42; background: #fff0f3; border: 1px solid rgba(211, 68, 95, 0.16); }
 .form-switch { margin: 18px 0 0; color: var(--muted); font-size: 11px; text-align: center; }
 .form-switch a { color: var(--blue); font-weight: 850; }
+.password-help { margin-top: 9px; }
 .standalone-form { width: min(470px, 100%); padding: 39px; }
 .centered-title { justify-content: center; text-align: left; }
 .centered-title h1 { margin: 0; color: var(--ink); font-size: 27px; }
@@ -797,6 +800,48 @@ input::placeholder { color: #9aacc0; }
 .grade-card-active { border-color: var(--sky); }
 .starting-badge { color: var(--coral); }
 
+.student-welcome-actions { display: flex; align-items: center; gap: 10px; }
+.student-account-badge { min-width: 132px; padding: 13px 16px; display: flex; flex-direction: column; align-items: center; border: 1px solid rgba(53, 105, 232, 0.15); border-radius: 17px; color: var(--blue-deep); background: #eef5ff; font-size: 11px; font-weight: 900; }
+.student-account-badge small { margin-bottom: 4px; color: var(--muted); font-size: 8px; letter-spacing: 1.2px; }
+.sign-out-button { min-height: 44px; padding: 0 15px; border: 1px solid rgba(223, 73, 104, 0.18); border-radius: 14px; color: #ad3150; background: #fff1f4; font-size: 10px; font-weight: 900; cursor: pointer; }
+.sign-out-button:hover { background: #ffe5eb; }
+.student-grade-grid { margin-top: 28px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.student-grade-card { min-height: 235px; padding: 19px; border: 1px solid var(--line); border-radius: 23px; background: linear-gradient(145deg, #f4f9ff, #ffffff); box-shadow: 0 11px 27px rgba(50, 88, 132, 0.08); }
+.student-grade-card:nth-child(3n + 2) { background: linear-gradient(145deg, #f0fff9, #ffffff); }
+.student-grade-card:nth-child(3n + 3) { background: linear-gradient(145deg, #fff9e9, #ffffff); }
+.student-grade-card > header { display: flex; align-items: center; gap: 12px; padding-bottom: 15px; border-bottom: 1px solid var(--line); }
+.student-grade-card > header small { color: var(--coral); font-size: 8px; font-weight: 950; letter-spacing: 1.15px; }
+.student-grade-card > header h2 { margin: 3px 0 0; color: var(--violet); font-size: 20px; }
+.student-course-options { margin-top: 14px; display: grid; gap: 10px; }
+.student-course-link { min-height: 62px; padding: 10px; display: flex; align-items: center; gap: 11px; border: 1px solid rgba(53, 105, 232, 0.13); border-radius: 15px; background: #edf5ff; transition: 0.2s ease; }
+.student-course-link:hover { transform: translateY(-2px); border-color: var(--sky); box-shadow: 0 10px 20px rgba(50, 88, 132, 0.1); }
+.connect-course-link { border-color: rgba(39, 189, 145, 0.18); background: #ecfff8; }
+.course-mini-cover { width: 38px; height: 43px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 8px 12px 12px 8px; color: white; background: linear-gradient(145deg, #4a82f1, #5964dd); font-size: 9px; font-weight: 950; box-shadow: 4px 5px 12px rgba(48, 86, 130, 0.16); }
+.connect-course-link .course-mini-cover { background: linear-gradient(145deg, #43d6ae, #21ad81); }
+.student-course-link > span:last-child { min-width: 0; display: flex; flex-direction: column; }
+.student-course-link strong { color: var(--ink); font-size: 11px; line-height: 1.35; }
+.student-course-link small { margin-top: 4px; color: var(--blue); font-size: 8px; font-weight: 850; }
+.connect-course-link small { color: #148c6b; }
+.student-loading-card { max-width: 620px; margin: 0 auto; padding: 52px; text-align: center; }
+.student-loading-card h1 { margin: 17px 0 5px; color: var(--ink); }
+.student-loading-card .form-message { max-width: 440px; margin-left: auto; margin-right: auto; }
+.inline-action { width: fit-content; min-width: 180px; margin-left: auto; margin-right: auto; }
+
+.course-app-card { width: 100%; padding: 42px; border-radius: 35px; }
+.course-app-header { display: grid; grid-template-columns: 165px 1fr; gap: 30px; align-items: center; padding-bottom: 30px; border-bottom: 1px solid var(--line); }
+.course-app-cover { min-height: 215px; padding: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 5px solid rgba(255, 255, 255, 0.88); border-radius: 14px 28px 28px 14px; color: white; background: linear-gradient(145deg, #4c8af4, #5261df); box-shadow: 12px 15px 28px rgba(50, 87, 131, 0.2); }
+.connect-course-app .course-app-cover { background: linear-gradient(145deg, #56dfbb, #20b987); }
+.course-app-cover span { font-size: 14px; font-weight: 900; text-align: center; }
+.course-app-cover b { margin: 9px 0; font-size: 66px; line-height: 1; }
+.course-app-cover small { font-size: 8px; letter-spacing: 1.3px; }
+.course-app-heading h1 { margin: 13px 0 10px; color: var(--ink); font-size: clamp(38px, 5vw, 61px); letter-spacing: -2px; }
+.course-app-heading > p:not(.eyebrow) { margin: 0; color: var(--ink-soft); font-size: 14px; line-height: 1.7; }
+.course-placeholder { margin-top: 28px; min-height: 250px; padding: 42px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px dashed rgba(53, 105, 232, 0.26); border-radius: 24px; text-align: center; background: linear-gradient(145deg, #f4f9ff, #f7fffc); }
+.course-placeholder h2 { margin: 17px 0 8px; color: var(--ink); font-size: 27px; }
+.course-placeholder p { max-width: 640px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.course-return-actions { max-width: 620px; margin: 27px auto 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.course-return-actions .primary-button { margin-top: 0; }
+
 @media (max-width: 1260px) {
   .hero-content { grid-template-columns: 34% 38% 28%; gap: 0; }
   .hero-copy h1 { font-size: 60px; }
@@ -812,6 +857,7 @@ input::placeholder { color: #9aacc0; }
   .feature-grid { grid-template-columns: 1fr 1fr; }
   .grade-grid { grid-template-columns: 1fr 1fr; }
   .teacher-profile-card { grid-template-columns: 320px 1fr; gap: 28px; }
+  .student-grade-grid { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 860px) {
@@ -837,6 +883,8 @@ input::placeholder { color: #9aacc0; }
   .teacher-visual { max-width: 430px; width: 100%; margin: 0 auto; }
   .teacher-portrait-placeholder { min-height: 310px; }
   .student-curriculum-grid { grid-template-columns: 1fr; }
+  .course-app-header { grid-template-columns: 135px 1fr; }
+  .course-app-cover { min-height: 185px; }
 }
 
 @media (max-width: 580px) {
@@ -862,6 +910,8 @@ input::placeholder { color: #9aacc0; }
   .curricula-heading { text-align: left; }
   .curricula-heading .eyebrow { justify-content: flex-start; }
   .student-welcome { align-items: flex-start; flex-direction: column; }
+  .student-welcome-actions { width: 100%; justify-content: space-between; }
+  .student-grade-grid { grid-template-columns: 1fr; }
   .student-grade-badge { min-width: 100px; padding: 12px; }
   .student-curriculum { grid-template-columns: 92px 1fr; padding: 15px; gap: 14px; min-height: 230px; }
   .curriculum-book-cover { height: 175px; padding: 10px; }
@@ -873,6 +923,16 @@ input::placeholder { color: #9aacc0; }
   .profile-detail-grid { grid-template-columns: 1fr; }
   .creator-credit { width: 100%; align-items: flex-start; }
   .creator-credit span { line-height: 1.4; }
+  .course-app-card { padding: 25px 18px; }
+  .course-app-header { grid-template-columns: 92px 1fr; gap: 16px; }
+  .course-app-cover { min-height: 155px; padding: 9px; border-width: 3px; }
+  .course-app-cover span { font-size: 10px; }
+  .course-app-cover b { font-size: 43px; }
+  .course-app-heading h1 { font-size: 31px; letter-spacing: -1px; }
+  .course-app-heading > p:not(.eyebrow) { font-size: 11px; }
+  .course-placeholder { min-height: 220px; padding: 28px 18px; }
+  .course-placeholder h2 { font-size: 22px; }
+  .course-return-actions { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
