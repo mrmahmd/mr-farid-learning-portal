@@ -6,16 +6,18 @@ window.MrFaridCourseProgress = (() => {
   let appId;
   let readState;
   let writeTimer;
+  let reportStatus;
 
-  async function connect({ courseId, getState, setState, mergeState, onReady }) {
-    if (!window.supabase) return { connected: false };
+  async function connect({ courseId, getState, setState, mergeState, onReady, onStatus }) {
+    reportStatus = onStatus;
+    if (!window.supabase) return { connected: false, error: "Learning sync is not available." };
 
     client = window.supabase.createClient(url, key, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
     });
     const { data: sessionData } = await client.auth.getSession();
     const session = sessionData.session;
-    if (!session) return { connected: false };
+    if (!session) return { connected: false, error: "Please sign in to the portal first." };
 
     userId = session.user.id;
     appId = courseId;
@@ -28,9 +30,15 @@ window.MrFaridCourseProgress = (() => {
       .eq("app_id", appId)
       .maybeSingle();
 
-    if (!error && data?.state) setState(mergeState(getState(), data.state));
-    await saveNow();
+    if (error) {
+      reportStatus?.({ online: false, message: "Cloud progress needs attention." });
+      return { connected: false, error: error.message };
+    }
+    if (data?.state) setState(mergeState(getState(), data.state));
+    const saved = await saveNow();
+    if (!saved) return { connected: false, error: "Progress could not be saved." };
     onReady?.();
+    reportStatus?.({ online: true, message: "Progress saved to your account" });
     return { connected: !error };
   }
 
@@ -41,11 +49,17 @@ window.MrFaridCourseProgress = (() => {
   }
 
   async function saveNow() {
-    if (!client || !userId || !appId || !readState) return;
-    await client.from("course_progress").upsert(
+    if (!client || !userId || !appId || !readState) return false;
+    const { error } = await client.from("course_progress").upsert(
       { user_id: userId, app_id: appId, state: readState(), updated_at: new Date().toISOString() },
       { onConflict: "user_id,app_id" },
     );
+    if (error) {
+      reportStatus?.({ online: false, message: "Cloud progress needs attention." });
+      return false;
+    }
+    reportStatus?.({ online: true, message: "Progress saved to your account" });
+    return true;
   }
 
   return { connect, queueSave, saveNow };
