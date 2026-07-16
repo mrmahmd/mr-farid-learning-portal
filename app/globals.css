@@ -962,3 +962,51 @@ input::placeholder { color: #9aacc0; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
 }
+
+/* Clear, student-friendly typography across the portal. */
+body { font-size: 16px; }
+.brand-name strong { font-size: 18px; }
+.brand-name small { font-size: 11px; }
+.desktop-nav a { font-size: 14px; }
+.header-actions a, .header-actions button { font-size: 13px; }
+.eyebrow { font-size: 12px; }
+.hero-intro { font-size: 18px; }
+.curriculum-pills span { font-size: 13px; }
+.card-heading p, .form-title p, .field-label, .account-form label, .standalone-form label { font-size: 12px; }
+.card-heading h2, .form-title h2 { font-size: 27px; }
+.quiet-link, .input-shell input, .primary-button, .secondary-button, .returning-student-copy { font-size: 14px; }
+.divider, .privacy-note, .field-help, .form-message, .form-switch { font-size: 12px; }
+.account-form input, .account-form select, .standalone-form input { font-size: 15px; }
+.form-intro > p:not(.eyebrow), .lead, .teacher-copy > p:not(.eyebrow) { font-size: 17px; }
+.benefit-list strong { font-size: 16px; }
+.benefit-list small { font-size: 14px; }
+.teacher-titles strong { font-size: 23px; }
+.teacher-titles span { font-size: 18px; }
+.profile-detail-grid h2 { font-size: 18px; }
+.profile-detail-grid p { font-size: 15px; }
+.teacher-mission p { font-size: 19px; }
+.creator-credit small, .creator-credit span { font-size: 11px; }
+.creator-credit strong { font-size: 17px; }
+.feature-grid b { font-size: 14px; }
+.feature-grid h2 { font-size: 20px; }
+.feature-grid p { font-size: 14px; }
+.curricula-heading > p:not(.eyebrow), .booklets-heading > p:not(.eyebrow), .student-welcome p:not(.eyebrow) { font-size: 16px; }
+.grade-card header small, .booklet-grade-card > header small, .student-grade-card > header small { font-size: 10px; }
+.grade-card header h2, .booklet-grade-card > header h2, .student-grade-card > header h2 { font-size: 22px; }
+.curriculum-option strong, .student-course-group-title strong { font-size: 14px; }
+.curriculum-option small { font-size: 11px; }
+.term-badges span { font-size: 9px; }
+.term-entry > span { font-size: 11px; }
+.term-entry small { font-size: 10px; }
+.booklet-resource h3 { font-size: 16px; }
+.booklet-resource p { font-size: 12px; }
+.booklet-resource button, .booklets-note, .student-access-note { font-size: 11px; }
+.student-account-badge, .sign-out-button { font-size: 12px; }
+
+@media (max-width: 580px) {
+  .brand-name strong { font-size: 15px; }
+  .hero-intro { font-size: 16px; }
+  .desktop-nav a, .header-actions a, .header-actions button { font-size: 12px; }
+  .curricula-heading > p:not(.eyebrow), .booklets-heading > p:not(.eyebrow), .student-welcome p:not(.eyebrow), .form-intro > p:not(.eyebrow), .lead { font-size: 15px; }
+  .profile-detail-grid p, .feature-grid p { font-size: 14px; }
+}
