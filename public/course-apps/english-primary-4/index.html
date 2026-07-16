@@ -529,6 +529,18 @@ function launchFromMrFaridPortal(){
   save({cloud:false});
   renderMap();
 }
+function isActivityFinished(mode,id){return false}
+function startUnitBank(uid){
+  clearPendingAdvance();
+  const unit=CURRICULUM.units.find(item=>item.id===uid);
+  if(unit)createOrResumeQuiz('bank',unit,null,makeUnitBank(unit));
+}
+function renderUnit(){
+  const unit=current.unit;
+  const lessons=visibleUnitLessons(unit).map((lesson,index)=>`<button class="lesson-card glass" onclick="openLesson('${lesson.id}')"><span class="lesson-cover"><img src="${lessonCover(lesson)}" alt="${esc(lesson.title)} cover"><span class="step">LEVEL ${index+1}</span></span><span class="lesson-card-body"><h3>${esc(lesson.title)}</h3><p class="muted">${esc(lesson.kind)}</p><span class="tag-row"><span class="tag">📚 ${lesson.vocab.length} words</span>${lesson.grammar?'<span class="tag">🧠 Grammar</span>':''}</span><p>▶ Open lesson</p></span></button>`).join('');
+  const content=`<section class="unit-hero glass"><img class="unit-hero-cover" src="${unitCover(unit)}" alt=""><div class="unit-hero-copy"><div class="muted">UNIT ${unit.number}</div><h1 class="rainbow">${esc(unit.title)}</h1><p>${esc(unit.theme)}</p><div class="tag-row">${unit.lifeSkills.map(skill=>`<span class="tag">🌟 ${esc(skill)}</span>`).join('')}</div></div></section><div class="section-title"><div><div class="dashboard-kicker" style="color:#5368c7">OPEN LEARNING</div><h2>Choose a Lesson</h2></div><b>${unit.lessons.length} lessons available</b></div><div class="lesson-grid">${lessons}</div><section class="glass panel" style="margin-top:20px"><h2>🏦 Unit Question Bank</h2><p>80 mixed questions from the whole unit. You can open this bank at any time.</p><button class="big-action bank" onclick="startUnitBank('${unit.id}')">Start Unit Bank — 80 Questions</button></section><div class="action-row"><button class="secondary" onclick="goHome()">← All Units</button></div>`;
+  document.getElementById('app').innerHTML=pageLayout(content,unit.id);
+}
 validate();launchFromMrFaridPortal();
 </script>
 </body>
