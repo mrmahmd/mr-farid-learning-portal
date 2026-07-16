@@ -151,7 +151,7 @@ body{background:radial-gradient(circle at 10% 5%,rgba(113,87,255,.13),transparen
 @media(max-width:760px){.topbar{height:72px;min-height:72px;align-items:center;padding:0 8px}.brand,.teacher-area{padding:0}.sidebar{top:72px;height:calc(100vh - 72px)}.course-switch-btn{font-size:9px;padding:8px 7px}}
 
 /* Always-visible, non-blocking WhatsApp support button */
-#mrFaridSupport{position:fixed!important;z-index:2147483000!important;right:max(14px,env(safe-area-inset-right))!important;bottom:max(14px,env(safe-area-inset-bottom))!important;display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;max-width:calc(100vw - 28px);transition:transform .2s ease,box-shadow .2s ease}
-#mrFaridSupport:hover{transform:translateY(-3px);box-shadow:0 15px 32px rgba(18,139,75,.4)!important}
-@media(max-width:560px){#mrFaridSupport{width:52px!important;height:52px!important;padding:0!important;justify-content:center!important;border-radius:17px!important}#mrFaridSupport span{display:none!important}#mrFaridSupport svg{width:25px!important;height:25px!important}}
+#mrFaridSupport{position:static!important;z-index:auto!important;display:flex!important;align-items:center;gap:7px;padding:9px 12px;border-radius:13px;color:#fff;background:linear-gradient(135deg,#28c96f,#128b4b);box-shadow:0 7px 17px rgba(18,139,75,.24);font:900 12px Arial,sans-serif;text-decoration:none;white-space:nowrap;transition:transform .2s ease,box-shadow .2s ease}
+#mrFaridSupport:hover{transform:translateY(-2px);box-shadow:0 11px 23px rgba(18,139,75,.34)!important}
+@media(max-width:900px){#mrFaridSupport{width:40px!important;height:40px!important;padding:0!important;justify-content:center!important;border-radius:12px!important}#mrFaridSupport span{display:none!important}#mrFaridSupport svg{width:22px!important;height:22px!important}}
 @media print{#mrFaridSupport{display:none!important}}
