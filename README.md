@@ -2,6 +2,10 @@
 
 An interactive English learning portal designed and developed by **Mr. Mohamed Farid**, English Teacher and Educational Content Designer.
 
+## Live Portal
+
+[Open Mr. Farid Learning Portal](https://mr-farid-learning-portal.mr-mahmd.chatgpt.site)
+
 The portal is designed for primary students from **Primary 1 to Primary 6**. Each grade provides access to two curricula:
 
 - English Primary 1–6
