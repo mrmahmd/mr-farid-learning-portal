@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Curriculum } from "../data/curricula";
+import { portalAsset } from "../asset-path";
 import { getSupabaseBrowserClient } from "../lib/supabase";
 
 export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) {
   const [isReady, setIsReady] = useState(false);
+  const [studentName, setStudentName] = useState("Student");
   const router = useRouter();
 
   useEffect(() => {
@@ -21,7 +23,10 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
         return;
       }
 
-      if (isActive) setIsReady(true);
+      if (isActive) {
+        setStudentName(String(data.session.user.user_metadata?.full_name ?? "Student"));
+        setIsReady(true);
+      }
     }
 
     void verifySession();
@@ -37,6 +42,21 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
         <span className="mini-logo">MF</span>
         <h1>Opening your curriculum...</h1>
         <p className="form-message" role="status">Checking your student account.</p>
+      </section>
+    );
+  }
+
+  if (curriculum.slug === "connect-plus-primary-4") {
+    const appUrl = `${portalAsset("/course-apps/connect-plus-primary-4/index.html")}?student=${encodeURIComponent(studentName)}`;
+
+    return (
+      <section className="integrated-course-shell" aria-label={`${curriculum.title} application`}>
+        <iframe
+          className="integrated-course-frame"
+          src={appUrl}
+          title={`${curriculum.title} interactive application`}
+          allow="autoplay"
+        />
       </section>
     );
   }

@@ -846,6 +846,9 @@ input::placeholder { color: #9aacc0; }
 .course-placeholder p { max-width: 640px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
 .course-return-actions { max-width: 620px; margin: 27px auto 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .course-return-actions .primary-button { margin-top: 0; }
+.course-app-page .inner-content { width: min(1540px, calc(100% - 28px)); padding: 24px 0 42px; }
+.integrated-course-shell { width: 100%; min-height: 820px; overflow: hidden; border: 1px solid rgba(53, 105, 232, 0.16); border-radius: 26px; background: #f7fbff; box-shadow: 0 24px 65px rgba(37, 67, 118, 0.16); }
+.integrated-course-frame { display: block; width: 100%; height: max(820px, calc(100svh - 145px)); border: 0; background: #f7fbff; }
 
 @media (max-width: 1260px) {
   .hero-content { grid-template-columns: 34% 38% 28%; gap: 0; }
