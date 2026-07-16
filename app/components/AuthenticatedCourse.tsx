@@ -54,7 +54,8 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
   const embeddedApp = embeddedApps[curriculum.slug];
 
   if (embeddedApp) {
-    const appUrl = `${portalAsset(embeddedApp)}?student=${encodeURIComponent(studentName)}`;
+    const cacheVersion = curriculum.slug === "english-primary-4" ? "&v=20260716-2" : "";
+    const appUrl = `${portalAsset(embeddedApp)}?student=${encodeURIComponent(studentName)}${cacheVersion}`;
 
     return (
       <section className="integrated-course-shell" aria-label={`${curriculum.title} application`}>
