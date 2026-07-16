@@ -826,7 +826,9 @@
   }
   function resumeConnectActivity(moduleId,lessonIndex,isBoss){const module=moduleById(moduleId);if(!module)return;state.nav={module:moduleId,lesson:lessonIndex,tab:'practice',boss:!!isBoss};state.view='lesson';rememberPage();save();render();scrollToLearningContent('.question-card,.panel')}
   function addConnectSupportSignature(){if(document.getElementById('mrFaridSupport'))return;document.body.insertAdjacentHTML('beforeend',`<a id="mrFaridSupport" href="https://wa.me/966552019074" target="_blank" rel="noreferrer" aria-label="Contact Mr.Farid on WhatsApp for support" style="position:fixed;z-index:500;right:18px;bottom:18px;display:flex;align-items:center;gap:9px;padding:10px 14px;border-radius:999px;color:#fff;background:linear-gradient(135deg,#28c96f,#128b4b);box-shadow:0 10px 24px rgba(18,139,75,.3);font:800 13px Arial,sans-serif;text-decoration:none"><svg viewBox="0 0 32 32" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M16 4a11.5 11.5 0 0 0-9.8 17.5L4.7 27l5.7-1.5A11.6 11.6 0 1 0 16 4Zm0 20.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.3.9.9-3.2-.2-.4A9.1 9.1 0 1 1 16 24.8Zm5-6.8c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.2l-.9 1.1c-.2.2-.3.2-.6.1a7.5 7.5 0 0 1-3.7-3.2c-.3-.5.3-.5.8-1.5.1-.2 0-.4 0-.6l-.9-2.1c-.2-.5-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.4-1.2 1.2-1.2 2.9s1.2 3.3 1.4 3.5c.1.2 2.4 3.7 5.9 5.2 2.2.9 3 .9 4.1.7.7-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.1-1.4-.2-.3-.4-.4-.7-.5Z"/></svg><span>Report an issue</span></a>`)}
-  function init(){
+  async function init(){
+    const account=await window.MrFaridCourseProgress?.requireAccount({loginUrl:new URL('../../login/',window.location.href).href});
+    if(!account)return;
     addConnectSupportSignature();
     const portalStudent=new URLSearchParams(window.location.search).get('student');
     state.profile={name:(portalStudent||state.profile.name||'Student').slice(0,80),className:'Primary 4'};
@@ -844,4 +846,4 @@
     render();
     void connectPlusCloudProgress();
   }
-  init();
+  void init();

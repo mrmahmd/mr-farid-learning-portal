@@ -20,6 +20,16 @@ window.MrFaridCourseProgress = (() => {
     reportStatus?.({ online, message });
   }
 
+  function ensureClient() {
+    if (!window.supabase) return null;
+    if (!client) {
+      client = window.supabase.createClient(url, key, {
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
+      });
+    }
+    return client;
+  }
+
   window.addEventListener("message", async (event) => {
     if (
       event.origin !== portalOrigin ||
@@ -59,6 +69,20 @@ window.MrFaridCourseProgress = (() => {
     return (await client.auth.getSession()).data.session;
   }
 
+  async function requireAccount({ loginUrl } = {}) {
+    if (!ensureClient()) {
+      window.top.location.replace(loginUrl || new URL("../../login/", window.location.href).href);
+      return null;
+    }
+
+    const session = await portalSession();
+    if (!session) {
+      window.top.location.replace(loginUrl || new URL("../../login/", window.location.href).href);
+      return null;
+    }
+    return session;
+  }
+
   async function connect({ courseId, getState, setState, mergeState, onReady, onStatus }) {
     reportStatus = onStatus;
     applyState = setState;
@@ -72,9 +96,7 @@ window.MrFaridCourseProgress = (() => {
       return { connected: false, error: "Learning sync is not available." };
     }
 
-    client = window.supabase.createClient(url, key, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
-    });
+    ensureClient();
 
     const session = await portalSession();
     if (!session) {
@@ -160,5 +182,5 @@ window.MrFaridCourseProgress = (() => {
   window.addEventListener("pagehide", () => { if (dirty) void saveNow(); });
   setInterval(() => { if (dirty) void saveNow(); }, 15000);
 
-  return { connect, queueSave, saveNow };
+  return { connect, queueSave, saveNow, requireAccount };
 })();
