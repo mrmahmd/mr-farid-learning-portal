@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { InnerPageShell } from "../../components/InnerPageShell";
+import { CurriculumIcon } from "../../components/CurriculumIcon";
 import { curricula } from "../../data/curricula";
 import {
   getSupabaseBrowserClient,
@@ -114,7 +115,7 @@ export default function StudentCurriculaPage() {
                   {curricula.filter((curriculum) => curriculum.grade === grade).map((curriculum) => (
                     <section className={`student-course-group ${curriculum.type}-course-group`} key={curriculum.slug}>
                       <div className="student-course-group-title">
-                        <span className="course-mini-cover">{curriculum.type === "english" ? "EN" : "C+"}</span>
+                        <CurriculumIcon type={curriculum.type} grade={grade} compact />
                         <strong>{curriculum.title}</strong>
                       </div>
                       <div className="term-entry-options">

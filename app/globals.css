@@ -1031,6 +1031,68 @@ body { font-size: 17px; }
 .feature-grid p { font-size: 16px; }
 .curriculum-option strong, .student-course-group-title strong { font-size: 15px; }
 .curriculum-option small { font-size: 12px; }
+
+/* Curriculum identity icons: each grade and pathway receives its own clear color. */
+.curriculum-art {
+  --icon-start: #4f91f5;
+  --icon-end: #5966df;
+  position: relative;
+  isolation: isolate;
+  width: 46px;
+  height: 51px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.65);
+  border-radius: 12px 18px 18px 12px;
+  color: #fff;
+  background: linear-gradient(145deg, var(--icon-start), var(--icon-end));
+  box-shadow: 5px 7px 15px color-mix(in srgb, var(--icon-end) 28%, transparent);
+}
+.curriculum-art::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 44px;
+  height: 44px;
+  top: -22px;
+  right: -18px;
+  border: 7px solid rgba(255, 255, 255, 0.21);
+  border-radius: 50%;
+}
+.curriculum-art::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 61px;
+  height: 12px;
+  left: -19px;
+  bottom: -5px;
+  background: rgba(255, 255, 255, 0.16);
+  transform: rotate(-28deg);
+}
+.curriculum-art-code { font-size: 13px; font-weight: 950; line-height: 1; letter-spacing: -0.7px; }
+.curriculum-art-grade { position: absolute; right: 6px; bottom: 5px; font-size: 10px; font-weight: 950; line-height: 1; }
+.curriculum-art-spark { position: absolute; top: 5px; left: 6px; font-size: 9px; line-height: 1; color: #fff9b8; }
+.compact-curriculum-art { width: 41px; height: 46px; border-radius: 10px 15px 15px 10px; }
+.compact-curriculum-art .curriculum-art-code { font-size: 11px; }
+
+.english-curriculum-art.grade-1 { --icon-start: #4f91f5; --icon-end: #5966df; }
+.english-curriculum-art.grade-2 { --icon-start: #a66af5; --icon-end: #6f50d4; }
+.english-curriculum-art.grade-3 { --icon-start: #ed6e9e; --icon-end: #c8467c; }
+.english-curriculum-art.grade-4 { --icon-start: #fa9d56; --icon-end: #dc5f43; }
+.english-curriculum-art.grade-5 { --icon-start: #39b7d6; --icon-end: #2676be; }
+.english-curriculum-art.grade-6 { --icon-start: #6177e8; --icon-end: #3147a6; }
+.connect-curriculum-art { border-radius: 17px 11px 17px 11px; }
+.connect-curriculum-art.grade-1 { --icon-start: #32d5af; --icon-end: #159a82; }
+.connect-curriculum-art.grade-2 { --icon-start: #9bcf42; --icon-end: #569b32; }
+.connect-curriculum-art.grade-3 { --icon-start: #e8bc42; --icon-end: #ce7536; }
+.connect-curriculum-art.grade-4 { --icon-start: #ff7f83; --icon-end: #d44e73; }
+.connect-curriculum-art.grade-5 { --icon-start: #4dc6cf; --icon-end: #287fab; }
+.connect-curriculum-art.grade-6 { --icon-start: #8975e7; --icon-end: #554cb7; }
+
+.booklet-resource > .curriculum-art { margin-top: 2px; }
 .term-entry > span { font-size: 12px; }
 .term-entry small { font-size: 11px; }
 .booklet-resource h3 { font-size: 18px; }
