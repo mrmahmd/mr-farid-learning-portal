@@ -120,6 +120,16 @@ function describeLastActivity(appId: string, rawState: unknown): ResumeActivity 
     : null;
 }
 
+function readDeviceActivity(userId: string): ResumeActivity | null {
+  try {
+    const saved = record(JSON.parse(localStorage.getItem("mrFaridPortalLastActivity") ?? "{}"));
+    if (saved.userId !== userId) return null;
+    return describeLastActivity(String(saved.appId), { portalLastActivity: saved });
+  } catch {
+    return null;
+  }
+}
+
 export function HomeLoginCard() {
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
@@ -150,7 +160,7 @@ export function HomeLoginCard() {
       const latestActivity = (progressRows ?? [])
         .map((row) => describeLastActivity(String(row.app_id), row.state))
         .find((activity): activity is ResumeActivity => Boolean(activity));
-      setResumeActivity(latestActivity ?? null);
+      setResumeActivity(readDeviceActivity(data.session.user.id) ?? latestActivity ?? null);
     }
 
     void loadStudentSession();

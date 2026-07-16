@@ -140,6 +140,19 @@ window.MrFaridCourseProgress = (() => {
     if (!dirty || !client || !userId || !appId || !readState) return false;
     const savingVersion = changeVersion;
     const snapshot = readState();
+    const lastActivity = snapshot?.portalLastActivity;
+    if (lastActivity?.detail) {
+      try {
+        localStorage.setItem("mrFaridPortalLastActivity", JSON.stringify({
+          userId,
+          appId,
+          ...lastActivity,
+          updatedAt: new Date().toISOString(),
+        }));
+      } catch (error) {
+        // The cloud save below remains the source of truth when local storage is unavailable.
+      }
+    }
     status(false, "Saving progress...");
 
     const { error } = await client.from("course_progress").upsert(

@@ -84,7 +84,7 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
   const embeddedApp = embeddedApps[curriculum.slug];
 
   if (embeddedApp) {
-    const cacheVersion = curriculum.slug === "english-primary-4" ? "&v=20260717-11" : curriculum.slug === "connect-plus-primary-4" ? "&v=20260717-9" : "";
+    const cacheVersion = curriculum.slug === "english-primary-4" ? "&v=20260717-12" : curriculum.slug === "connect-plus-primary-4" ? "&v=20260717-10" : "";
     const appUrl = `${portalAsset(embeddedApp)}?student=${encodeURIComponent(studentName)}${cacheVersion}${shouldResume ? "&resume=1" : ""}`;
 
     return (
