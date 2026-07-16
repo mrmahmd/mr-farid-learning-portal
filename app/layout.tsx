@@ -9,7 +9,10 @@ export const metadata: Metadata = {
     template: "%s | Mr.Farid",
   },
   description: "Mr. Mohamed Farid Learning Portal for English and Connect Plus, Primary 1–6.",
-  icons: { icon: portalAsset("/favicon.svg") },
+  icons: {
+    icon: portalAsset("/mr-farid-avatar.png"),
+    apple: portalAsset("/mr-farid-avatar.png"),
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

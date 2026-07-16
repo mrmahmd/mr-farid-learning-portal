@@ -32,6 +32,19 @@ export function SocialLinks({ floating = false, labeled = false }: SocialLinksPr
         {labeled && <span>Facebook</span>}
         {floating && <span className="social-tooltip">Facebook</span>}
       </a>
+      <a
+        className="social-button youtube"
+        href="https://www.youtube.com/@english-architect"
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Visit Mr. Mohamed Farid on YouTube"
+      >
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M28 10.2c-.3-2.1-1.9-3.7-4-4C21.6 5.8 18.8 5.6 16 5.6s-5.6.2-8 .6c-2.1.3-3.7 1.9-4 4-.4 2.1-.6 4-.6 5.8s.2 3.7.6 5.8c.3 2.1 1.9 3.7 4 4 2.4.4 5.2.6 8 .6s5.6-.2 8-.6c2.1-.3 3.7-1.9 4-4 .4-2.1.6-4 .6-5.8s-.2-3.7-.6-5.8ZM13.4 21V11l8.3 5-8.3 5Z" />
+        </svg>
+        {labeled && <span>YouTube</span>}
+        {floating && <span className="social-tooltip">YouTube</span>}
+      </a>
     </div>
   );
 }

@@ -534,6 +534,7 @@ input::placeholder { color: #9aacc0; }
 .social-button svg { width: 24px; height: 24px; fill: currentColor; }
 .social-button.whatsapp { background: linear-gradient(145deg, #29d174, #14b85c); }
 .social-button.facebook { background: linear-gradient(145deg, #3e8af5, #2165da); }
+.social-button.youtube { background: linear-gradient(145deg, #ff4b4b, #d71920); }
 .social-button:hover { transform: translateY(-3px) scale(1.04); }
 .social-links:not(.social-floating) .social-button { width: auto; min-width: 150px; padding: 0 20px; }
 .social-tooltip {
