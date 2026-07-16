@@ -790,7 +790,7 @@ input::placeholder { color: #9aacc0; }
 .booklet-term-option { min-width: 0; padding: 10px; border: 1px solid rgba(53, 105, 232, 0.12); border-radius: 13px; background: rgba(255, 255, 255, 0.56); }
 .connect-booklet .booklet-term-option { border-color: rgba(39, 189, 145, 0.18); }
 .booklet-term-option strong { display: block; color: var(--ink); font-size: 10px; font-weight: 900; }
-.booklet-term-option button { margin-top: 7px; padding: 8px 6px; font-size: 7px; line-height: 1.25; }
+.booklet-term-option button { min-height: 42px; margin-top: 7px; padding: 8px 6px; display: flex; align-items: center; justify-content: center; white-space: normal; overflow-wrap: anywhere; text-align: center; font-size: 8px; line-height: 1.25; }
 .booklets-note { margin: 25px 0 0; color: var(--muted); font-size: 10px; text-align: center; }
 
 .student-curricula-card { width: 100%; padding: 42px; border-radius: 35px; }
