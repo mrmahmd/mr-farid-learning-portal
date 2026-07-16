@@ -168,9 +168,15 @@ window.MrFaridCourseProgress = (() => {
     const result = await writePromise;
     writePromise = undefined;
 
-    if (writeAgain || dirty) {
-      writeAgain = false;
-      if (dirty) return saveNow();
+    const changedWhileSaving = writeAgain;
+    writeAgain = false;
+
+    // Only follow up immediately when the previous write succeeded and the
+    // student made another change while it was in flight. When a write fails,
+    // keep the dirty state for the scheduled/online retry instead of creating
+    // an endless retry loop that can hold up navigation away from a course.
+    if (result && changedWhileSaving && dirty) {
+      return saveNow();
     }
     return result;
   }
@@ -179,7 +185,6 @@ window.MrFaridCourseProgress = (() => {
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden" && dirty) void saveNow();
   });
-  window.addEventListener("pagehide", () => { if (dirty) void saveNow(); });
   setInterval(() => { if (dirty) void saveNow(); }, 15000);
 
   return { connect, queueSave, saveNow, requireAccount };

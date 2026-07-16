@@ -846,7 +846,7 @@
     $('#menuBtn').onclick=()=>$('#sidebar').classList.toggle('open');
     $('#courseSwitchBtn').onclick=returnToCurricula;
     $('#portalHomeBtn').onclick=returnToPortalHome;
-    window.addEventListener('beforeunload',()=>{state.updatedAt=Date.now();localStorage.setItem(APP_KEY,JSON.stringify(state));void window.MrFaridCourseProgress?.saveNow()});
+    window.addEventListener('beforeunload',()=>{state.updatedAt=Date.now();localStorage.setItem(APP_KEY,JSON.stringify(state))});
     rememberAppOpen(true);
     save();
     render();

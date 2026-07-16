@@ -1,14 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { portalAsset } from "../asset-path";
 import { getSupabaseBrowserClient } from "../lib/supabase";
 
 export function SiteHeader() {
   const [isSignedIn, setIsSignedIn] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
@@ -31,15 +28,16 @@ export function SiteHeader() {
   async function handleSignOut() {
     await getSupabaseBrowserClient().auth.signOut();
     setIsSignedIn(false);
-    router.push("/");
+    window.location.assign(portalAsset("/"));
   }
 
   const curriculaHref = isSignedIn ? "/student/curricula" : "/curricula";
   const curriculaLabel = isSignedIn ? "My Curricula" : "Curricula";
+  const pageHref = (path: string) => portalAsset(path === "/" ? "/" : `${path.replace(/\/$/, "")}/`);
 
   return (
     <header className="site-header">
-      <Link href="/" className="brand" aria-label="Mr.Farid home">
+      <a href={pageHref("/")} className="brand" aria-label="Mr.Farid home">
         <span className="brand-mark brand-portrait">
           <img src={portalAsset("/mr-farid-avatar.png")} alt="" />
           <span>✦</span>
@@ -48,26 +46,26 @@ export function SiteHeader() {
           <strong>Mr.Farid</strong>
           <small>Learning Portal</small>
         </span>
-      </Link>
+      </a>
 
       <nav className="desktop-nav" aria-label="Main navigation" dir="ltr">
-        <Link href="/">Home</Link>
-        <Link href="/teacher">Meet the Teacher</Link>
-        <Link href={curriculaHref}>{curriculaLabel}</Link>
-        <Link href="/booklets">Booklets</Link>
-        <Link href="/about">About the Portal</Link>
+        <a href={pageHref("/")}>Home</a>
+        <a href={pageHref("/teacher")}>Meet the Teacher</a>
+        <a href={pageHref(curriculaHref)}>{curriculaLabel}</a>
+        <a href={pageHref("/booklets")}>Booklets</a>
+        <a href={pageHref("/about")}>About the Portal</a>
       </nav>
 
       <div className="header-actions">
         {isSignedIn ? (
           <>
-            <Link href="/student/curricula" className="nav-login">My Curricula</Link>
+            <a href={pageHref("/student/curricula")} className="nav-login">My Curricula</a>
             <button className="nav-create nav-signout" type="button" onClick={handleSignOut}>Sign Out</button>
           </>
         ) : (
           <>
-            <Link href="/login" className="nav-login">Sign In</Link>
-            <Link href="/register" className="nav-create">Create Account</Link>
+            <a href={pageHref("/login")} className="nav-login">Sign In</a>
+            <a href={pageHref("/register")} className="nav-create">Create Account</a>
           </>
         )}
       </div>
@@ -75,20 +73,20 @@ export function SiteHeader() {
       <details className="mobile-menu">
         <summary aria-label="Open navigation">☰</summary>
         <div className="mobile-menu-panel">
-          <Link href="/">Home</Link>
-          <Link href="/teacher">Meet the Teacher</Link>
-          <Link href={curriculaHref}>{curriculaLabel}</Link>
-          <Link href="/booklets">Booklets</Link>
-          <Link href="/about">About the Portal</Link>
+          <a href={pageHref("/")}>Home</a>
+          <a href={pageHref("/teacher")}>Meet the Teacher</a>
+          <a href={pageHref(curriculaHref)}>{curriculaLabel}</a>
+          <a href={pageHref("/booklets")}>Booklets</a>
+          <a href={pageHref("/about")}>About the Portal</a>
           {isSignedIn ? (
             <>
-              <Link href="/student/curricula">My Curricula</Link>
+              <a href={pageHref("/student/curricula")}>My Curricula</a>
               <button type="button" onClick={handleSignOut}>Sign Out</button>
             </>
           ) : (
             <>
-              <Link href="/login">Sign In</Link>
-              <Link href="/register">Create Account</Link>
+              <a href={pageHref("/login")}>Sign In</a>
+              <a href={pageHref("/register")}>Create Account</a>
             </>
           )}
         </div>
