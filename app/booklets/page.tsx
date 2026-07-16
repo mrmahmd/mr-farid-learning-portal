@@ -38,7 +38,7 @@ export default function BookletsPage() {
                       {terms.map((term) => (
                         <div className="booklet-term-option" key={term}>
                           <strong>{term}</strong>
-                          <button type="button" disabled>Download link coming soon</button>
+                          <button type="button" disabled>Soon</button>
                         </div>
                       ))}
                     </div>
@@ -54,7 +54,7 @@ export default function BookletsPage() {
                       {terms.map((term) => (
                         <div className="booklet-term-option" key={term}>
                           <strong>{term}</strong>
-                          <button type="button" disabled>Download link coming soon</button>
+                          <button type="button" disabled>Soon</button>
                         </div>
                       ))}
                     </div>
