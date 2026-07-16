@@ -30,7 +30,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
   if (!curriculum) notFound();
 
   return (
-    <InnerPageShell className="course-app-page">
+    <InnerPageShell className="course-app-page" showSocialLinks={false}>
       <AuthenticatedCourse curriculum={curriculum} />
     </InnerPageShell>
   );
