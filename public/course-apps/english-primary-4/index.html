@@ -524,10 +524,8 @@ function launchFromMrFaridPortal(){
   state.className='Primary 4';
   state.unlockedUnits=CURRICULUM.units.map(unit=>unit.number);
   state.unlockedLessons=Object.fromEntries(CURRICULUM.units.map(unit=>[unit.id,unit.lessons.map((_,index)=>index+1)]));
-  current={unit:null,lesson:null,tab:'overview'};
-  quiz=null;
   save({cloud:false});
-  renderMap();
+  if(!restoreSavedRoute())render();
 }
 function isActivityFinished(mode,id){return false}
 function startUnitBank(uid){
