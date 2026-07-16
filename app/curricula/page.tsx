@@ -33,7 +33,7 @@ export default function CurriculaPage() {
               <div className="curriculum-options">
                 <div className="curriculum-option english-option">
                   <CurriculumCover type="english" grade={grade} />
-                  <div>
+                  <div className="curriculum-option-content">
                     <strong>English Primary {grade}</strong>
                     <small>English Curriculum</small>
                     <div className="term-badges" aria-label="Available terms">
@@ -43,7 +43,7 @@ export default function CurriculaPage() {
                 </div>
                 <div className="curriculum-option connect-option">
                   <CurriculumCover type="connect" grade={grade} />
-                  <div>
+                  <div className="curriculum-option-content">
                     <strong>Connect Plus Primary {grade}</strong>
                     <small>Connect Plus Curriculum</small>
                     <div className="term-badges connect-term-badges" aria-label="Available terms">

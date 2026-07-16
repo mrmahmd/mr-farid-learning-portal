@@ -750,7 +750,7 @@ input::placeholder { color: #9aacc0; }
 .connect-option { background: #ecfff8; border-color: rgba(73, 215, 181, 0.18); }
 .book-icon { width: 35px; height: 40px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 7px 11px 11px 7px; color: white; background: var(--blue); font-size: 10px; font-weight: 900; box-shadow: 4px 5px 12px rgba(48, 86, 130, 0.16); }
 .connect-option .book-icon { background: #27bd91; }
-.curriculum-option > div { min-width: 0; display: flex; flex-direction: column; }
+.curriculum-option > .curriculum-option-content { min-width: 0; display: flex; flex-direction: column; }
 .curriculum-option strong { color: var(--ink); font-size: 11px; line-height: 1.3; }
 .curriculum-option small { margin-top: 3px; color: var(--muted); font-size: 8px; }
 
@@ -776,11 +776,11 @@ input::placeholder { color: #9aacc0; }
 .booklet-resource h3 { margin: 2px 0 6px; color: var(--ink); font-size: 13px; line-height: 1.3; }
 .booklet-resource p { min-height: 34px; margin: 0; color: var(--muted); font-size: 9px; line-height: 1.5; }
 .booklet-resource button { width: 100%; margin-top: 14px; padding: 9px 10px; border: 1px dashed rgba(61, 102, 151, 0.25); border-radius: 11px; color: #7188a4; background: rgba(255, 255, 255, 0.72); font-size: 8px; font-weight: 900; cursor: not-allowed; }
-.booklet-term-options { margin-top: 14px; display: grid; gap: 9px; }
-.booklet-term-option { padding: 10px; border: 1px solid rgba(53, 105, 232, 0.12); border-radius: 13px; background: rgba(255, 255, 255, 0.56); }
+.booklet-term-options { margin-top: 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+.booklet-term-option { min-width: 0; padding: 10px; border: 1px solid rgba(53, 105, 232, 0.12); border-radius: 13px; background: rgba(255, 255, 255, 0.56); }
 .connect-booklet .booklet-term-option { border-color: rgba(39, 189, 145, 0.18); }
 .booklet-term-option strong { display: block; color: var(--ink); font-size: 10px; font-weight: 900; }
-.booklet-term-option button { margin-top: 7px; }
+.booklet-term-option button { margin-top: 7px; padding: 8px 6px; font-size: 7px; line-height: 1.25; }
 .booklets-note { margin: 25px 0 0; color: var(--muted); font-size: 10px; text-align: center; }
 
 .student-curricula-card { width: 100%; padding: 42px; border-radius: 35px; }
@@ -1106,6 +1106,7 @@ body { font-size: 17px; }
   background: #4d8ef5;
   box-shadow: 7px 9px 18px rgba(43, 78, 132, 0.22);
 }
+.curriculum-option > .curriculum-cover { display: block; min-width: 78px; }
 .curriculum-cover img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
 .curriculum-cover-shade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgba(9, 22, 66, 0.9) 100%); }
 .curriculum-cover-title { position: absolute; z-index: 1; right: 7px; bottom: 8px; left: 7px; display: grid; gap: 2px; color: #fff; text-shadow: 0 1px 3px rgba(8, 26, 56, 0.55); }
@@ -1120,6 +1121,9 @@ body { font-size: 17px; }
   .curriculum-cover-title span { font-size: 9px; }
   .curriculum-cover-title strong { font-size: 8px; }
   .curriculum-option { min-height: 97px; }
+  .curriculum-option > .curriculum-cover { min-width: 66px; }
+  .booklet-term-options { gap: 6px; }
+  .booklet-term-option { padding: 7px; }
 }
 .term-entry > span { font-size: 12px; }
 .term-entry small { font-size: 11px; }
