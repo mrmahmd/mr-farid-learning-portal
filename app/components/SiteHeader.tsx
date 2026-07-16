@@ -16,6 +16,7 @@ export function SiteHeader() {
       </Link>
 
       <nav className="desktop-nav" aria-label="Main navigation" dir="ltr">
+        <Link href="/">Home</Link>
         <Link href="/teacher">Meet the Teacher</Link>
         <Link href="/curricula">Curricula</Link>
         <Link href="/about">About the Portal</Link>
@@ -29,6 +30,7 @@ export function SiteHeader() {
       <details className="mobile-menu">
         <summary aria-label="Open navigation">☰</summary>
         <div className="mobile-menu-panel">
+          <Link href="/">Home</Link>
           <Link href="/teacher">Meet the Teacher</Link>
           <Link href="/curricula">Curricula</Link>
           <Link href="/about">About the Portal</Link>
