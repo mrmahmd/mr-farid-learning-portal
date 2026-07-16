@@ -782,21 +782,21 @@ input::placeholder { color: #9aacc0; }
 .booklet-grade-card > header { display: flex; align-items: center; gap: 12px; padding-bottom: 17px; border-bottom: 1px solid var(--line); }
 .booklet-grade-card > header small { color: var(--coral); font-size: 9px; font-weight: 950; letter-spacing: 1.35px; }
 .booklet-grade-card > header h2 { margin: 3px 0 0; color: var(--violet); font-size: 21px; font-weight: 900; }
-.booklet-resources { margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
-.booklet-resource { min-height: 176px; padding: 15px; display: flex; align-items: flex-start; gap: 11px; border: 1px solid transparent; border-radius: 18px; }
+.booklet-resources { margin-top: 15px; display: grid; grid-template-columns: 1fr; gap: 12px; }
+.booklet-resource { min-height: 0; padding: 16px; display: flex; align-items: flex-start; gap: 16px; border: 1px solid transparent; border-radius: 18px; }
 .english-booklet { background: #edf5ff; border-color: rgba(53, 105, 232, 0.14); }
 .connect-booklet { background: #ecfff8; border-color: rgba(73, 215, 181, 0.2); }
 .resource-icon { width: 39px; height: 45px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 8px 12px 12px 8px; color: white; background: linear-gradient(145deg, #4a82f1, #5964dd); box-shadow: 5px 7px 14px rgba(48, 86, 130, 0.17); font-size: 10px; font-weight: 950; }
 .connect-booklet .resource-icon { background: linear-gradient(145deg, #43d6ae, #21ad81); }
 .booklet-resource > div { min-width: 0; display: flex; flex: 1; flex-direction: column; }
 .booklet-resource h3 { margin: 2px 0 6px; color: var(--ink); font-size: 13px; line-height: 1.3; }
-.booklet-resource p { min-height: 34px; margin: 0; color: var(--muted); font-size: 9px; line-height: 1.5; }
+.booklet-resource p { margin: 0; color: var(--muted); font-size: 9px; line-height: 1.5; }
 .booklet-resource button { width: 100%; margin-top: 14px; padding: 9px 10px; border: 1px dashed rgba(61, 102, 151, 0.25); border-radius: 11px; color: #7188a4; background: rgba(255, 255, 255, 0.72); font-size: 8px; font-weight: 900; cursor: not-allowed; }
-.booklet-term-options { margin-top: 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
-.booklet-term-option { min-width: 0; padding: 10px; border: 1px solid rgba(53, 105, 232, 0.12); border-radius: 13px; background: rgba(255, 255, 255, 0.56); }
+.booklet-term-options { width: min(100%, 420px); margin: 14px auto 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.booklet-term-option { min-width: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; border: 1px solid rgba(53, 105, 232, 0.12); border-radius: 13px; background: rgba(255, 255, 255, 0.56); text-align: center; }
 .connect-booklet .booklet-term-option { border-color: rgba(39, 189, 145, 0.18); }
 .booklet-term-option strong { display: block; color: var(--ink); font-size: 10px; font-weight: 900; }
-.booklet-term-option button { min-height: 42px; margin-top: 7px; padding: 8px 6px; display: flex; align-items: center; justify-content: center; white-space: normal; overflow-wrap: anywhere; text-align: center; font-size: 8px; line-height: 1.25; }
+.booklet-term-option button { width: 100%; min-height: 38px; margin-top: 7px; padding: 8px 12px; display: flex; align-items: center; justify-content: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; word-break: normal; writing-mode: horizontal-tb; text-align: center; font-size: 9px; line-height: 1.25; }
 .booklets-note { margin: 25px 0 0; color: var(--muted); font-size: 10px; text-align: center; }
 
 .student-curricula-card { width: 100%; padding: 42px; border-radius: 35px; }
@@ -1140,6 +1140,8 @@ body { font-size: 17px; }
   .curriculum-option > .curriculum-cover { min-width: 66px; }
   .booklet-term-options { gap: 6px; }
   .booklet-term-option { padding: 7px; }
+  .booklet-resource { gap: 10px; padding: 12px; }
+  .booklet-term-options { gap: 7px; }
 }
 .term-entry > span { font-size: 12px; }
 .term-entry small { font-size: 11px; }
