@@ -19,6 +19,7 @@ export function SiteHeader() {
         <Link href="/">Home</Link>
         <Link href="/teacher">Meet the Teacher</Link>
         <Link href="/curricula">Curricula</Link>
+        <Link href="/booklets">Booklets</Link>
         <Link href="/about">About the Portal</Link>
       </nav>
 
@@ -33,6 +34,7 @@ export function SiteHeader() {
           <Link href="/">Home</Link>
           <Link href="/teacher">Meet the Teacher</Link>
           <Link href="/curricula">Curricula</Link>
+          <Link href="/booklets">Booklets</Link>
           <Link href="/about">About the Portal</Link>
           <Link href="/login">Sign In</Link>
           <Link href="/register">Create Account</Link>
