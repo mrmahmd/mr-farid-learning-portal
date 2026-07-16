@@ -1,5 +1,6 @@
 import { InnerPageShell } from "../components/InnerPageShell";
 import { SocialLinks } from "../components/SocialLinks";
+import { portalAsset } from "../asset-path";
 
 const profileDetails = [
   {
@@ -30,7 +31,7 @@ export default function TeacherPage() {
       <section className="teacher-profile-card">
         <aside className="teacher-visual">
           <div className="teacher-photo-frame">
-            <img src="/mr-farid-avatar.png" alt="Mr. Mohamed Farid" />
+            <img src={portalAsset("/mr-farid-avatar.png")} alt="Mr. Mohamed Farid" />
             <span className="teacher-status"><i /> Senior English Instructor</span>
           </div>
           <div className="teacher-contact-panel">

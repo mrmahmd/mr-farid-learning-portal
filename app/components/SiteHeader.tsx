@@ -1,11 +1,12 @@
 import Link from "next/link";
+import { portalAsset } from "../asset-path";
 
 export function SiteHeader() {
   return (
     <header className="site-header">
       <Link href="/" className="brand" aria-label="Mr.Farid home">
         <span className="brand-mark brand-portrait">
-          <img src="/mr-farid-avatar.png" alt="" />
+          <img src={portalAsset("/mr-farid-avatar.png")} alt="" />
           <span>✦</span>
         </span>
         <span className="brand-name">

@@ -1,4 +1,5 @@
 import { InnerPageShell } from "../components/InnerPageShell";
+import { portalAsset } from "../asset-path";
 
 const features = [
   ["01", "A clear learning path", "Each grade is organised into curricula, units, lessons and activities."],
@@ -15,7 +16,7 @@ export default function AboutPage() {
         <h1>A complete English learning world for every primary learner.</h1>
         <p className="lead">Mr.Farid Learning Portal brings English and Connect Plus curricula from Primary 1 to Primary 6 together in one welcoming portal.</p>
         <div className="creator-credit">
-          <img src="/mr-farid-avatar.png" alt="Mr. Mohamed Farid" />
+          <img src={portalAsset("/mr-farid-avatar.png")} alt="Mr. Mohamed Farid" />
           <div>
             <small>DESIGNED &amp; DEVELOPED BY</small>
             <strong>Mr. Mohamed Farid</strong>
