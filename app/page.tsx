@@ -5,6 +5,16 @@ import { HomeLoginCard } from "./components/HomeLoginCard";
 export default function Home() {
   return (
     <main className="hero-page">
+      <div className="school-credit" aria-label="School and portal designer">
+        <div className="school-lockup" aria-label="AlAndalus Private Schools">
+          <span className="school-crest">APS</span>
+          <span className="school-name">ALANDALUS<br />PRIVATE SCHOOLS</span>
+        </div>
+        <div className="designer-credit">
+          <small>PREPARED AND DESIGNED BY</small>
+          <strong>Mr. Mohamed Farid</strong>
+        </div>
+      </div>
       <SiteHeader />
 
       <div className="hero-shade" aria-hidden="true" />
