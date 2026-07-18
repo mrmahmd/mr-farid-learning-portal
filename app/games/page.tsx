@@ -1,4 +1,5 @@
 import { InnerPageShell } from "../components/InnerPageShell";
+import { portalAsset } from "../asset-path";
 
 const grades = [1, 2, 3, 4, 5, 6];
 
@@ -33,7 +34,9 @@ export default function GamesPage() {
                   <div>
                     <h3>English Primary {grade}</h3>
                     <p>Vocabulary, grammar and lesson games</p>
-                    <button type="button" disabled>Coming Soon</button>
+                    {grade === 1 ? (
+                      <a className="game-launch" href={portalAsset("/games/healthy-habits-sorter/")}>Play Unit 1 • Lesson 1</a>
+                    ) : <button type="button" disabled>Coming Soon</button>}
                   </div>
                 </div>
                 <div className="game-option connect-game-option">
