@@ -53,6 +53,7 @@ export function SiteHeader() {
         <a href={pageHref("/teacher")}>Meet the Teacher</a>
         <a href={pageHref(curriculaHref)}>{curriculaLabel}</a>
         <a href={pageHref("/games")}>Games</a>
+        <a href={pageHref("/whats-new")}>What's New?</a>
         <a href={pageHref("/booklets")}>Booklets</a>
         <a href={pageHref("/about")}>About the Portal</a>
       </nav>
@@ -78,6 +79,7 @@ export function SiteHeader() {
           <a href={pageHref("/teacher")}>Meet the Teacher</a>
           <a href={pageHref(curriculaHref)}>{curriculaLabel}</a>
           <a href={pageHref("/games")}>Games</a>
+          <a href={pageHref("/whats-new")}>What's New?</a>
           <a href={pageHref("/booklets")}>Booklets</a>
           <a href={pageHref("/about")}>About the Portal</a>
           {isSignedIn ? (
