@@ -52,6 +52,7 @@ export function SiteHeader() {
         <a href={pageHref("/")}>Home</a>
         <a href={pageHref("/teacher")}>Meet the Teacher</a>
         <a href={pageHref(curriculaHref)}>{curriculaLabel}</a>
+        <a href={pageHref("/games")}>Games</a>
         <a href={pageHref("/booklets")}>Booklets</a>
         <a href={pageHref("/about")}>About the Portal</a>
       </nav>
@@ -76,6 +77,7 @@ export function SiteHeader() {
           <a href={pageHref("/")}>Home</a>
           <a href={pageHref("/teacher")}>Meet the Teacher</a>
           <a href={pageHref(curriculaHref)}>{curriculaLabel}</a>
+          <a href={pageHref("/games")}>Games</a>
           <a href={pageHref("/booklets")}>Booklets</a>
           <a href={pageHref("/about")}>About the Portal</a>
           {isSignedIn ? (
