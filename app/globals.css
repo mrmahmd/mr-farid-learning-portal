@@ -213,6 +213,14 @@ body { font-size: 16px; }
 .desktop-nav a:nth-child(5):hover { background: #f2efff; border-color: var(--violet); }
 .desktop-nav a:nth-child(6):hover { background: #fff0fb; border-color: #d86ce5; }
 .desktop-nav a:hover { color: var(--ink); transform: translateY(-2px); box-shadow: 0 8px 18px rgba(54, 92, 138, 0.12); }
+.whats-new-nav { position: relative; isolation: isolate; overflow: visible; }
+.whats-new-nav::after { content: ""; position: absolute; inset: -3px; z-index: -1; border-radius: inherit; background: linear-gradient(110deg, transparent 20%, rgba(255,255,255,.85) 48%, transparent 70%); transform: translateX(-130%); animation: whatsNewSweep 3.2s ease-in-out infinite; pointer-events: none; }
+.whats-new-nav i { position: absolute; top: -12px; right: -10px; padding: 3px 7px; border-radius: 999px; color: #fff; background: linear-gradient(135deg, #ff6b8a, #9b5cff); font-size: 9px; font-style: normal; font-weight: 1000; letter-spacing: .5px; line-height: 1; box-shadow: 0 4px 10px rgba(155,92,255,.28); animation: whatsNewBadge 1.8s ease-in-out infinite; }
+.mobile-menu .whats-new-nav { display: flex; align-items: center; justify-content: space-between; }
+.mobile-menu .whats-new-nav i { position: static; margin-left: 8px; }
+@keyframes whatsNewSweep { 0%, 45% { transform: translateX(-130%); opacity: 0; } 58% { opacity: 1; } 78%, 100% { transform: translateX(130%); opacity: 0; } }
+@keyframes whatsNewBadge { 0%, 100% { transform: scale(1) rotate(-4deg); } 50% { transform: scale(1.12) rotate(4deg); } }
+@media (prefers-reduced-motion: reduce) { .whats-new-nav::after, .whats-new-nav i { animation: none; } }
 
 .header-actions {
   display: flex;
