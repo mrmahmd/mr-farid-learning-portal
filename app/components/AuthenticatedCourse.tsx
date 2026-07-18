@@ -77,6 +77,7 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
   }
 
   const embeddedApps: Record<string, string> = {
+    "english-primary-1": "/course-apps/english-primary-1/index.html",
     "connect-plus-primary-4": "/course-apps/connect-plus-primary-4/index.html",
     "english-primary-4": "/course-apps/english-primary-4/index.html",
   };
