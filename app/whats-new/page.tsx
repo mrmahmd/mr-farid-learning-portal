@@ -26,6 +26,14 @@ const updates = [
     icon: "⭐",
   },
   {
+    badge: "Available Now",
+    date: "Just added",
+    title: "English Primary 4 – First Term Added to Games",
+    description: "The English Primary 4 First Term curriculum is now available inside the Educational Games section.",
+    tone: "update-blue",
+    icon: "📘",
+  },
+  {
     badge: "New Curriculum",
     date: "Recently added",
     title: "English Primary 1 – First Term",
