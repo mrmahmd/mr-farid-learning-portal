@@ -117,11 +117,23 @@ window.MrFaridCourseProgress = (() => {
       return { connected: false, error: error.message };
     }
 
-    if (data?.state) applyState(mergeStates(readState(), data.state));
-    dirty = true;
-    changeVersion += 1;
-    const saved = await saveNow();
-    if (!saved) return { connected: false, error: "Progress could not be saved." };
+    if (data?.state) {
+      // Applying remote state updates the host app asynchronously (React apps
+      // need a render cycle). Do not save immediately here: readState() still
+      // points at the old local defaults and would overwrite the student's
+      // cloud progress during the handshake.
+      applyState(mergeStates(readState(), data.state));
+      dirty = false;
+      writeAgain = false;
+    } else {
+      // New course record: persist the initial state once the account is
+      // connected. Existing records are saved by the host app's state-change
+      // effect after the merged remote state has been applied.
+      dirty = true;
+      changeVersion += 1;
+      const saved = await saveNow();
+      if (!saved) return { connected: false, error: "Progress could not be saved." };
+    }
 
     onReady?.();
     status(true, "Progress saved to your account");
