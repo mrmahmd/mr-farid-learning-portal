@@ -41,6 +41,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   background: #f7fbff;
 }
 
+.hero-top-mask { position: absolute; z-index: 10; inset: 0 0 auto; height: 108px; background: #f7fbff; pointer-events: none; }
+
 .hero-page::before {
   content: "";
   position: absolute;
