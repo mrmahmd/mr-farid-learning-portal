@@ -121,6 +121,16 @@ function describeLastActivity(appId: string, rawState: unknown): ResumeActivity 
     detail = parts.join(" • ");
   }
 
+  if (appId === "english-primary-1-first-term") {
+    const activity = record(state.lastActivity);
+    if (!activity.unitId) return null;
+    const parts = [unitLabel(activity.unitId)];
+    const lesson = lessonLabel(activity.lessonId);
+    if (lesson) parts.push(lesson);
+    parts.push(activity.type === "quiz" ? "Practice" : "Lesson");
+    detail = parts.join(" • ");
+  }
+
   return detail
     ? { courseTitle: course.title, detail, href: `${portalAsset(`/courses/${course.slug}/`)}?resume=1` }
     : null;
