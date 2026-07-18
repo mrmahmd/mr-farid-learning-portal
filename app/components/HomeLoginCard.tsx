@@ -64,7 +64,10 @@ function describeLastActivity(appId: string, rawState: unknown): ResumeActivity 
   const course = COURSE_DETAILS[appId];
   if (!course) return null;
   const state = record(rawState);
-  const savedActivity = record(state.portalLastActivity);
+  const nestedProgress = record(state.progress);
+  const savedActivity = record(
+    state.portalLastActivity ?? nestedProgress.portalLastActivity,
+  );
   if (typeof savedActivity.detail === "string" && savedActivity.detail.trim()) {
     return {
       courseTitle: typeof savedActivity.courseTitle === "string" ? savedActivity.courseTitle : course.title,
@@ -122,7 +125,7 @@ function describeLastActivity(appId: string, rawState: unknown): ResumeActivity 
   }
 
   if (appId === "english-primary-1-first-term") {
-    const activity = record(state.lastActivity);
+    const activity = record(state.lastActivity ?? nestedProgress.lastActivity);
     if (!activity.unitId) return null;
     const parts = [unitLabel(activity.unitId)];
     const lesson = lessonLabel(activity.lessonId);
@@ -178,7 +181,7 @@ export function HomeLoginCard() {
           const activity = describeLastActivity(String(row.app_id), row.state);
           return activity ? { ...activity, updatedAt: String(row.updated_at ?? "") } : null;
         })
-        .filter((activity): activity is ResumeActivity => Boolean(activity))
+        .filter((activity) => activity !== null)
         .sort((a, b) => Date.parse(b.updatedAt ?? "") - Date.parse(a.updatedAt ?? ""))[0] ?? null;
       const deviceActivity = readDeviceActivity(data.session.user.id);
       const deviceTime = deviceActivity?.updatedAt ? Date.parse(deviceActivity.updatedAt) : 0;
