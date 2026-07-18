@@ -18,6 +18,10 @@ type ResumeActivity = {
 };
 
 const COURSE_DETAILS: Record<string, { title: string; slug: string }> = {
+  "english-primary-1-first-term": {
+    title: "English Primary 1 â€“ First Term",
+    slug: "english-primary-1",
+  },
   "connect-plus-primary-4-first-term": {
     title: "Connect Plus Primary 4 – First Term",
     slug: "connect-plus-primary-4",
