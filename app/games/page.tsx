@@ -34,7 +34,7 @@ export default function GamesPage() {
                   <div>
                     <h3>English Primary {grade}</h3>
                     <p>Vocabulary, grammar and lesson games</p>
-                    {grade === 1 ? (
+                    {grade === 4 ? (
                       <a className="game-launch" href={portalAsset("/games/healthy-habits-sorter/")}>Play Unit 1 • Lesson 1</a>
                     ) : <button type="button" disabled>Coming Soon</button>}
                   </div>
