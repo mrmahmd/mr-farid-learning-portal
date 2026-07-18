@@ -35,11 +35,7 @@ export default function GamesPage() {
                     <h3>English Primary {grade}</h3>
                     <p>Vocabulary, grammar and lesson games</p>
                     {grade === 4 ? (
-                      <div className="game-links">
-                        <a className="game-launch" href={portalAsset("/games/goha-vocabulary-match/")}>Unit 1 • Lesson 3</a>
-                        <a className="game-launch" href={portalAsset("/games/sequence-builder/")}>Unit 1 • Lesson 4</a>
-                        <a className="game-launch" href={portalAsset("/games/healthy-diet-catcher/")}>Unit 1 • Lesson 5</a>
-                      </div>
+                      <a className="game-launch" href={portalAsset("/games/english-primary-4-games/")}>Open English Primary 4 Games</a>
                     ) : <button type="button" disabled>Coming Soon</button>}
                   </div>
                 </div>
