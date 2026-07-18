@@ -43,6 +43,30 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 .hero-top-mask { position: absolute; z-index: 10; inset: 0 0 auto; height: 108px; background: #f7fbff; pointer-events: none; }
 
+/* Shared readable portal typography */
+body { font-size: 16px; }
+.site-header a, .site-header button { font-size: 15px; font-weight: 900; }
+.brand-name strong { font-size: 21px; }
+.brand-name small { font-size: 12px; font-weight: 900; }
+.eyebrow { font-size: 13px; font-weight: 950; }
+.hero-copy h1 { font-size: clamp(48px, 6vw, 78px); }
+.hero-intro { font-size: 19px; line-height: 1.65; font-weight: 700; }
+.curriculum-pills span { font-size: 13px; font-weight: 900; }
+.curricula-heading > p:not(.eyebrow), .booklets-heading > p:not(.eyebrow), .games-heading > p:not(.eyebrow) { font-size: 17px; font-weight: 700; }
+.grade-card header small, .booklet-grade-card > header small, .game-grade-card > header small { font-size: 11px; }
+.grade-card header h2, .booklet-grade-card > header h2, .game-grade-card > header h2 { font-size: 25px; font-weight: 950; }
+.curriculum-option-content strong, .booklet-resource h3, .game-option h3 { font-size: 16px; font-weight: 950; }
+.curriculum-option-content small, .booklet-resource p, .game-option p { font-size: 12px; font-weight: 700; }
+.term-badges span, .booklet-term-option strong { font-size: 12px; font-weight: 900; }
+.curricula-access-copy strong { font-size: 17px; }
+.curricula-access-copy span { font-size: 14px; font-weight: 700; }
+.teacher-profile-copy h1 { font-size: clamp(42px, 5vw, 68px); }
+.teacher-titles strong, .teacher-titles span { font-size: 20px; font-weight: 850; }
+.profile-detail-grid article h2 { font-size: 22px; }
+.profile-detail-grid article p { font-size: 17px; line-height: 1.65; font-weight: 650; }
+.about-card h1 { font-size: clamp(42px, 5vw, 66px); }
+.about-card p, .about-card li { font-size: 17px; line-height: 1.65; font-weight: 650; }
+
 .hero-page::before {
   content: "";
   position: absolute;
