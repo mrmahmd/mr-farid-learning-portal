@@ -15,6 +15,7 @@ type ResumeActivity = {
   courseTitle: string;
   detail: string;
   href: string;
+  updatedAt?: string;
 };
 
 const COURSE_DETAILS: Record<string, { title: string; slug: string }> = {
@@ -69,6 +70,7 @@ function describeLastActivity(appId: string, rawState: unknown): ResumeActivity 
       courseTitle: typeof savedActivity.courseTitle === "string" ? savedActivity.courseTitle : course.title,
       detail: savedActivity.detail,
       href: `${portalAsset(`/courses/${course.slug}/`)}?resume=1`,
+      updatedAt: typeof savedActivity.updatedAt === "string" ? savedActivity.updatedAt : undefined,
     };
   }
   let detail = "";
@@ -162,9 +164,16 @@ export function HomeLoginCard() {
 
       if (!isActive) return;
       const latestActivity = (progressRows ?? [])
-        .map((row) => describeLastActivity(String(row.app_id), row.state))
-        .find((activity): activity is ResumeActivity => Boolean(activity));
-      setResumeActivity(readDeviceActivity(data.session.user.id) ?? latestActivity ?? null);
+        .map((row) => {
+          const activity = describeLastActivity(String(row.app_id), row.state);
+          return activity ? { ...activity, updatedAt: String(row.updated_at ?? "") } : null;
+        })
+        .filter((activity): activity is ResumeActivity => Boolean(activity))
+        .sort((a, b) => Date.parse(b.updatedAt ?? "") - Date.parse(a.updatedAt ?? ""))[0] ?? null;
+      const deviceActivity = readDeviceActivity(data.session.user.id);
+      const deviceTime = deviceActivity?.updatedAt ? Date.parse(deviceActivity.updatedAt) : 0;
+      const cloudTime = latestActivity?.updatedAt ? Date.parse(latestActivity.updatedAt) : 0;
+      setResumeActivity(deviceTime > cloudTime ? deviceActivity : latestActivity ?? deviceActivity ?? null);
     }
 
     void loadStudentSession();
