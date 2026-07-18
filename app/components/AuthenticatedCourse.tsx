@@ -31,7 +31,7 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
       }
 
       if (isActive) {
-        setStudentName(String(data.session.user.user_metadata?.full_name ?? "Student"));
+        setStudentName(String(data.session.user.user_metadata?.username ?? data.session.user.user_metadata?.full_name ?? "Student"));
         setSessionBridge({
           accessToken: data.session.access_token,
           refreshToken: data.session.refresh_token,
