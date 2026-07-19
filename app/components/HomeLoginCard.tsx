@@ -234,7 +234,7 @@ export function HomeLoginCard() {
 
     setIsSignedIn(true);
     setResumeActivity(null);
-    router.push("/student/curricula");
+    router.push("/student/dashboard");
   }
 
   async function handleSignOut() {
