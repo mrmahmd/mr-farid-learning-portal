@@ -322,6 +322,15 @@ body { font-size: 16px; }
 .favourite-empty-card { justify-content:center; border:2px dashed rgba(53,105,232,.3); color:var(--blue-deep); font-weight:900; cursor:pointer; }
 .dashboard-quick-links { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
 .dashboard-quick-links a { padding:11px 15px; border-radius:13px; color:var(--ink); background:rgba(255,255,255,.75); border:1px solid rgba(66,111,166,.13); font-weight:900; }
+.student-dashboard-page { font-family: "Trebuchet MS", "Segoe UI", sans-serif; }
+.student-dashboard-sidebar { padding:18px 12px; gap:10px; background:linear-gradient(160deg,rgba(239,248,255,.95),rgba(246,241,255,.86)); }
+.sidebar-title { font-size:14px; letter-spacing:1.5px; padding:10px 13px 14px; }
+.student-dashboard-sidebar button { padding:14px 15px; border:1px solid transparent; border-radius:16px; color:#38557f; font-size:15px; font-weight:900; transition:transform .2s ease, background .2s ease, box-shadow .2s ease; }
+.student-dashboard-sidebar button:hover { transform:translateX(3px); }
+.student-dashboard-sidebar button.sidebar-active { color:#fff; background:linear-gradient(135deg,#3d76ed,#6559dc); box-shadow:0 9px 20px rgba(65,91,220,.25); }
+.student-dashboard-main { font-size:16px; }
+.student-dashboard-panel p,.dashboard-selection-note { font-size:16px; }
+.dashboard-section-heading h2 { font-size:30px; }
 .student-dashboard-loading { width:min(600px,calc(100% - 32px)); margin:80px auto; padding:50px; text-align:center; border-radius:30px; background:rgba(255,255,255,.78); box-shadow:var(--shadow); }
 .student-dashboard-loading h1 { margin:18px 0 8px; font-size:32px; }
 .student-dashboard-loading p { color:var(--muted); font-weight:700; }
