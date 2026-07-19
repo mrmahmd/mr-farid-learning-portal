@@ -47,6 +47,7 @@ export default function CurriculaPage() {
                 <div className="curriculum-option english-option">
                   <CurriculumCover type="english" grade={grade} />
                   <div className="curriculum-option-content">
+                    {grade === 3 && <span className="new-curriculum-badge">NEW · RECENTLY ADDED</span>}
                     <strong>English Primary {grade}</strong>
                     <small>English Curriculum</small>
                     <div className="term-badges" aria-label="Available terms">

@@ -881,6 +881,9 @@ input::placeholder { color: #9aacc0; }
 .curriculum-options { margin-top: 15px; display: grid; gap: 10px; }
 .curriculum-option { min-height: 58px; padding: 9px 11px; display: flex; align-items: center; gap: 11px; border: 1px solid transparent; border-radius: 15px; }
 .english-option { background: #edf5ff; border-color: rgba(53, 105, 232, 0.13); }
+.english-option:has(.new-curriculum-badge) { position:relative; border-color:rgba(42,194,151,.55); background:linear-gradient(135deg,#e8fff6,#f4fbff); box-shadow:0 8px 20px rgba(42,194,151,.14); }
+.new-curriculum-badge { display:inline-flex; width:max-content; margin-bottom:4px; padding:4px 8px; border-radius:999px; color:#fff; background:linear-gradient(135deg,#18bd73,#3b82f6); font-size:9px; font-weight:950; letter-spacing:.7px; box-shadow:0 5px 12px rgba(35,170,135,.25); animation:newBadgePulse 2.8s ease-in-out infinite; }
+@keyframes newBadgePulse { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-2px); } }
 .connect-option { background: #ecfff8; border-color: rgba(73, 215, 181, 0.18); }
 .book-icon { width: 35px; height: 40px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 7px 11px 11px 7px; color: white; background: var(--blue); font-size: 10px; font-weight: 900; box-shadow: 4px 5px 12px rgba(48, 86, 130, 0.16); }
 .connect-option .book-icon { background: #27bd91; }
