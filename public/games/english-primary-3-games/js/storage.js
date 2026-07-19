@@ -77,7 +77,7 @@
     return firstTime;
   };
 
-  const setLastRoute = (state, route) => { state.lastRoute = route; save(state); };
+  const setLastRoute = (state, route) => { state.lastRoute = route; state.portalLastActivity = { detail: `English Primary 3 Game World · ${String(route || '#home').replace('#', '')}` }; save(state); };
   const reset = () => { localStorage.removeItem(key()); return load(); };
 
   window.GameStorage = { load, save, addRewards, markGameComplete, setLastRoute, reset, xpForLevel };
