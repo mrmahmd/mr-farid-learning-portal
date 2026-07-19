@@ -67,7 +67,7 @@ export default function RegisterPage() {
     }
 
     if (data.session) {
-      router.push("/student/curricula");
+      router.push("/student/dashboard");
       return;
     }
 
