@@ -290,6 +290,7 @@ body { font-size: 16px; }
 .student-dashboard-sidebar button { border:0; width:100%; text-align:left; cursor:pointer; font:inherit; }
 .student-dashboard-sidebar a:hover,.student-dashboard-sidebar a.sidebar-active,.student-dashboard-sidebar button:hover,.student-dashboard-sidebar button.sidebar-active { color:var(--blue-deep); background:#fff; box-shadow:0 6px 16px rgba(54,92,138,.1); }
 .student-settings-form { display:grid; gap:1rem; }
+.duplicate-dashboard-block { display:none; }
 .student-settings-form label { display:grid; gap:.4rem; font-weight:700; color:#294675; }
 .student-settings-form input { border:1px solid #c9dbf4; border-radius:12px; padding:.75rem .9rem; font:inherit; background:rgba(255,255,255,.72); }
 .settings-message { color:#315fbd; font-weight:700; }
