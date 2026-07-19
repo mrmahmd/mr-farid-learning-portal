@@ -1,4 +1,4 @@
-const CACHE = 'english-primary3-v1';
+const CACHE = 'english-primary3-v3-short-questions-20260719';
 const CORE = [
   './', './index.html', './css/style.css',
   './js/curriculum.js', './js/question-engine.js', './js/storage.js', './js/app.js',

@@ -34,6 +34,7 @@
   let activeChallenge = null;
   let challengeRuntime = null;
   let drawerOpen = false;
+  let dragToken = null;
 
   function escapeHTML(value = '') {
     return String(value).replace(/[&<>'"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[ch]));
@@ -558,12 +559,27 @@
     if (q.type === 'mcq') return `<div class="option-list">${q.options.map((option, i) => `<button class="answer-option ${run.selected === option ? 'selected' : ''}" data-select-answer="${escapeHTML(option)}" ${run.checked ? 'disabled' : ''}><span>${String.fromCharCode(65 + i)}</span>${escapeHTML(option)}</button>`).join('')}</div>`;
     if (q.type === 'trueFalse') return `<div class="tf-grid"><button class="answer-option ${run.selected === true ? 'selected' : ''}" data-select-bool="true" ${run.checked ? 'disabled' : ''}><span>✓</span>True</button><button class="answer-option ${run.selected === false ? 'selected' : ''}" data-select-bool="false" ${run.checked ? 'disabled' : ''}><span>✕</span>False</button></div>`;
     if (q.type === 'fill') return `<label class="fill-label">Type the missing word or phrase<input id="fillAnswer" value="${escapeHTML(run.selected || '')}" ${run.checked ? 'disabled' : ''} autocomplete="off" spellcheck="false" /></label>`;
+    if (q.type === 'dragFill') {
+      return `<div class="drag-instruction">Drag a word into the box, or tap the word.</div>
+        <div class="drag-drop-zone ${run.selected ? 'has-answer' : ''}" data-drag-fill-zone tabindex="0" aria-label="Answer drop zone">${run.selected ? `<b>${escapeHTML(run.selected)}</b><button data-clear-drag-fill ${run.checked ? 'disabled' : ''}>×</button>` : '<span>Drop the answer here</span>'}</div>
+        <div class="drag-chip-bank">${q.options.map((option, i) => `<button class="drag-chip ${run.selected === option ? 'used selected' : ''}" draggable="${!run.checked}" data-drag-fill-choice="${escapeHTML(option)}" data-drag-index="${i}" ${run.checked ? 'disabled' : ''}>${escapeHTML(option)}</button>`).join('')}</div>`;
+    }
     if (q.type === 'reorder') {
-      return `<div class="reorder-answer">${run.reorder.length ? run.reorder.map((w, i) => `<button data-remove-reorder="${i}" ${run.checked ? 'disabled' : ''}>${escapeHTML(w)} ×</button>`).join('') : '<span>Tap the words below to build the sentence.</span>'}</div><div class="word-bank">${q.words.map((w, i) => `<button data-add-reorder="${i}" ${run.checked || run.reorder.includes(w) ? 'disabled' : ''}>${escapeHTML(w)}</button>`).join('')}</div><button class="small-link" data-question-action="reset-order" ${run.checked ? 'disabled' : ''}>Reset words</button>`;
+      return `<div class="drag-instruction">Drag or tap the words to build the sentence.</div>
+        <div class="reorder-answer drag-drop-zone" data-reorder-drop-zone>${run.reorder.length ? run.reorder.map((wordIndex, position) => `<button draggable="${!run.checked}" data-remove-reorder="${position}" ${run.checked ? 'disabled' : ''}>${escapeHTML(q.words[wordIndex])} ×</button>`).join('') : '<span>Drop words here in the correct order.</span>'}</div>
+        <div class="word-bank">${q.words.map((w, i) => `<button draggable="${!run.checked && !run.reorder.includes(i)}" data-add-reorder="${i}" data-reorder-drag="${i}" ${run.checked || run.reorder.includes(i) ? 'disabled' : ''}>${escapeHTML(w)}</button>`).join('')}</div>
+        <button class="small-link" data-question-action="reset-order" ${run.checked ? 'disabled' : ''}>Reset words</button>`;
+    }
+    if (q.type === 'dragMatch') {
+      const used = Object.values(run.match);
+      return `<div class="drag-instruction">Drag each word to its sentence. On mobile, tap a word then tap a box.</div>
+        <div class="drag-match-list">${q.pairs.map((p, i) => `<div class="drag-match-row"><p>${escapeHTML(p.sentence)}</p><button class="drag-match-slot ${run.match[String(i)] ? 'has-answer' : ''}" data-drag-match-slot="${i}" ${run.checked ? 'disabled' : ''}>${run.match[String(i)] ? escapeHTML(run.match[String(i)]) : 'Drop word here'}</button></div>`).join('')}</div>
+        <div class="drag-chip-bank">${q.options.map((option, i) => `<button class="drag-chip ${used.includes(option) ? 'used' : ''} ${dragToken === option ? 'selected' : ''}" draggable="${!run.checked && !used.includes(option)}" data-drag-match-choice="${escapeHTML(option)}" data-drag-index="${i}" ${run.checked || used.includes(option) ? 'disabled' : ''}>${escapeHTML(option)}</button>`).join('')}</div>
+        <button class="small-link" data-question-action="reset-match" ${run.checked ? 'disabled' : ''}>Reset matches</button>`;
     }
     if (q.type === 'matching') {
       const meanings = QE.shuffle(q.pairs.map((p) => p.meaning), `${q.id}:ui`);
-      return `<div class="matching-list">${q.pairs.map((p) => `<label><b>${escapeHTML(p.word)}</b><select data-match-word="${escapeHTML(p.word)}" ${run.checked ? 'disabled' : ''}><option value="">Choose a meaning</option>${meanings.map((m) => `<option value="${escapeHTML(m)}" ${run.match[p.word] === m ? 'selected' : ''}>${escapeHTML(m)}</option>`).join('')}</select></label>`).join('')}</div>`;
+      return `<div class="matching-list">${q.pairs.map((p) => `<label><b>${escapeHTML(p.word)}</b><select data-match-word="${escapeHTML(p.word)}" ${run.checked ? 'disabled' : ''}><option value="">Choose an answer</option>${meanings.map((m) => `<option value="${escapeHTML(m)}" ${run.match[p.word] === m ? 'selected' : ''}>${escapeHTML(m)}</option>`).join('')}</select></label>`).join('')}</div>`;
     }
     return '';
   }
@@ -577,30 +593,32 @@
   function getCurrentAnswer(q) {
     const run = challengeRuntime;
     if (q.type === 'fill') return ($('#fillAnswer')?.value || '').trim();
-    if (q.type === 'reorder') return run.reorder.join(' ');
-    if (q.type === 'matching') return run.match;
+    if (q.type === 'reorder') return run.reorder.map((index) => q.words[index]).join(' ');
+    if (q.type === 'matching' || q.type === 'dragMatch') return run.match;
     return run.selected;
   }
 
   function evaluateAnswer(q, answer) {
-    if (q.type === 'mcq') return answer === q.answer;
+    if (q.type === 'mcq' || q.type === 'dragFill') return answer === q.answer;
     if (q.type === 'trueFalse') return answer === q.answer;
     if (q.type === 'fill') return (q.accepted || [String(q.answer).toLocaleLowerCase()]).includes(String(answer).toLocaleLowerCase().trim());
     if (q.type === 'reorder') return normalizeSentence(answer) === normalizeSentence(q.answer);
     if (q.type === 'matching') return q.pairs.every((p) => answer[p.word] === p.meaning);
+    if (q.type === 'dragMatch') return q.pairs.every((p, i) => answer[String(i)] === p.answer);
     return false;
   }
 
   function correctAnswerText(q) {
     if (q.type === 'trueFalse') return q.answer ? 'True' : 'False';
     if (q.type === 'matching') return q.pairs.map((p) => `${p.word} → ${p.meaning}`).join('; ');
+    if (q.type === 'dragMatch') return q.pairs.map((p) => `${p.sentence} → ${p.answer}`).join('; ');
     return q.answer;
   }
 
   function checkCurrentQuestion() {
     const q = activeChallenge.questions[challengeRuntime.index];
     const answer = getCurrentAnswer(q);
-    const empty = answer === null || answer === undefined || answer === '' || (q.type === 'matching' && Object.keys(answer).length < q.pairs.length) || (q.type === 'reorder' && !challengeRuntime.reorder.length);
+    const empty = answer === null || answer === undefined || answer === '' || (['matching', 'dragMatch'].includes(q.type) && Object.keys(answer).length < q.pairs.length) || (q.type === 'reorder' && !challengeRuntime.reorder.length);
     if (empty) return toast('Please choose or enter an answer first.', 'warn');
     const correct = evaluateAnswer(q, answer);
     challengeRuntime.checked = true;
@@ -642,6 +660,7 @@
       return;
     }
     run.index += 1;
+    dragToken = null;
     run.checked = false; run.feedback = null; run.selected = null; run.reorder = []; run.match = {};
     renderChallengeBody($('#page'));
   }
@@ -735,17 +754,45 @@
     $$('[data-speak]').forEach((el) => el.onclick = (e) => { e.stopPropagation(); speak(el.dataset.speak); });
     $$('[data-select-answer]').forEach((el) => el.onclick = () => { challengeRuntime.selected = el.dataset.selectAnswer; renderChallengeBody($('#page')); });
     $$('[data-select-bool]').forEach((el) => el.onclick = () => { challengeRuntime.selected = el.dataset.selectBool === 'true'; renderChallengeBody($('#page')); });
-    $$('[data-add-reorder]').forEach((el) => el.onclick = () => { const q = activeChallenge.questions[challengeRuntime.index]; challengeRuntime.reorder.push(q.words[Number(el.dataset.addReorder)]); renderChallengeBody($('#page')); });
+    $$('[data-add-reorder]').forEach((el) => el.onclick = () => { challengeRuntime.reorder.push(Number(el.dataset.addReorder)); renderChallengeBody($('#page')); });
     $$('[data-remove-reorder]').forEach((el) => el.onclick = () => { challengeRuntime.reorder.splice(Number(el.dataset.removeReorder), 1); renderChallengeBody($('#page')); });
+    $$('[data-reorder-drag]').forEach((el) => el.ondragstart = (event) => { event.dataTransfer.setData('text/reorder-index', el.dataset.reorderDrag); });
+    $$('[data-reorder-drop-zone]').forEach((el) => {
+      el.ondragover = (event) => { event.preventDefault(); el.classList.add('drag-over'); };
+      el.ondragleave = () => el.classList.remove('drag-over');
+      el.ondrop = (event) => { event.preventDefault(); el.classList.remove('drag-over'); const index = Number(event.dataTransfer.getData('text/reorder-index')); if (Number.isInteger(index) && !challengeRuntime.reorder.includes(index)) { challengeRuntime.reorder.push(index); renderChallengeBody($('#page')); } };
+    });
+    $$('[data-drag-fill-choice]').forEach((el) => {
+      el.onclick = () => { challengeRuntime.selected = el.dataset.dragFillChoice; renderChallengeBody($('#page')); };
+      el.ondragstart = (event) => { event.dataTransfer.setData('text/drag-fill', el.dataset.dragFillChoice); };
+    });
+    $$('[data-drag-fill-zone]').forEach((el) => {
+      el.ondragover = (event) => { event.preventDefault(); el.classList.add('drag-over'); };
+      el.ondragleave = () => el.classList.remove('drag-over');
+      el.ondrop = (event) => { event.preventDefault(); el.classList.remove('drag-over'); const value = event.dataTransfer.getData('text/drag-fill'); if (value) { challengeRuntime.selected = value; renderChallengeBody($('#page')); } };
+    });
+    $$('[data-clear-drag-fill]').forEach((el) => el.onclick = () => { challengeRuntime.selected = null; renderChallengeBody($('#page')); });
+    $$('[data-drag-match-choice]').forEach((el) => {
+      el.onclick = () => { dragToken = el.dataset.dragMatchChoice; renderChallengeBody($('#page')); };
+      el.ondragstart = (event) => { dragToken = el.dataset.dragMatchChoice; event.dataTransfer.setData('text/drag-match', dragToken); };
+    });
+    $$('[data-drag-match-slot]').forEach((el) => {
+      const assign = (value) => { if (!value) return; Object.keys(challengeRuntime.match).forEach((key) => { if (challengeRuntime.match[key] === value) delete challengeRuntime.match[key]; }); challengeRuntime.match[el.dataset.dragMatchSlot] = value; dragToken = null; renderChallengeBody($('#page')); };
+      el.onclick = () => assign(dragToken);
+      el.ondragover = (event) => { event.preventDefault(); el.classList.add('drag-over'); };
+      el.ondragleave = () => el.classList.remove('drag-over');
+      el.ondrop = (event) => { event.preventDefault(); el.classList.remove('drag-over'); assign(event.dataTransfer.getData('text/drag-match') || dragToken); };
+    });
     $$('[data-match-word]').forEach((el) => el.onchange = () => { challengeRuntime.match[el.dataset.matchWord] = el.value; });
     $$('[data-question-action]').forEach((el) => el.onclick = () => {
       const action = el.dataset.questionAction;
       if (action === 'check') checkCurrentQuestion();
       else if (action === 'next') nextQuestion();
-      else if (action === 'previous' && challengeRuntime.index > 0) { challengeRuntime.index -= 1; challengeRuntime.checked = false; challengeRuntime.feedback = null; challengeRuntime.selected = null; challengeRuntime.reorder = []; challengeRuntime.match = {}; renderChallengeBody($('#page')); }
+      else if (action === 'previous' && challengeRuntime.index > 0) { challengeRuntime.index -= 1; dragToken = null; challengeRuntime.checked = false; challengeRuntime.feedback = null; challengeRuntime.selected = null; challengeRuntime.reorder = []; challengeRuntime.match = {}; renderChallengeBody($('#page')); }
       else if (action === 'reset-order') { challengeRuntime.reorder = []; renderChallengeBody($('#page')); }
+      else if (action === 'reset-match') { challengeRuntime.match = {}; dragToken = null; renderChallengeBody($('#page')); }
     });
-    $$('[data-retry-challenge]').forEach((el) => el.onclick = () => { challengeRuntime = { index: 0, correct: 0, answered: [], checked: false, feedback: null, selected: null, reorder: [], match: {}, finished: false }; renderChallengeBody($('#page')); });
+    $$('[data-retry-challenge]').forEach((el) => el.onclick = () => { dragToken = null; challengeRuntime = { index: 0, correct: 0, answered: [], checked: false, feedback: null, selected: null, reorder: [], match: {}, finished: false }; renderChallengeBody($('#page')); });
     $$('[data-reset-progress]').forEach((el) => el.onclick = () => openModal(`<h2>Reset progress?</h2><p>This removes local progress for <b>${escapeHTML(state().student.name)}</b> on this browser. It cannot be undone.</p><div class="modal-actions"><button class="button outline" data-action="close-modal">Cancel</button><button class="button danger" data-confirm-reset>Reset</button></div>`));
     $$('[data-action="close-modal"]').forEach((el) => el.onclick = () => { $('#modalRoot').innerHTML = ''; });
     $$('[data-confirm-reset]').forEach((el) => el.onclick = () => { Store.reset(); $('#modalRoot').innerHTML = ''; navigate('#home'); toast('Progress reset.', 'info'); });
