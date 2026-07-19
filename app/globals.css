@@ -345,6 +345,12 @@ body { font-size: 16px; }
 @media (max-width: 760px) { .student-dashboard-card { width:calc(100% - 20px); margin-top:18px; padding:20px 15px; border-radius:25px; } .student-dashboard-heading { flex-direction:column; } .student-dashboard-account { width:100%; justify-content:space-between; } .student-dashboard-layout { grid-template-columns:1fr; gap:18px; } .student-dashboard-sidebar { position:static; display:flex; overflow-x:auto; padding:9px; gap:5px; } .sidebar-title { display:none; } .student-dashboard-sidebar a { flex:0 0 auto; white-space:nowrap; padding:10px 12px; } .student-dashboard-grid,.favourite-grid,.favourite-select-grid { grid-template-columns:1fr; } .student-dashboard-panel { padding:22px 18px; } .dashboard-section-heading { align-items:flex-start; flex-direction:column; } .dashboard-quick-links a { flex:1 1 calc(50% - 10px); text-align:center; font-size:13px; } }
 
 .platform-update-card { display:flex; align-items:flex-start; gap:14px; max-width:610px; margin:22px 0 18px; padding:18px 20px; border:1px solid rgba(255,255,255,.9); border-radius:24px; background:linear-gradient(135deg,rgba(255,255,255,.72),rgba(226,244,255,.62)); box-shadow:0 14px 30px rgba(48,91,150,.14), inset 0 1px 0 rgba(255,255,255,.9); backdrop-filter:blur(16px); animation:updateGlow 4s ease-in-out infinite; }
+.hero-login-stack { grid-column:2; width:min(445px,calc(100% - 16px)); justify-self:center; }
+.hero-login-stack .platform-update-card { max-width:none; margin:0 auto 12px; padding:11px 14px; gap:10px; border-radius:18px; }
+.hero-login-stack .platform-update-icon { width:30px; height:30px; border-radius:10px; font-size:17px; }
+.hero-login-stack .platform-update-label { font-size:9px; margin-bottom:2px; }
+.hero-login-stack .platform-update-card h2 { font-size:15px; margin-bottom:2px; }
+.hero-login-stack .platform-update-card p:not(.platform-update-label) { font-size:11px; line-height:1.35; margin-top:2px; }
 .platform-update-icon { display:grid; place-items:center; flex:0 0 auto; width:42px; height:42px; border-radius:14px; color:#fff; background:linear-gradient(135deg,#3d78ed,#ed63b2); font-size:24px; box-shadow:0 8px 16px rgba(91,91,220,.25); }
 .platform-update-label { margin:0 0 5px; color:#3367cf; font-size:12px; font-weight:950; letter-spacing:1px; text-transform:uppercase; }
 .platform-update-card h2 { margin:0 0 6px; color:#1d3f70; font-size:clamp(17px,2vw,22px); }
@@ -1081,7 +1087,8 @@ input::placeholder { color: #9aacc0; }
   .hero-copy h1 { margin-left: auto; margin-right: auto; font-size: clamp(43px, 11vw, 64px); }
   .hero-intro { margin: 0 auto; }
   .curriculum-pills { justify-content: center; }
-  .login-card { grid-column: 1; width: min(100%, 470px); }
+  .hero-login-stack { grid-column: 1; width: min(100%, 470px); }
+  .login-card { grid-column: 1; width: 100%; }
   .hero-footer { display: none; }
   .wide-glass-card, .teacher-card, .teacher-profile-card { grid-template-columns: 1fr; }
   .form-intro, .account-form { padding: 34px 27px; }
