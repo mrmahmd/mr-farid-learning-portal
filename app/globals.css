@@ -325,8 +325,16 @@ body { font-size: 16px; }
 .student-dashboard-page { font-family: "Trebuchet MS", "Segoe UI", sans-serif; }
 .student-dashboard-sidebar { padding:18px 12px; gap:10px; background:linear-gradient(160deg,rgba(239,248,255,.95),rgba(246,241,255,.86)); }
 .sidebar-title { font-size:14px; letter-spacing:1.5px; padding:10px 13px 14px; }
-.student-dashboard-sidebar button { padding:14px 15px; border:1px solid transparent; border-radius:16px; color:#38557f; font-size:15px; font-weight:900; transition:transform .2s ease, background .2s ease, box-shadow .2s ease; }
+.student-dashboard-sidebar button { padding:15px 16px; border:1px solid rgba(122,161,215,.2); border-radius:16px; color:#294a79; background:rgba(255,255,255,.68); box-shadow:0 5px 12px rgba(54,92,138,.07); font-size:15px; font-weight:950; letter-spacing:.15px; transition:transform .2s ease, background .2s ease, box-shadow .2s ease; }
 .student-dashboard-sidebar button:hover { transform:translateX(3px); }
+.student-dashboard-sidebar button:nth-of-type(1) { background:linear-gradient(135deg,#e4f1ff,#f4f8ff); }
+.student-dashboard-sidebar button:nth-of-type(2) { background:linear-gradient(135deg,#fff2d9,#fff9ed); }
+.student-dashboard-sidebar button:nth-of-type(3) { background:linear-gradient(135deg,#e7f9f1,#f3fffb); }
+.student-dashboard-sidebar button:nth-of-type(4) { background:linear-gradient(135deg,#eee9ff,#f8f5ff); }
+.student-dashboard-sidebar button:nth-of-type(5) { background:linear-gradient(135deg,#ffe9f0,#fff5f8); }
+.student-dashboard-sidebar button:nth-of-type(6) { background:linear-gradient(135deg,#e4f8ff,#f3fcff); }
+.student-dashboard-sidebar button:nth-of-type(7) { background:linear-gradient(135deg,#fff0e4,#fff8f2); }
+.student-dashboard-sidebar button:hover { box-shadow:0 10px 22px rgba(54,92,138,.16); filter:saturate(1.12); }
 .student-dashboard-sidebar button.sidebar-active { color:#fff; background:linear-gradient(135deg,#3d76ed,#6559dc); box-shadow:0 9px 20px rgba(65,91,220,.25); }
 .student-dashboard-main { font-size:16px; }
 .student-dashboard-panel p,.dashboard-selection-note { font-size:16px; }
