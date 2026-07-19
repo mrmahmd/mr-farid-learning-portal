@@ -22,7 +22,7 @@
   function layout(content,active='#home'){
     const levelNeed=GameStorage.xpForLevel(state.level);const xpPct=Math.round(state.xp/levelNeed*100);
     app.innerHTML=`
-      <div class="app-frame">
+      <div class="portal-return-bar"><a href="../../games/">← Back to Games</a><a href="../../">⌂ Back to Portal</a></div><div class="app-frame">
         <aside class="sidebar">
           <a class="brand" href="#home"><span>ENGLISH</span><strong>PRIMARY 3</strong><em>GAME WORLD</em></a>
           <nav>${navItems.map(([href,icon,label])=>`<a href="${href}" class="${active===href?'active':''}"><span>${icon}</span>${label}</a>`).join('')}</nav>
