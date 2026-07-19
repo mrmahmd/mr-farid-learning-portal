@@ -1,4 +1,4 @@
-const CACHE = 'primary3-game-world-v2-cloud-progress-20260719';
+const CACHE = 'primary3-game-world-v3-navigation-20260719';
 const ASSETS = [
   './','./index.html','./css/game-world.css','./js/curriculum.js','./js/question-engine.js','./js/game-data.js','./js/portal-progress.js','./js/storage.js','./js/engines.js','./js/app.js','./manifest.webmanifest',
   './assets/images/game-world-hero.png','./assets/images/hero.jpg','./assets/images/omar-laila.png','./assets/images/lesson-banner.jpg','./assets/images/question-scene.jpg',
