@@ -117,6 +117,8 @@
     },
     setRoute(route) {
       state.lastRoute = route;
+      const labels = { unit: `Unit ${route.unitId}`, lesson: `Lesson ${route.lessonId}`, challenge: `Challenge ${route.id || ''}`, review: `Review ${route.reviewId || ''}`, progress: 'Progress', rewards: 'Rewards', about: 'About' };
+      state.portalLastActivity = { detail: `${labels[route.name] || 'Home'} · English Primary 3 First Term` };
       save();
     },
     markStation(lessonId, stationId) {

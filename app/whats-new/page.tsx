@@ -2,6 +2,14 @@ import { InnerPageShell } from "../components/InnerPageShell";
 
 const updates = [
   {
+    badge: "New Curriculum",
+    date: "Just added",
+    title: "English Primary 3 – First Term Added",
+    description: "English Primary 3 First Term is now available with six units, interactive lessons, Grammar Banks, challenges, and saved student progress.",
+    tone: "update-mint",
+    icon: "📚",
+  },
+  {
     badge: "Available Now",
     date: "First release",
     title: "Primary 4 Curricula Added",
