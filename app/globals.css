@@ -286,8 +286,13 @@ body { font-size: 16px; }
 .student-dashboard-main { min-width:0; }
 .student-dashboard-sidebar { position:sticky; top:22px; display:grid; gap:8px; padding:16px; border:1px solid rgba(255,255,255,.95); border-radius:24px; background:rgba(245,250,255,.8); box-shadow:0 12px 28px rgba(54,92,138,.08); }
 .sidebar-title { padding:8px 10px 12px; color:var(--blue); font-size:12px; font-weight:950; letter-spacing:1.2px; text-transform:uppercase; }
-.student-dashboard-sidebar a { padding:12px 13px; border-radius:13px; color:var(--ink-soft); font-weight:850; font-size:14px; }
-.student-dashboard-sidebar a:hover,.student-dashboard-sidebar a.sidebar-active { color:var(--blue-deep); background:#fff; box-shadow:0 6px 16px rgba(54,92,138,.1); }
+.student-dashboard-sidebar a,.student-dashboard-sidebar button { padding:12px 13px; border-radius:13px; color:var(--ink-soft); font-weight:850; font-size:14px; }
+.student-dashboard-sidebar button { border:0; width:100%; text-align:left; cursor:pointer; font:inherit; }
+.student-dashboard-sidebar a:hover,.student-dashboard-sidebar a.sidebar-active,.student-dashboard-sidebar button:hover,.student-dashboard-sidebar button.sidebar-active { color:var(--blue-deep); background:#fff; box-shadow:0 6px 16px rgba(54,92,138,.1); }
+.student-settings-form { display:grid; gap:1rem; }
+.student-settings-form label { display:grid; gap:.4rem; font-weight:700; color:#294675; }
+.student-settings-form input { border:1px solid #c9dbf4; border-radius:12px; padding:.75rem .9rem; font:inherit; background:rgba(255,255,255,.72); }
+.settings-message { color:#315fbd; font-weight:700; }
 .student-dashboard-panel { padding:28px; border:1px solid rgba(255,255,255,.95); border-radius:26px; background:rgba(248,252,255,.82); box-shadow:0 12px 28px rgba(54,92,138,.1); }
 .last-activity-panel { background:linear-gradient(135deg,#edf6ff,#f6f0ff); }
 .panel-kicker { color:var(--blue); font-size:12px; font-weight:950; letter-spacing:1.4px; text-transform:uppercase; }
