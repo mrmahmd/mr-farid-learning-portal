@@ -61,7 +61,7 @@ export function SiteHeader() {
       <div className="header-actions">
         {isSignedIn ? (
           <>
-            <a href={pageHref("/student/curricula")} className="nav-login">My Curricula</a>
+            <a href={pageHref("/student/dashboard")} className="nav-login">Student Dashboard</a>
             <button className="nav-create nav-signout" type="button" onClick={handleSignOut}>Sign Out</button>
           </>
         ) : (

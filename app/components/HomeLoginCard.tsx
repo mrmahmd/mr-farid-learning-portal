@@ -270,6 +270,10 @@ export function HomeLoginCard() {
           </p>
         )}
 
+        <Link className="primary-button returning-curricula-link" href="/student/dashboard">
+          Student Dashboard
+        </Link>
+
         <Link className="secondary-button returning-curricula-link" href="/student/curricula">
           My Curricula
         </Link>
