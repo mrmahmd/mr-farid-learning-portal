@@ -35,7 +35,7 @@
           <button class="sound-toggle" data-sound>${state.sound?'🔊 Sound On':'🔇 Sound Off'}</button>
         </aside>
         <main class="main-area">
-          <header class="topbar">
+          <header class="topbar"><div class="portal-top-actions"><a href="../../games/">← Games</a><a href="../../">⌂ Portal</a></div>
             <button class="mobile-menu" aria-label="Menu">☰</button>
             <div class="welcome"><span>👋</span><div><strong>Welcome back, ${escapeHtml(state.studentName)}!</strong><small>Learn English · Play Games · Win Rewards</small></div></div>
             <div class="top-stats"><span>⭐ <b>${state.points}</b><small>Points</small></span><span>🪙 <b>${state.coins}</b><small>Coins</small></span><span>💎 <b>${state.gems}</b><small>Gems</small></span><span>🛡️ <b>${state.badges.length}</b><small>Badges</small></span></div>
