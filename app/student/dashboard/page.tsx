@@ -85,6 +85,18 @@ export default function StudentDashboardPage() {
           <div className="student-dashboard-account"><span>@{profile.username}</span><button type="button" onClick={signOut}>Sign Out</button></div>
         </header>
 
+        <div className="student-dashboard-layout">
+          <aside className="student-dashboard-sidebar" aria-label="Student dashboard menu">
+            <div className="sidebar-title">Student Menu</div>
+            <Link className="sidebar-active" href="/student/dashboard">Dashboard</Link>
+            <Link href="/student/curricula">My Curricula</Link>
+            <Link href="/games">Games</Link>
+            <Link href="/booklets">Booklets</Link>
+            <Link href="/whats-new">What’s New?</Link>
+            <a href="https://wa.me/966552019074" target="_blank" rel="noreferrer">Help & Support</a>
+          </aside>
+          <div className="student-dashboard-main">
+
         <div className="student-dashboard-grid">
           <article className="student-dashboard-panel last-activity-panel">
             <div className="panel-kicker">Last Activity</div>
@@ -96,7 +108,9 @@ export default function StudentDashboardPage() {
 
         <section className="dashboard-section"><div className="dashboard-section-heading"><div><div className="panel-kicker">My Favourite Curricula</div><h2>Choose up to two</h2></div><span className="dashboard-selection-note">Select your two shortcuts below</span></div><div className="favourite-select-grid">{[0, 1].map((slot) => <label className="favourite-select-card" key={slot}><span>Favourite {slot + 1}</span><select value={favoriteSlugs[slot] ?? ""} onChange={(event) => { const next = [...favoriteSlugs]; next[slot] = event.target.value; saveFavorites(next.filter(Boolean).filter((slug, index, all) => all.indexOf(slug) === index)); }}><option value="">Choose a curriculum</option>{curricula.map((course) => <option key={course.slug} value={course.slug} disabled={favoriteSlugs.includes(course.slug) && favoriteSlugs[slot] !== course.slug}>{course.title} — First Term</option>)}</select></label>)}</div><div className="favourite-grid">{favorites.map((course) => { const row = rows.find((item) => item.app_id.startsWith(course.slug)); const percent = progressPercent(course, row); return <article className="favourite-course-card" key={course.slug}><div className="favourite-course-icon">{course.type === "english" ? "A" : "+"}</div><div><h3>{course.title}</h3><p>{percent}% complete</p><div className="dashboard-progress"><span style={{ width: `${percent}%` }} /></div></div><Link href={`/courses/${course.slug}`}>Open</Link></article>; })}</div></section>
 
-        <nav className="dashboard-quick-links" aria-label="Student shortcuts"><Link href="/student/curricula">My Curricula</Link><Link href="/games">Games</Link><Link href="/booklets">Booklets</Link><Link href="/whats-new">What’s New?</Link><Link href="/teacher">Meet the Teacher</Link></nav>
+        <nav className="dashboard-quick-links" aria-label="Student shortcuts"><Link href="/teacher">Meet the Teacher</Link></nav>
+          </div>
+        </div>
       </section>
     </InnerPageShell>
   );
