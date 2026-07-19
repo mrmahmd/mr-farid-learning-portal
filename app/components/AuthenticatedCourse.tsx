@@ -10,7 +10,7 @@ import { getSupabaseBrowserClient } from "../lib/supabase";
 export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) {
   const [isReady, setIsReady] = useState(false);
   const [studentName, setStudentName] = useState("Student");
-  const [sessionBridge, setSessionBridge] = useState<{ accessToken: string; refreshToken: string } | null>(null);
+  const [sessionBridge, setSessionBridge] = useState<{ accessToken: string; refreshToken: string; userId: string } | null>(null);
   const [shouldResume, setShouldResume] = useState(false);
   const courseFrame = useRef<HTMLIFrameElement>(null);
   const router = useRouter();
@@ -35,6 +35,7 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
         setSessionBridge({
           accessToken: data.session.access_token,
           refreshToken: data.session.refresh_token,
+          userId: data.session.user.id,
         });
         setIsReady(true);
       }
@@ -78,6 +79,7 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
 
   const embeddedApps: Record<string, string> = {
     "english-primary-1": "/course-apps/english-primary-1/index.html",
+    "english-primary-3": "/course-apps/english-primary-3/index.html",
     "connect-plus-primary-4": "/course-apps/connect-plus-primary-4/index.html",
     "english-primary-4": "/course-apps/english-primary-4/index.html",
   };
@@ -108,6 +110,10 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
             );
             courseFrame.current.contentWindow.postMessage(
               { type: "mrfarid-course-entry", destination: shouldResume ? "resume" : "dashboard" },
+              window.location.origin,
+            );
+            courseFrame.current.contentWindow.postMessage(
+              { type: "PLATFORM_STUDENT", student: { studentId: sessionBridge.userId, studentName } },
               window.location.origin,
             );
           }}

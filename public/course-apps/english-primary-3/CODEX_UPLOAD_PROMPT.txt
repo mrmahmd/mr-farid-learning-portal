@@ -1,0 +1,28 @@
+You are a senior front-end engineer. Upload and deploy the attached complete static website project to the GitHub repository I provide.
+
+Project: English Primary 3 – Term 1
+Technology: HTML, CSS and vanilla JavaScript. No build step is required.
+
+Required actions:
+1. Inspect all project files before changing anything.
+2. Keep the existing light cinematic 3D educational design and all curriculum content.
+3. Copy the complete project contents to the repository root unless the existing repository structure requires a documented subfolder.
+4. Verify all relative image, CSS, JavaScript, manifest and service-worker paths.
+5. Run a local static server and test the following routes and features:
+   - #home
+   - #unit/1
+   - #lesson/u1l1/vocab
+   - #challenge/lesson/u1l1
+   - #progress
+   - #rewards
+   - Responsive mobile layout
+6. Confirm that lesson challenges contain 30 questions and unit challenges contain 50 questions.
+7. Confirm that localStorage progress is separated by studentId.
+8. Do not add a login page. The parent platform supplies studentName and studentId.
+9. Preserve the public integration API described in README.md.
+10. Fix only verified issues. Do not redesign the website.
+11. Commit and push the final working files.
+12. Enable or update GitHub Pages and give me the public URL.
+
+Repository URL:
+[PASTE REPOSITORY URL HERE]
