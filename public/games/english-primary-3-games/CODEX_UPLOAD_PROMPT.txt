@@ -1,0 +1,20 @@
+Use the attached English Primary 3 Game World project as a complete static website.
+
+Requirements:
+1. Create a backup branch before changing the repository.
+2. Delete old unrelated files only if this repository is dedicated to the games platform. Do not merge this project into a different grade or teacher project.
+3. Copy the contents of the project folder directly to the repository root.
+4. Confirm the title is "English Primary 3 – Game World" and the course is Primary 3, Term 1.
+5. Confirm there is no login, name-entry, class-entry, school-entry, or avatar-selection page.
+6. Run locally with: python -m http.server 8765
+7. Test these routes:
+   - /#home
+   - /#unit/1
+   - /#lesson/u1l1
+   - /#game/u1l1/u1l1-g1
+   - /#game/u1l4/u1l4-g1
+   - /#tournaments
+8. Test penalty shootout, car racing, runner, dialogue ordering, drag/tap builder, memory, maze, football, puzzle, and phonics games.
+9. Test mouse, keyboard, touch/mobile layout, points, best scores, replay, and saved progress.
+10. Do not rewrite or regenerate the curriculum questions. They are already included in js/question-engine.js.
+11. Inspect the git diff, commit, push, and enable/update GitHub Pages.
