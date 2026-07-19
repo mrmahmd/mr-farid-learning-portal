@@ -22,6 +22,16 @@ export default function Home() {
             Primary 1 to Primary 6.
           </p>
 
+          <aside className="platform-update-card" aria-label="Platform development update">
+            <div className="platform-update-icon">✦</div>
+            <div>
+              <p className="platform-update-label">Platform Update · تحديث المنصة</p>
+              <h2>The platform is under development</h2>
+              <p>New curricula and interactive learning resources are being added gradually.</p>
+              <p dir="rtl">المنصة قيد الإنشاء، ويتم إضافة المناهج والمصادر التعليمية التفاعلية تدريجيًا.</p>
+            </div>
+          </aside>
+
           <div className="curriculum-pills" aria-label="Available curricula">
             <span>English</span>
             <span>Connect Plus</span>
