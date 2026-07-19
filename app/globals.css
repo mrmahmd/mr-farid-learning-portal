@@ -883,6 +883,11 @@ input::placeholder { color: #9aacc0; }
 .english-option { background: #edf5ff; border-color: rgba(53, 105, 232, 0.13); }
 .english-option:has(.new-curriculum-badge) { position:relative; border-color:rgba(42,194,151,.55); background:linear-gradient(135deg,#e8fff6,#f4fbff); box-shadow:0 8px 20px rgba(42,194,151,.14); }
 .new-curriculum-badge { display:inline-flex; width:max-content; margin-bottom:4px; padding:4px 8px; border-radius:999px; color:#fff; background:linear-gradient(135deg,#18bd73,#3b82f6); font-size:9px; font-weight:950; letter-spacing:.7px; box-shadow:0 5px 12px rgba(35,170,135,.25); animation:newBadgePulse 2.8s ease-in-out infinite; }
+.new-curriculum-entry { display:inline-flex; align-items:center; justify-content:center; margin-top:8px; padding:10px 14px; border-radius:12px; color:#fff; background:linear-gradient(135deg,#2f70e8,#5361df); font-size:13px; font-weight:950; box-shadow:0 7px 15px rgba(53,105,232,.22); }
+.new-curriculum-entry:hover { transform:translateY(-2px); box-shadow:0 10px 20px rgba(53,105,232,.3); }
+.curricula-page { font-family:"Trebuchet MS","Segoe UI",sans-serif; }
+.curricula-page .curricula-heading h1,.curricula-page .grade-card h2 { font-weight:950; }
+.curricula-page .curricula-heading > p:not(.eyebrow),.curricula-page .curriculum-option strong,.curricula-page .curriculum-option small,.curricula-page .term-badges span { font-size:clamp(13px,1.1vw,17px); font-weight:850; }
 @keyframes newBadgePulse { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-2px); } }
 .connect-option { background: #ecfff8; border-color: rgba(73, 215, 181, 0.18); }
 .book-icon { width: 35px; height: 40px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 7px 11px 11px 7px; color: white; background: var(--blue); font-size: 10px; font-weight: 900; box-shadow: 4px 5px 12px rgba(48, 86, 130, 0.16); }

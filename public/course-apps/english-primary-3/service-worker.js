@@ -1,7 +1,7 @@
-const CACHE = 'english-primary3-v3-short-questions-20260719';
+const CACHE = 'english-primary3-v5-cloud-progress-20260719';
 const CORE = [
   './', './index.html', './css/style.css',
-  './js/curriculum.js', './js/question-engine.js', './js/storage.js', './js/app.js',
+  './js/curriculum.js', './js/question-engine.js', './js/portal-progress.js', './js/storage.js', './js/app.js',
   './assets/images/hero.jpg', './assets/images/omar-laila.png',
   './assets/images/unit-1.jpg', './assets/images/unit-2.jpg', './assets/images/unit-3.jpg',
   './assets/images/unit-4.jpg', './assets/images/unit-5.jpg', './assets/images/unit-6.jpg'
