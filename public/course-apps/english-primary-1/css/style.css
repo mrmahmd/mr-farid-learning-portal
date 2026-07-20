@@ -58,3 +58,4 @@ button:disabled{cursor:not-allowed;opacity:.55}
 .flash-icon{filter:drop-shadow(0 8px 14px rgba(0,0,0,.12))}.brand strong{font-size:21px}.lesson-banner-copy h1{font-size:clamp(30px,4vw,54px)}
 @media(max-width:850px){.tracing-lab{grid-template-columns:1fr}.trace-canvas{height:280px}.sound-words{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.phonics-letter-tab{flex:1}.sound-words{grid-template-columns:1fr}.trace-canvas{height:240px}.tracing-lab{padding:15px}.sound-main-button{width:100%}}
+.word-art { display: block; width: min(150px, 58vw); height: min(105px, 25vw); object-fit: contain; margin: 0 auto; }

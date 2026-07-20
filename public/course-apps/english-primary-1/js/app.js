@@ -40,6 +40,12 @@
     return String(value).replace(/[&<>'"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[ch]));
   }
 
+  function wordIcon(item = {}) {
+    const word = String(item.word || '').toLowerCase();
+    if (word === 'table' || word === 'desk') return '<img class="word-art" src="assets/images/table.svg" alt="Table" />';
+    return escapeHTML(item.icon || '');
+  }
+
   function normalizeSentence(value = '') {
     return value.toLocaleLowerCase().replace(/[“”"'?!.,:;()]/g, '').replace(/\s+/g, ' ').trim();
   }
@@ -466,7 +472,7 @@
         <button class="flash-arrow" data-flash-nav="prev" aria-label="Previous word">←</button>
         <div class="flash-card ${flashFlipped ? 'flipped' : ''}" data-action="flip-card" role="button" tabindex="0" aria-label="Flip vocabulary card">
           <div class="flash-inner">
-            <article class="flash-face front"><span class="flash-icon">${item.icon}</span><h3>${escapeHTML(item.word)}</h3><button class="speak-button" data-speak="${escapeHTML(item.word)}" aria-label="Listen to ${escapeHTML(item.word)}">🔊</button><small>Tap to see the meaning</small></article>
+            <article class="flash-face front"><span class="flash-icon">${wordIcon(item)}</span><h3>${escapeHTML(item.word)}</h3><button class="speak-button" data-speak="${escapeHTML(item.word)}" aria-label="Listen to ${escapeHTML(item.word)}">🔊</button><small>Tap to see the meaning</small></article>
             <article class="flash-face back"><span class="meaning-label">Meaning</span><p>${escapeHTML(item.meaning)}</p><hr><span class="meaning-label">Example</span><p>${escapeHTML(item.example)}</p><button class="speak-button" data-speak="${escapeHTML(item.example)}">🔊</button></article>
           </div>
         </div>
@@ -493,7 +499,7 @@
           <p>Tap the speaker. Listen carefully, repeat the sound, then say the words.</p>
           <button class="sound-main-button" data-audio="${escapeHTML(letter.soundAudio)}" data-fallback="${escapeHTML(letter.upper)}"><span>🔊</span> Hear the sound</button>
         </div>
-        <div class="sound-words">${letter.words.map((item)=>`<button data-audio="${escapeHTML(item.audio)}" data-fallback="${escapeHTML(item.word)}"><span class="word-icon">${item.icon}</span><strong>${escapeHTML(item.word)}</strong><small>🔊 Listen</small></button>`).join('')}</div>
+        <div class="sound-words">${letter.words.map((item)=>`<button data-audio="${escapeHTML(item.audio)}" data-fallback="${escapeHTML(item.word)}"><span class="word-icon">${wordIcon(item)}</span><strong>${escapeHTML(item.word)}</strong><small>🔊 Listen</small></button>`).join('')}</div>
       </div>
       <div class="tracing-lab">
         <div class="tracing-copy"><span class="eyebrow">Letter Tracing</span><h3>Trace ${escapeHTML(letter.upper)} and ${escapeHTML(letter.lower)}</h3><p>Use your finger, mouse or pen. Follow the light letter shape.</p><div class="trace-actions"><button class="button outline" data-clear-trace>Clear</button><button class="button primary" data-audio="${escapeHTML(letter.soundAudio)}" data-fallback="${escapeHTML(letter.upper)}">Hear Again 🔊</button></div></div>
