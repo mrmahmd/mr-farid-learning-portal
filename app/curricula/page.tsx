@@ -53,6 +53,7 @@ export default function CurriculaPage() {
                     <div className="term-badges" aria-label="Available terms">
                       <span>First Term</span><span>Second Term</span>
                     </div>
+                    {grade === 1 && <Link className="new-curriculum-entry" href="/courses/english-primary-1">Enter English Primary 1</Link>}
                     {grade === 3 && <Link className="new-curriculum-entry" href="/courses/english-primary-3">Enter English Primary 3</Link>}
                   </div>
                 </div>

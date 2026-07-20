@@ -1,15 +1,38 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
-    <script type="module" crossorigin src="/mr-farid-learning-portal/course-apps/english-primary-1/assets/index-DOc-nVeD.js"></script>
-    <link rel="stylesheet" crossorigin href="/mr-farid-learning-portal/course-apps/english-primary-1/assets/index-BLKR70Is.css">
-  </head>
-  <body>
-    <div id="root"></div>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/mr-farid-learning-portal/course-apps/portal-progress.js?v=20260718-2"></script>
-  </body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7faff">
+  <meta name="description" content="English Primary 1 – Term 1 interactive learning website with lessons, flashcards, grammar, reading and challenges.">
+  <title>English Primary 1 – Term 1</title>
+  <link rel="icon" href="assets/images/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/images/icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <noscript>This website needs JavaScript to run its interactive lessons and challenges.</noscript>
+  <div id="app"></div>
+
+  <script src="js/curriculum.js"></script>
+  <script src="js/question-engine.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/portal-progress.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      window.MrFaridCourseProgress?.connect({
+        courseId: 'english-primary-1-first-term',
+        getState: () => window.Primary1Store.getState(),
+        setState: (next) => window.Primary1Store.replaceState(next),
+        mergeState: (current, remote) => window.Primary1App.mergeState({ ...current, ...remote }),
+      });
+    });
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(() => {}));
+    }
+  </script>
+</body>
 </html>
