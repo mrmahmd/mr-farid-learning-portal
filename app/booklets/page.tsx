@@ -38,7 +38,7 @@ export default function BookletsPage() {
                       {terms.map((term) => (
                         <div className="booklet-term-option" key={term}>
                           <strong>{term}</strong>
-                          <button type="button" disabled>Soon</button>
+                          {grade === 1 && term === "First Term" ? <a className="booklet-download-button" href="https://ia902908.us.archive.org/22/items/english-primary-1-term-1-complete-booklet-illustrated-2026-2027_202607/English_Primary_1_Term_1_Complete_Booklet_Illustrated_2026_2027.pdf" target="_blank" rel="noreferrer">Download PDF ↗</a> : <button type="button" disabled>Soon</button>}
                         </div>
                       ))}
                     </div>

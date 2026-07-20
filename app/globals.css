@@ -923,6 +923,11 @@ input::placeholder { color: #9aacc0; }
 .connect-booklet .booklet-term-option { border-color: rgba(39, 189, 145, 0.18); }
 .booklet-term-option strong { display: block; color: var(--ink); font-size: 10px; font-weight: 900; }
 .booklet-term-option button { width: 100%; min-height: 38px; margin-top: 7px; padding: 8px 12px; display: flex; align-items: center; justify-content: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; word-break: normal; writing-mode: horizontal-tb; text-align: center; font-size: 9px; line-height: 1.25; }
+.booklet-download-button { position: relative; display: inline-flex; width: 100%; min-height: 38px; margin-top: 7px; align-items: center; justify-content: center; overflow: hidden; border-radius: 11px; color: #fff; background: linear-gradient(135deg, #1769e8, #6b55df, #19bd83); background-size: 220% 220%; font-size: 10px; font-weight: 950; line-height: 1.25; text-decoration: none; box-shadow: 0 8px 16px rgba(43, 104, 224, 0.25); animation: bookletDownloadPulse 3s ease-in-out infinite; transition: transform 180ms ease, box-shadow 180ms ease; }
+.booklet-download-button::after { content: ""; position: absolute; inset: 0 auto 0 -40%; width: 35%; background: rgba(255, 255, 255, 0.4); transform: skewX(-18deg); animation: bookletDownloadSweep 2.8s ease-in-out infinite; pointer-events: none; }
+.booklet-download-button:hover { transform: translateY(-2px); box-shadow: 0 11px 20px rgba(43, 104, 224, 0.35); }
+@keyframes bookletDownloadPulse { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+@keyframes bookletDownloadSweep { 0%, 40% { left: -40%; } 75%, 100% { left: 120%; } }
 .booklets-note { margin: 25px 0 0; color: var(--muted); font-size: 10px; text-align: center; }
 
 .games-card { width: 100%; padding: 46px; border-radius: 35px; }
