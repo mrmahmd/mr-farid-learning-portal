@@ -1,0 +1,10 @@
+Use this folder as a complete static GitHub Pages website.
+
+1. Do not replace it with any older Primary 3, Primary 4 or Mrs. Mona Harb project.
+2. Confirm the title is “English Primary 1 – Game World”.
+3. Confirm there is no login screen.
+4. Run `python -m http.server 8765` and test desktop and mobile.
+5. Test phonics sound buttons, touch controls, racing arrows, maze arrows, builders and progress saving.
+6. Confirm there are 6 units, 24 lessons, 48 lesson games and 2 review tournaments.
+7. Upload the folder contents to the repository root and enable GitHub Pages.
+8. Preserve the signature: Prepared and Designed by: Mr.Mohamed Farid.
