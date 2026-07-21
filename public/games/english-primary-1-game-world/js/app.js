@@ -94,5 +94,9 @@
 
   function renderRoute(){state=GameStorage.load();const hash=location.hash||'#home';GameStorage.setLastRoute(state,hash);if(hash==='#home')return renderHome();if(hash==='#units')return renderUnits();if(hash==='#tournaments')return renderTournaments();if(hash==='#achievements')return renderAchievements();if(hash==='#progress')return renderProgress();if(hash==='#how-to-play')return renderHowTo();let m=hash.match(/^#unit\/(\d+)$/);if(m)return renderUnit(m[1]);m=hash.match(/^#lesson\/(u\d+l\d+)$/);if(m)return renderLesson(m[1]);m=hash.match(/^#game\/(u\d+l\d+)\/(.+)$/);if(m)return renderGame(m[1],m[2]);m=hash.match(/^#tournament\/(review\d+)\/(.+)$/);if(m)return renderTournamentGame(m[1],m[2]);renderHome()}
 
-  window.GameApp={get state(){return state},renderRoute};window.addEventListener('hashchange',renderRoute);window.addEventListener('message',(event)=>{if(event.data?.type==='STUDENT_CONTEXT'){window.PLATFORM_STUDENT=event.data.payload||{};state=GameStorage.load();renderRoute()}});renderRoute();
+  window.GameApp={get state(){return state},renderRoute};window.addEventListener('hashchange',renderRoute);window.addEventListener('message',(event)=>{if(event.data?.type==='STUDENT_CONTEXT'){window.PLATFORM_STUDENT=event.data.payload||{};state=GameStorage.load();renderRoute()}});
+  const cameFromOutside = !sessionStorage.getItem('primary1GameWorldOpen') || !document.referrer.includes('/games/english-primary-1-game-world/');
+  if (cameFromOutside && /^(#game|#tournament)/.test(location.hash) && !new URLSearchParams(location.search).has('resume')) history.replaceState(null, '', '#home');
+  sessionStorage.setItem('primary1GameWorldOpen', '1');
+  renderRoute();
 })();
