@@ -2,6 +2,22 @@ import { InnerPageShell } from "../components/InnerPageShell";
 
 const updates = [
   {
+    badge: "New Games Platform",
+    date: "Just added",
+    title: "English Primary 1 Game World",
+    description: "An interactive English Primary 1 games platform is now available with unit adventures, lesson missions, tournaments, rewards, and saved student progress.",
+    tone: "update-purple",
+    icon: "🎮",
+  },
+  {
+    badge: "New Booklet",
+    date: "Just added",
+    title: "English Primary 1 Booklet",
+    description: "The illustrated English Primary 1 First Term booklet is now available for students to download from the Booklets section.",
+    tone: "update-sun",
+    icon: "📘",
+  },
+  {
     badge: "New Curriculum",
     date: "Just added",
     title: "English Primary 3 – First Term Added",
