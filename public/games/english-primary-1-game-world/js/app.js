@@ -39,7 +39,7 @@
             <button class="mobile-menu" aria-label="Menu">☰</button>
             <div class="welcome"><span>👋</span><div><strong>Welcome back, ${escapeHtml(state.studentName)}!</strong><small>Listen · Play · Learn · Win Rewards</small></div></div>
             <div class="top-stats"><span>⭐ <b>${state.points}</b><small>Points</small></span><span>🪙 <b>${state.coins}</b><small>Coins</small></span><span>💎 <b>${state.gems}</b><small>Gems</small></span><span>🛡️ <b>${state.badges.length}</b><small>Badges</small></span></div>
-          </header>
+          <nav class="portal-return-actions" aria-label="Portal navigation"><a href="../../" title="Return to the main portal">⌂ <span>Portal</span></a><a href="../../games" title="Return to the games page">🎮 <span>Games</span></a></nav></header>
           <div class="page-content">${content}</div>
         </main>
       </div>`;
