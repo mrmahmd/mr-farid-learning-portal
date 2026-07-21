@@ -44,7 +44,7 @@ button,a{touch-action:manipulation}.answer-option{min-height:62px;font-size:1.05
 .listen-question,.hear-target{border:0;border-radius:14px;padding:12px 18px;background:linear-gradient(135deg,#ffe85c,#ffbd32);color:#173c73;font-weight:1000;box-shadow:0 8px 18px rgba(255,178,33,.3);margin:4px 0 13px}
 .falling-word{min-width:120px;min-height:58px;font-size:1.05rem}.falling-word span{font-size:1.5rem;margin-right:7px}.phonics-banner p{margin:8px 0 0;color:#496587}
 @media(max-width:700px){.answer-option{min-height:58px;font-size:1rem}.hear-target,.listen-question{width:100%}.phonics-scene{min-height:660px}.falling-word{min-width:105px}}
-.portal-return-actions { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 auto; }
+.portal-return-actions { position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; gap: 8px; }
 .portal-return-actions a { display: inline-flex; align-items: center; gap: 6px; padding: 10px 14px; border: 1px solid rgba(45, 111, 225, .2); border-radius: 12px; color: #1851a1; background: rgba(255, 255, 255, .9); box-shadow: 0 6px 14px rgba(40, 88, 160, .1); font-size: 11px; font-weight: 900; text-decoration: none; transition: transform .18s ease, background .18s ease; }
 .portal-return-actions a:hover { transform: translateY(-2px); background: #eaf3ff; }
-@media (max-width: 760px) { .portal-return-actions { order: 3; width: 100%; margin-top: 8px; } .portal-return-actions a { flex: 1; justify-content: center; padding: 9px 10px; font-size: 10px; } }
+@media (max-width: 760px) { .portal-return-actions { position: static; transform: none; order: 3; width: 100%; margin-top: 8px; } .portal-return-actions a { flex: 1; justify-content: center; padding: 9px 10px; font-size: 10px; } }
