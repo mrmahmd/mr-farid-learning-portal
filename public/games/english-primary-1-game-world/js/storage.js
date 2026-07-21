@@ -79,5 +79,10 @@
   const setLastRoute = (state, route) => { state.lastRoute = route; state.portalLastActivity = { detail: route === '#home' ? 'Game World home' : `Game World ${route.replace(/^#/, '')}`, path: route }; save(state); };
   const reset = () => { localStorage.removeItem(key()); return load(); };
 
-  window.GameStorage = { load, save, addRewards, markGameComplete, setLastRoute, reset, xpForLevel, getState: load, replaceState: (next) => save(next), mergeState: (current, remote) => ({ ...current, ...remote, studentId: current.studentId, studentName: current.studentName }) };
+  const replaceState = (next) => {
+    const identity = getIdentity();
+    const merged = { ...DEFAULT, ...(next || {}), studentId: identity.studentId, studentName: identity.studentName, className: identity.className };
+    localStorage.setItem(key(), JSON.stringify(merged));
+  };
+  window.GameStorage = { load, save, addRewards, markGameComplete, setLastRoute, reset, xpForLevel, getState: load, replaceState, mergeState: (current, remote) => ({ ...current, ...remote, studentId: current.studentId, studentName: current.studentName }) };
 })();
