@@ -534,11 +534,11 @@
   {
     "id": "review1-tournament",
     "reviewId": "review1",
-    "title": "Rainbow School Championship",
+    "title": "English Explorers Championship",
     "engine": "tournament",
-    "icon": "🌈",
+    "icon": "🏆",
     "reward": 500,
-    "description": "Five friendly stages reviewing Units 1–3."
+    "description": "Five exciting stages reviewing Units 1–3."
   },
   {
     "id": "review2-tournament",

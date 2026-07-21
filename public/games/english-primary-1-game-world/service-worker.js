@@ -1,4 +1,4 @@
-const CACHE = 'primary1-game-world-v4';
+const CACHE = 'primary1-game-world-v5';
 const ASSETS = [
   './','./index.html','./css/game-world.css','./js/curriculum.js','./js/question-engine.js','./js/game-data.js','./js/portal-progress.js','./js/storage.js','./js/engines.js','./js/app.js','./manifest.webmanifest',
 './assets/images/hero.jpg','./assets/images/omar-laila.png','./assets/images/lesson-banner.jpg','./assets/images/question-scene.jpg',
