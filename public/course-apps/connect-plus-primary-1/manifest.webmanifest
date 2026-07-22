@@ -1,0 +1,17 @@
+{
+  "name": "Connect Plus Primary 1 – Term 1",
+  "short_name": "Connect Plus P1",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#eef8ff",
+  "theme_color": "#082b5c",
+  "description": "Interactive English learning website for Connect Plus Primary 1 – Term 1.",
+  "icons": [
+    {
+      "src": "assets/icons/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

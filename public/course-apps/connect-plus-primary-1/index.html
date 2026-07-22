@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#082b5c" />
+  <meta name="description" content="Connect Plus Primary 1 – Term 1 interactive learning website." />
+  <title>Connect Plus Primary 1 – Term 1</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/icons/app-icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <noscript>
+    <div class="noscript">This learning website needs JavaScript to work.</div>
+  </noscript>
+
+  <section id="splashScreen" class="splash-screen" aria-labelledby="splashTitle">
+    <div class="splash-art-frame">
+      <img src="assets/images/splash.png" alt="Connect Plus Primary 1 Term 1 welcome cover" class="splash-art" />
+    </div>
+    <div class="splash-panel glass-panel">
+      <p class="eyebrow">Interactive Learning Adventure</p>
+      <h1 id="splashTitle">Welcome, dear student!</h1>
+      <p>Type your first name to save your points and continue from your last activity.</p>
+      <form id="startForm" class="start-form" autocomplete="off">
+        <label for="studentName">Student name</label>
+        <div class="input-row">
+          <input id="studentName" name="studentName" type="text" maxlength="30" placeholder="Type your name" required />
+          <button class="primary-btn" type="submit">Start Learning</button>
+        </div>
+      </form>
+      <p class="splash-credit">Prepared and Designed by: <strong>Mr.Mohamed Farid</strong></p>
+    </div>
+  </section>
+
+  <div id="appShell" class="app-shell" hidden>
+    <header class="topbar">
+      <button class="brand-btn" data-route="home" aria-label="Go to home">
+        <span class="brand-mark">CP+</span>
+        <span class="brand-copy">
+          <strong>Connect Plus Primary 1</strong>
+          <small>Term 1</small>
+        </span>
+      </button>
+
+      <nav class="topnav" aria-label="Main navigation">
+        <button data-route="home">Home</button>
+        <button data-route="remember">Let’s Remember</button>
+        <button data-route="dashboard">Dashboard</button>
+        <button id="continueNavBtn" data-action="continue">Continue</button>
+      </nav>
+
+      <div class="topbar-actions">
+        <div class="points-pill" title="Learning points"><span>⭐</span><strong id="pointsValue">0</strong></div>
+        <button class="avatar-btn" id="profileBtn" aria-label="Open student menu"><span id="studentInitial">S</span></button>
+      </div>
+    </header>
+
+    <aside id="profileMenu" class="profile-menu glass-panel" hidden>
+      <div class="profile-head">
+        <div class="profile-avatar" id="profileAvatar">S</div>
+        <div><strong id="profileName">Student</strong><small>Primary 1 learner</small></div>
+      </div>
+      <button data-route="dashboard">View dashboard</button>
+      <button data-action="teacher">Meet your teacher</button>
+      <button data-action="toggle-preview">Teacher preview: <span id="previewState">Off</span></button>
+      <button data-action="change-name">Change student name</button>
+      <button data-action="reset" class="danger-link">Reset local progress</button>
+    </aside>
+
+    <main id="mainContent" class="main-content" tabindex="-1"></main>
+
+    <footer class="site-footer">
+      <span>Connect Plus Primary 1 – Term 1</span>
+      <span>Prepared and Designed by: <strong>Mr.Mohamed Farid</strong></span>
+    </footer>
+  </div>
+
+  <div id="toastRegion" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+  <dialog id="infoDialog" class="app-dialog">
+    <button class="dialog-close" data-action="close-dialog" aria-label="Close">×</button>
+    <div id="dialogContent"></div>
+  </dialog>
+
+  <script src="js/data.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/portal-progress.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    window.addEventListener('message', (event) => {
+      if (event.origin !== window.location.origin || event.data?.type !== 'mrfarid-course-entry') return;
+      if (event.data.destination === 'dashboard' && location.hash !== '#home') history.replaceState(null, '', '#home');
+    });
+    window.addEventListener('DOMContentLoaded', () => {
+      window.MrFaridCourseProgress?.connect({
+        courseId: 'connect-plus-primary-1-first-term',
+        getState: () => window.ConnectPlusPrimary1App?.getState?.() || {},
+        setState: (next) => window.ConnectPlusPrimary1App?.replaceState?.(next),
+        mergeState: (current, remote) => window.ConnectPlusPrimary1App?.mergeState?.(current, remote) || { ...current, ...remote },
+      });
+    });
+  </script>
+</body>
+</html>

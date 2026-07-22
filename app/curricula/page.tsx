@@ -60,11 +60,13 @@ export default function CurriculaPage() {
                 <div className="curriculum-option connect-option">
                   <CurriculumCover type="connect" grade={grade} />
                   <div className="curriculum-option-content">
+                    {grade === 1 && <span className="new-curriculum-badge">NEW · RECENTLY ADDED</span>}
                     <strong>Connect Plus Primary {grade}</strong>
                     <small>Connect Plus Curriculum</small>
                     <div className="term-badges connect-term-badges" aria-label="Available terms">
                       <span>First Term</span><span>Second Term</span>
                     </div>
+                    {grade === 1 && <Link className="new-curriculum-entry" href="/courses/connect-plus-primary-1">Enter Connect Plus Primary 1</Link>}
                   </div>
                 </div>
               </div>
