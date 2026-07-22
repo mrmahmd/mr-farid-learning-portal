@@ -23,6 +23,10 @@ const COURSE_DETAILS: Record<string, { title: string; slug: string }> = {
     title: "English Primary 1 â€“ First Term",
     slug: "english-primary-1",
   },
+  "connect-plus-primary-1-first-term": {
+    title: "Connect Plus Primary 1 – First Term",
+    slug: "connect-plus-primary-1",
+  },
   "connect-plus-primary-4-first-term": {
     title: "Connect Plus Primary 4 – First Term",
     slug: "connect-plus-primary-4",
@@ -132,6 +136,18 @@ function describeLastActivity(appId: string, rawState: unknown): ResumeActivity 
     if (lesson) parts.push(lesson);
     parts.push(activity.type === "quiz" ? "Practice" : "Lesson");
     detail = parts.join(" • ");
+  }
+
+  if (appId === "connect-plus-primary-1-first-term") {
+    const last = record(state.lastView);
+    const question = record(state.lastQuestion);
+    if (Object.keys(question).length && typeof question.setId === "string") {
+      detail = `Practice · ${question.setId} · Question ${Number(question.index ?? 0) + 1}`;
+    } else if (typeof savedActivity.detail === "string" && savedActivity.detail.trim()) {
+      detail = savedActivity.detail;
+    } else if (last.route && last.route !== "home") {
+      detail = `${String(last.route).replace(/^[a-z]/, (letter) => letter.toUpperCase())}${last.id ? ` · ${last.id}` : ""}`;
+    }
   }
 
   return detail
