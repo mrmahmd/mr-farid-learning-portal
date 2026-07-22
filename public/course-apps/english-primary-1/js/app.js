@@ -216,9 +216,14 @@
     speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'en-GB';
-    utterance.rate = 0.72;
+    utterance.rate = 0.9;
     utterance.pitch = 1.05;
-    speechSynthesis.speak(utterance);
+    const voices = speechSynthesis.getVoices();
+    const voice = voices.find((item) => /^en(-|_)(GB|US)/i.test(item.lang)) || voices.find((item) => /^en/i.test(item.lang));
+    if (voice) utterance.voice = voice;
+    speechSynthesis.resume();
+    // A short defer helps iOS Safari start speech after the answer tap.
+    window.setTimeout(() => speechSynthesis.speak(utterance), 40);
   }
 
   function playAudio(src, fallbackText = '') {
@@ -660,8 +665,10 @@
       const awarded = Store.award({ id: q.id, points: activeChallenge.kind === 'unit' ? 15 : 10, stars: 1, coins: 2 });
       if (awarded) toast(activeChallenge.kind === 'unit' ? '+15 points and +1 star!' : '+10 points and +1 star!', 'success');
       playTone('success');
+      speak('Great job! Excellent answer!');
     } else {
       playTone('wrong');
+      speak('Good try! Keep going!');
     }
     renderChallengeBody($('#page'));
     if (correct) {
@@ -790,6 +797,7 @@
       Store.markStation(lessonId, stationId);
       if (!already) Store.award({ id: `${lessonId}:station:${stationId}`, points: 20, stars: 2, coins: 5 });
       toast(already ? 'This station is already complete.' : 'Station complete! +20 XP and +2 stars', 'success');
+      if (!already) speak('Excellent! Station completed. Well done!');
       render();
     });
     $$('[data-start-challenge]').forEach((el) => el.onclick = () => navigate(`#challenge/${el.dataset.startChallenge}/${el.dataset.challengeId}`));
