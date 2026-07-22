@@ -43,6 +43,7 @@
   function wordIcon(item = {}) {
     const word = String(item.word || '').toLowerCase();
     if (word === 'table' || word === 'desk') return '<img class="word-art" src="assets/images/table.svg" alt="Table" />';
+    if (word === 'goodbye') return '<img class="word-art" src="assets/images/goodbye.svg" alt="Goodbye" />';
     return escapeHTML(item.icon || '');
   }
 
