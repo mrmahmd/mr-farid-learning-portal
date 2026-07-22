@@ -48,6 +48,10 @@
     return escapeHTML(item.icon || '');
   }
 
+  function formatQuestionPrompt(value = '') {
+    return escapeHTML(value).replace(/\[\[word:([^\]]+)\]\]/g, (_, word) => wordIcon({ word }));
+  }
+
   function normalizeSentence(value = '') {
     return value.toLocaleLowerCase().replace(/[“”"'?!.,:;()]/g, '').replace(/\s+/g, ' ').trim();
   }
@@ -303,6 +307,9 @@
     else if (route.name === 'rewards') renderRewards(page);
     else if (route.name === 'about') renderAbout(page);
     else renderHome(page);
+    document.querySelectorAll('.question-card h2').forEach((heading) => {
+      heading.innerHTML = formatQuestionPrompt(heading.textContent || '');
+    });
     bindEvents();
   }
 

@@ -17,7 +17,7 @@
     const qs=[];
     for(let i=0;i<5;i++){
       const item=allWords[i%allWords.length]; const correct=item.letter.upper+item.letter.lower;
-      qs.push({id:qid(lesson.id,'start-letter',i),type:'mcq',category:'Beginning Sound',prompt:`Choose the beginning letter for ${item.icon} ${item.word}.`,options:options(correct,distractorLetters,lesson.id+':sl:'+i),answer:correct,explanation:`${item.word} starts with ${correct}.`});
+      qs.push({id:qid(lesson.id,'start-letter',i),type:'mcq',category:'Beginning Sound',prompt:`Choose the beginning letter for [[word:${item.word}]] ${item.word}.`,options:options(correct,distractorLetters,lesson.id+':sl:'+i),answer:correct,explanation:`${item.word} starts with ${correct}.`});
     }
     for(let i=0;i<5;i++){
       const letter=letters[i%letters.length]; const correct=letter.words[i%letter.words.length].word;
@@ -29,11 +29,11 @@
     }
     for(let i=0;i<5;i++){
       const item=allWords[(i+4)%allWords.length]; const first=item.word[0].toLowerCase();
-      qs.push({id:qid(lesson.id,'missing-letter',i),type:'fill',category:'Missing Letter',prompt:`Write the first letter: _${item.word.slice(1)} ${item.icon}`,answer:first,accepted:[first,item.letter.upper,item.letter.lower],explanation:`${item.word} starts with ${item.letter.upper}${item.letter.lower}.`});
+      qs.push({id:qid(lesson.id,'missing-letter',i),type:'fill',category:'Missing Letter',prompt:`Write the first letter: _${item.word.slice(1)} [[word:${item.word}]]`,answer:first,accepted:[first,item.letter.upper,item.letter.lower],explanation:`${item.word} starts with ${item.letter.upper}${item.letter.lower}.`});
     }
     for(let i=0;i<5;i++){
       const item=allWords[(i+1)%allWords.length]; const trueValue=i%2===0; const shown=trueValue?item.letter:letters[(letters.indexOf(item.letter)+1)%letters.length] || {upper:'Z',lower:'z'};
-      qs.push({id:qid(lesson.id,'sound-check',i),type:'trueFalse',category:'Sound Check',prompt:`${item.icon} ${item.word} starts with ${shown.upper}${shown.lower}.`,answer:trueValue,explanation:`${item.word} starts with ${item.letter.upper}${item.letter.lower}.`});
+      qs.push({id:qid(lesson.id,'sound-check',i),type:'trueFalse',category:'Sound Check',prompt:`[[word:${item.word}]] ${item.word} starts with ${shown.upper}${shown.lower}.`,answer:trueValue,explanation:`${item.word} starts with ${item.letter.upper}${item.letter.lower}.`});
     }
     return qs.slice(0,25);
   }
@@ -42,7 +42,7 @@
     const vocab=lesson.vocab||[], words=vocab.map(v=>v.word), qs=[];
     for(let i=0;i<5;i++){
       const item=vocab[i%vocab.length];
-      qs.push({id:qid(lesson.id,'picture-word',i),type:'mcq',category:'Look and Choose',prompt:`Choose the word for ${item.icon}.`,options:options(item.word,words,lesson.id+':pw:'+i),answer:item.word,explanation:item.example});
+      qs.push({id:qid(lesson.id,'picture-word',i),type:'mcq',category:'Look and Choose',prompt:`Choose the word for [[word:${item.word}]].`,options:options(item.word,words,lesson.id+':pw:'+i),answer:item.word,explanation:item.example});
     }
     for(let i=0;i<5;i++){
       const item=vocab[(i+2)%vocab.length];
@@ -50,7 +50,7 @@
     }
     for(let i=0;i<4;i++){
       const item=vocab[(i+1)%vocab.length], trueValue=i%2===0, shown=trueValue?item.word:vocab[(i+3)%vocab.length].word;
-      qs.push({id:qid(lesson.id,'true-false',i),type:'trueFalse',category:'Picture Check',prompt:`${item.icon} is “${shown}”.`,answer:trueValue,explanation:`${item.icon} is “${item.word}”.`});
+      qs.push({id:qid(lesson.id,'true-false',i),type:'trueFalse',category:'Picture Check',prompt:`[[word:${item.word}]] is “${shown}”.`,answer:trueValue,explanation:`${item.word} is “${item.word}”.`});
     }
     for(let i=0;i<4;i++){
       const item=vocab[(i+3)%vocab.length], answer=item.example.trim(), toks=wordsOf(answer);

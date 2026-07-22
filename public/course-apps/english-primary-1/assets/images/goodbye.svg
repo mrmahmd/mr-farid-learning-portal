@@ -4,6 +4,8 @@
   <text x="120" y="64" text-anchor="middle" font-family="Arial,sans-serif" font-size="30" font-weight="800" fill="#2366c4">Bye!</text>
   <circle cx="85" cy="128" r="22" fill="#ffd5b5"/><circle cx="155" cy="128" r="22" fill="#d99b70"/>
   <path d="M68 119q17-23 34 0M138 119q17-23 34 0" fill="none" stroke="#4a2d25" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="78" cy="128" r="4" fill="#25375f"/><circle cx="92" cy="128" r="4" fill="#25375f"/><circle cx="148" cy="128" r="4" fill="#25375f"/><circle cx="162" cy="128" r="4" fill="#25375f"/>
+  <path d="M78 139q10 10 20 0M148 139q10 10 20 0" fill="none" stroke="#25375f" stroke-width="4" stroke-linecap="round"/>
   <path d="M67 153q18-22 36 0M137 153q18-22 36 0" fill="none" stroke="#3479e8" stroke-width="17" stroke-linecap="round"/>
   <path d="M49 130l-19-18M191 130l19-18" stroke="#ffd5b5" stroke-width="9" stroke-linecap="round"/>
   <path d="M27 107l-8-11M34 101l-2-14M207 107l8-11M200 101l2-14" stroke="#35b879" stroke-width="5" stroke-linecap="round"/>

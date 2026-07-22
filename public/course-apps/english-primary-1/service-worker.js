@@ -1,4 +1,4 @@
-const CACHE = 'english-primary1-v5';
+const CACHE = 'english-primary1-v6';
 const CORE = [
   './', './index.html', './css/style.css',
   './js/curriculum.js', './js/question-engine.js', './js/portal-progress.js', './js/storage.js', './js/app.js',
