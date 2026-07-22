@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-label="Children playing">
+  <circle cx="65" cy="62" r="25" fill="#ffd5b5"/><circle cx="175" cy="62" r="25" fill="#d99b70"/>
+  <path d="M41 54q24-35 48 0M151 54q24-35 48 0" fill="none" stroke="#4a2d25" stroke-width="11" stroke-linecap="round"/>
+  <path d="M40 105q25-30 50 0v52H40zM150 105q25-30 50 0v52h-50z" fill="#397fe9"/>
+  <path d="M65 108v45M175 108v45" stroke="#244e9b" stroke-width="11" stroke-linecap="round"/>
+  <path d="M45 113 18 91M195 113l27-22" stroke="#ffd5b5" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="120" cy="135" r="23" fill="#fff" stroke="#2f65b4" stroke-width="4"/><path d="m120 118 7 10 12 3-8 9 1 12-12-5-12 5 1-12-8-9 12-3z" fill="#2f65b4"/>
+</svg>

@@ -1,10 +1,10 @@
-const CACHE = 'english-primary1-v4';
+const CACHE = 'english-primary1-v5';
 const CORE = [
   './', './index.html', './css/style.css',
   './js/curriculum.js', './js/question-engine.js', './js/portal-progress.js', './js/storage.js', './js/app.js',
   './assets/images/hero.jpg', './assets/images/omar-laila.png',
   './assets/images/unit-1.jpg', './assets/images/unit-2.jpg', './assets/images/unit-3.jpg',
-  './assets/images/unit-4.jpg', './assets/images/unit-5.jpg', './assets/images/unit-6.jpg', './assets/images/table.svg', './assets/images/goodbye.svg'
+  './assets/images/unit-4.jpg', './assets/images/unit-5.jpg', './assets/images/unit-6.jpg', './assets/images/table.svg', './assets/images/goodbye.svg', './assets/images/play.svg'
 ];
 self.addEventListener('install', (event) => event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(CORE)).then(() => self.skipWaiting())));
 self.addEventListener('activate', (event) => event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())));

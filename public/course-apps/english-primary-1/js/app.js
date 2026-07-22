@@ -44,6 +44,7 @@
     const word = String(item.word || '').toLowerCase();
     if (word === 'table' || word === 'desk') return '<img class="word-art" src="assets/images/table.svg" alt="Table" />';
     if (word === 'goodbye') return '<img class="word-art" src="assets/images/goodbye.svg" alt="Goodbye" />';
+    if (word === 'play') return '<img class="word-art" src="assets/images/play.svg" alt="Children playing" />';
     return escapeHTML(item.icon || '');
   }
 
