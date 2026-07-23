@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { InnerPageShell } from "../components/InnerPageShell";
 import { CurriculumCover } from "../components/CurriculumCover";
+import { portalAsset } from "../asset-path";
 
 const grades = [1, 2, 3, 4, 5, 6];
 
@@ -35,6 +36,11 @@ export default function CurriculaPage() {
         <div className="grade-grid">
           {grades.map((grade) => (
             <article className="grade-card" key={grade}>
+              <div className="grade-card-hero">
+                <img src={portalAsset("/curriculum-covers/english-cover.png")} alt={`Primary ${grade} learning`} />
+                <div className="grade-card-hero-overlay" />
+                <div className="grade-card-hero-label"><span>PRIMARY STAGE</span><strong>Primary {grade}</strong></div>
+              </div>
               <header>
                 <span className="grade-number">P{grade}</span>
                 <div>
