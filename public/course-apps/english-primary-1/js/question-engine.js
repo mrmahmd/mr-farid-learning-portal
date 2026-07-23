@@ -13,6 +13,7 @@
     const letters=lesson.phonics.letters;
     const allWords=letters.flatMap(l=>l.words.map(w=>({...w,letter:l})));
     const letterNames=letters.map(l=>l.upper+l.lower);
+    const phonicsFallbackWords=['apple','ball','cat','dog','fish','goat','hat','ink','jam','lion','nose','orange','pencil','rabbit','sun','umbrella'];
     const distractorLetters=['Tt','Ii','Ss','Aa','Nn','Pp','Hh','Dd','Rr','Ee','Cc','Kk','Mm','Gg','Oo','Ff','Bb','Ll','Uu','Jj'];
     const qs=[];
     for(let i=0;i<5;i++){
@@ -21,7 +22,8 @@
     }
     for(let i=0;i<5;i++){
       const letter=letters[i%letters.length]; const correct=letter.words[i%letter.words.length].word;
-      qs.push({id:qid(lesson.id,'choose-word',i),type:'mcq',category:'Phonics',prompt:`Which word starts with ${letter.upper}${letter.lower} ${letter.sound}?`,options:options(correct,allWords.map(w=>w.word),lesson.id+':cw:'+i),answer:correct,explanation:`${correct} starts with ${letter.upper}${letter.lower}.`});
+      const otherInitialWords=unique([...allWords.map(w=>w.word),...phonicsFallbackWords]).filter(word=>word[0].toLowerCase()!==correct[0].toLowerCase());
+      qs.push({id:qid(lesson.id,'choose-word',i),type:'mcq',category:'Phonics',prompt:`Which word starts with ${letter.upper}${letter.lower} ${letter.sound}?`,options:options(correct,otherInitialWords,lesson.id+':cw:'+i),answer:correct,explanation:`${correct} starts with ${letter.upper}${letter.lower}.`});
     }
     for(let i=0;i<5;i++){
       const item=allWords[(i+2)%allWords.length];
