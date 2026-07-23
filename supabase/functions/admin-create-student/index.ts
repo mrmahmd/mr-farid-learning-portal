@@ -1,62 +1,47 @@
 // @ts-nocheck
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.110.5";
-
-const cors = {
-  "Access-Control-Allow-Origin": "https://mrfarid.net",
-  "Access-Control-Allow-Headers": "authorization, content-type, apikey, x-client-info",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
-
-const json = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
+const cors = { "Access-Control-Allow-Origin": "https://mrfarid.net", "Access-Control-Allow-Headers": "authorization, content-type, apikey, x-client-info", "Access-Control-Allow-Methods": "POST, OPTIONS" };
+const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
+const namedKey = (name: string) => JSON.parse(Deno.env.get(name) ?? "{}").default;
 
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
-
-  const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  if (!supabaseUrl || !serviceRoleKey) return json({ error: "Server configuration is incomplete" }, 500);
-
+  const url = Deno.env.get("SUPABASE_URL");
+  const secretKey = namedKey("SUPABASE_SECRET_KEYS");
+  const publicKey = namedKey("SUPABASE_PUBLISHABLE_KEYS");
   const authorization = request.headers.get("Authorization");
-  if (!authorization?.startsWith("Bearer ")) return json({ error: "Authentication required" }, 401);
-
-  const adminClient = createClient(supabaseUrl, serviceRoleKey, { auth: { autoRefreshToken: false, persistSession: false } });
-  const token = authorization.slice("Bearer ".length);
-  const { data: { user }, error: userError } = await adminClient.auth.getUser(token);
+  if (!url || !secretKey || !publicKey || !authorization?.startsWith("Bearer ")) return json({ error: "Server authentication is not configured" }, 500);
+  const verifier = createClient(url, publicKey, { auth: { persistSession: false, autoRefreshToken: false } });
+  const { data: { user }, error: userError } = await verifier.auth.getUser(authorization.slice(7));
   if (userError || user?.app_metadata?.role !== "admin") return json({ error: "Administrator access required" }, 403);
-
-  let input: { fullName?: string; password?: string; grade?: number };
+  let input: any;
   try { input = await request.json(); } catch { return json({ error: "Invalid JSON" }, 400); }
-  const fullName = input.fullName?.trim() ?? "";
-  const password = input.password ?? "";
-  if (fullName.length < 3 || fullName.length > 100) return json({ error: "Full name must be 3–100 characters" }, 400);
+  const fullName = String(input.fullName ?? "").trim();
+  const password = String(input.password ?? "");
+  const grade = Number(input.grade ?? 1);
+  if (fullName.length < 3 || fullName.length > 100) return json({ error: "Full name must be 3-100 characters" }, 400);
   if (password.length < 8) return json({ error: "Password must contain at least 8 characters" }, 400);
-  if (input.grade !== undefined && (!Number.isInteger(input.grade) || input.grade < 1 || input.grade > 6)) return json({ error: "Grade must be between 1 and 6" }, 400);
-
-  const { data: profiles, error: profilesError } = await adminClient.from("profiles").select("username").like("username", "st-%");
-  if (profilesError) return json({ error: profilesError.message }, 500);
-  const nextNumber = (profiles ?? []).reduce((max, row) => {
+  if (!Number.isInteger(grade) || grade < 1 || grade > 6) return json({ error: "Grade must be between 1 and 6" }, 400);
+  const profilesResponse = await fetch(`${url}/rest/v1/profiles?select=username&username=like.st-*`, { headers: { apikey: secretKey } });
+  const profiles = profilesResponse.ok ? await profilesResponse.json() : [];
+  const next = (profiles ?? []).reduce((max: number, row: any) => {
     const match = String(row.username ?? "").match(/^st-(\d{3,})$/i);
     return match ? Math.max(max, Number(match[1])) : max;
   }, 0) + 1;
-  const username = `ST-${String(nextNumber).padStart(3, "0")}`;
+  const username = `ST-${String(next).padStart(3, "0")}`;
   const email = `${username.toLowerCase()}@students.mrfarid.invalid`;
-
-  const { data: created, error: createError } = await adminClient.auth.admin.createUser({
-    email,
-    password,
-    email_confirm: true,
-    user_metadata: { full_name: fullName, username: username.toLowerCase(), grade: input.grade ?? null },
+  const createdResponse = await fetch(`${url}/auth/v1/admin/users`, {
+    method: "POST",
+    headers: { apikey: secretKey, "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password, email_confirm: true, user_metadata: { full_name: fullName, username: username.toLowerCase(), grade } }),
   });
-  if (createError || !created.user) return json({ error: createError?.message ?? "Could not create account" }, 400);
-
-  await adminClient.from("student_access").upsert({
-    user_id: created.user.id,
-    grade: input.grade ?? null,
-    allowed_curricula: [],
-    booklet_access: true,
-  }, { onConflict: "user_id" });
-
-  return json({ username, studentId: created.user.id, fullName, grade: input.grade ?? null });
+  const created = await createdResponse.json();
+  if (!createdResponse.ok) return json({ error: created.msg ?? created.message ?? created.error_description ?? "Could not create account" }, createdResponse.status);
+  await fetch(`${url}/rest/v1/student_access?on_conflict=user_id`, {
+    method: "POST",
+    headers: { apikey: secretKey, "Content-Type": "application/json", Prefer: "resolution=merge-duplicates" },
+    body: JSON.stringify({ user_id: created.id, grade, allowed_curricula: [], booklet_access: true }),
+  });
+  return json({ username, studentId: created.id, fullName, grade });
 });

@@ -118,7 +118,11 @@ export default function AdminDashboardPage() {
       },
     });
     if (error || data?.error) {
-      setCreateMessage(data?.error ?? error?.message ?? "Could not create account.");
+      let detail = data?.error ?? error?.message ?? "Could not create account.";
+      if (error && "context" in error) {
+        try { detail = (await (error.context as Response).json())?.error ?? detail; } catch { /* keep fallback */ }
+      }
+      setCreateMessage(detail);
       setCreating(false);
       return;
     }
@@ -153,7 +157,11 @@ export default function AdminDashboardPage() {
     }
     setDataMessage("Saving student controls...");
     const { data, error } = await getSupabaseBrowserClient().functions.invoke("admin-manage-student", { body });
-    setDataMessage(error || data?.error ? data?.error ?? error?.message ?? "Could not save changes." : "Student controls saved successfully.");
+    let detail = data?.error ?? error?.message ?? "Could not save changes.";
+    if (error && "context" in error) {
+      try { detail = (await (error.context as Response).json())?.error ?? detail; } catch { /* keep fallback */ }
+    }
+    setDataMessage(error || data?.error ? detail : "Student controls saved successfully.");
     if (!error && !data?.error) await loadStudents();
   }
 
