@@ -889,7 +889,14 @@ input::placeholder { color: #9aacc0; }
 .english-option { background: #edf5ff; border-color: rgba(53, 105, 232, 0.13); }
 .english-option:has(.new-curriculum-badge) { position:relative; border-color:rgba(42,194,151,.55); background:linear-gradient(135deg,#e8fff6,#f4fbff); box-shadow:0 8px 20px rgba(42,194,151,.14); }
 .new-curriculum-badge { display:inline-flex; width:max-content; margin-bottom:4px; padding:4px 8px; border-radius:999px; color:#fff; background:linear-gradient(135deg,#18bd73,#3b82f6); font-size:9px; font-weight:950; letter-spacing:.7px; box-shadow:0 5px 12px rgba(35,170,135,.25); animation:newBadgePulse 2.8s ease-in-out infinite; }
-.new-curriculum-entry { display:inline-flex; align-self:flex-start; align-items:center; justify-content:center; width:auto; min-height:40px; margin-top:12px; padding:10px 15px; border:1px solid rgba(255,255,255,.38); border-radius:13px; color:#fff; background:linear-gradient(135deg,#1769e8,#5361df 58%,#7055d9); font-size:13px; font-weight:950; letter-spacing:.1px; text-align:center; text-decoration:none; box-shadow:0 9px 18px rgba(53,105,232,.25); transition:transform 180ms ease, box-shadow 180ms ease, filter 180ms ease; }
+.curriculum-terms { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin-top:10px; }
+.curriculum-term { min-width:0; padding:8px; border:1px solid rgba(53,105,232,.14); border-radius:11px; background:rgba(255,255,255,.58); }
+.connect-option .curriculum-term { border-color:rgba(39,189,145,.18); }
+.curriculum-term strong, .curriculum-term span { display:block; font-size:10px; font-weight:950; line-height:1.25; }
+.curriculum-term strong { color:var(--ink); }
+.curriculum-term.unavailable span { margin-top:6px; color:var(--muted); }
+.new-curriculum-entry { display:inline-flex; align-items:center; justify-content:center; width:auto; min-height:30px; margin-top:6px; padding:6px 10px; border:1px solid rgba(255,255,255,.38); border-radius:9px; color:#fff; background:linear-gradient(135deg,#1769e8,#5361df 58%,#7055d9); font-size:10px; font-weight:950; line-height:1; text-align:center; text-decoration:none; box-shadow:0 5px 11px rgba(53,105,232,.23); transition:transform 180ms ease, box-shadow 180ms ease, filter 180ms ease; }
+.new-curriculum-entry::after { content:' →'; margin-left:4px; font-size:12px; }
 .new-curriculum-entry::after { content:'  →'; margin-left:8px; font-size:18px; }
 .new-curriculum-entry:hover { transform:translateY(-2px); filter:brightness(1.06); box-shadow:0 12px 24px rgba(53,105,232,.34); }
 .curricula-page { font-family:"Trebuchet MS","Segoe UI",sans-serif; }
