@@ -23,10 +23,11 @@ Deno.serve(async (request) => {
   if (fullName.length < 3 || fullName.length > 100) return json({ error: "Full name must be 3-100 characters" }, 400);
   if (password.length < 8) return json({ error: "Password must contain at least 8 characters" }, 400);
   if (!Number.isInteger(grade) || grade < 1 || grade > 6) return json({ error: "Grade must be between 1 and 6" }, 400);
-  const profilesResponse = await fetch(`${url}/rest/v1/profiles?select=username&username=ilike.st-%25`, { headers: { apikey: secretKey, Authorization: `Bearer ${secretKey}` } });
-  const profiles = profilesResponse.ok ? await profilesResponse.json() : [];
-  const next = (profiles ?? []).reduce((max: number, row: any) => {
-    const match = String(row.username ?? "").match(/^st-(\d{3,})$/i);
+  const authUsersResponse = await fetch(`${url}/auth/v1/admin/users?per_page=1000`, { headers: { apikey: secretKey, Authorization: `Bearer ${secretKey}` } });
+  const authUsersPayload = authUsersResponse.ok ? await authUsersResponse.json() : { users: [] };
+  const authUsers = Array.isArray(authUsersPayload?.users) ? authUsersPayload.users : [];
+  const next = authUsers.reduce((max: number, row: any) => {
+    const match = String(row.user_metadata?.username ?? "").match(/^st-(\d{3,})$/i);
     return match ? Math.max(max, Number(match[1])) : max;
   }, 0) + 1;
   const username = `ST-${String(next).padStart(3, "0")}`;
