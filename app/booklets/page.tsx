@@ -1,5 +1,6 @@
 import { InnerPageShell } from "../components/InnerPageShell";
 import { CurriculumCover } from "../components/CurriculumCover";
+import { BookletAccessGate } from "../components/BookletAccessGate";
 
 const grades = [1, 2, 3, 4, 5, 6];
 const terms = ["First Term", "Second Term"];
@@ -7,6 +8,7 @@ const terms = ["First Term", "Second Term"];
 export default function BookletsPage() {
   return (
     <InnerPageShell className="booklets-page">
+      <BookletAccessGate>
       <section className="booklets-card">
         <header className="booklets-heading">
           <p className="eyebrow"><span /> Study resources</p>
@@ -69,6 +71,7 @@ export default function BookletsPage() {
           Download buttons will become available as soon as each resource link is added.
         </p>
       </section>
+      </BookletAccessGate>
     </InnerPageShell>
   );
 }

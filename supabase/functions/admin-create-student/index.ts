@@ -51,5 +51,12 @@ Deno.serve(async (request) => {
   });
   if (createError || !created.user) return json({ error: createError?.message ?? "Could not create account" }, 400);
 
+  await adminClient.from("student_access").upsert({
+    user_id: created.user.id,
+    grade: input.grade ?? null,
+    allowed_curricula: [],
+    booklet_access: true,
+  }, { onConflict: "user_id" });
+
   return json({ username, studentId: created.user.id, fullName, grade: input.grade ?? null });
 });

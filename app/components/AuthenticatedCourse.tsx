@@ -12,6 +12,7 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
   const [studentName, setStudentName] = useState("Student");
   const [sessionBridge, setSessionBridge] = useState<{ accessToken: string; refreshToken: string; userId: string } | null>(null);
   const [shouldResume, setShouldResume] = useState(false);
+  const [deniedReason, setDeniedReason] = useState("");
   const courseFrame = useRef<HTMLIFrameElement>(null);
   const router = useRouter();
 
@@ -27,6 +28,23 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
 
       if (!data.session) {
         router.replace("/login");
+        return;
+      }
+
+      const { data: access } = await getSupabaseBrowserClient()
+        .from("student_access")
+        .select("is_suspended, allowed_curricula")
+        .eq("user_id", data.session.user.id)
+        .maybeSingle();
+
+      if (access?.is_suspended) {
+        await getSupabaseBrowserClient().auth.signOut();
+        if (isActive) setDeniedReason("Your account is suspended. Please contact Mr.Farid.");
+        return;
+      }
+
+      if (access?.allowed_curricula?.length && !access.allowed_curricula.includes(curriculum.slug)) {
+        if (isActive) setDeniedReason("This curriculum is not included in your current access.");
         return;
       }
 
@@ -46,7 +64,7 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
     return () => {
       isActive = false;
     };
-  }, [router]);
+  }, [curriculum.slug, router]);
 
   useEffect(() => {
     function sendSession(event?: MessageEvent) {
@@ -67,6 +85,17 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
     return () => window.removeEventListener("message", listener);
   }, [sessionBridge]);
 
+  if (deniedReason) {
+    return (
+      <section className="course-app-card student-loading-card">
+        <span className="mini-logo">MF</span>
+        <h1>Curriculum access unavailable</h1>
+        <p className="form-message error">{deniedReason}</p>
+        <Link className="primary-button" href="/student/curricula">Choose Another Curriculum</Link>
+      </section>
+    );
+  }
+
   if (!isReady) {
     return (
       <section className="course-app-card student-loading-card">
@@ -79,7 +108,6 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
 
   const embeddedApps: Record<string, string> = {
     "english-primary-1": "/course-apps/english-primary-1/index.html",
-    "connect-plus-primary-1": "/course-apps/connect-plus-primary-1/index.html",
     "english-primary-3": "/course-apps/english-primary-3/index.html",
     "connect-plus-primary-4": "/course-apps/connect-plus-primary-4/index.html",
     "english-primary-4": "/course-apps/english-primary-4/index.html",
@@ -88,7 +116,7 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
   const embeddedApp = embeddedApps[curriculum.slug];
 
   if (embeddedApp) {
-    const cacheVersion = curriculum.slug === "english-primary-1" ? "&v=20260718-6" : curriculum.slug === "connect-plus-primary-1" ? "&v=20260722-1" : curriculum.slug === "english-primary-3" ? "&v=20260719-2" : curriculum.slug === "english-primary-4" ? "&v=20260717-12" : curriculum.slug === "connect-plus-primary-4" ? "&v=20260717-10" : "";
+    const cacheVersion = curriculum.slug === "english-primary-1" ? "&v=20260718-6" : curriculum.slug === "english-primary-3" ? "&v=20260719-2" : curriculum.slug === "english-primary-4" ? "&v=20260717-12" : curriculum.slug === "connect-plus-primary-4" ? "&v=20260717-10" : "";
     const appUrl = `${portalAsset(embeddedApp)}?student=${encodeURIComponent(studentName)}&studentId=${encodeURIComponent(sessionBridge.userId)}${cacheVersion}${shouldResume ? "&resume=1" : ""}`;
 
     return (

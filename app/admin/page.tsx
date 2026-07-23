@@ -12,6 +12,10 @@ type StudentRow = {
   apps: number;
   activity: string;
   updatedAt: string | null;
+  suspended: boolean;
+  grade: number | null;
+  allowedCurricula: string[];
+  bookletAccess: boolean;
 };
 
 export default function AdminDashboardPage() {
@@ -28,17 +32,19 @@ export default function AdminDashboardPage() {
   const loadStudents = useCallback(async () => {
     const supabase = getSupabaseBrowserClient();
     setDataMessage("Loading student data...");
-    const [{ data: profiles, error: profilesError }, { data: progress, error: progressError }] = await Promise.all([
+    const [{ data: profiles, error: profilesError }, { data: progress, error: progressError }, { data: access, error: accessError }] = await Promise.all([
       supabase.from("profiles").select("id, full_name, username, created_at").order("created_at", { ascending: false }),
       supabase.from("course_progress").select("user_id, app_id, state, updated_at").order("updated_at", { ascending: false }),
+      supabase.from("student_access").select("user_id, is_suspended, grade, allowed_curricula, booklet_access"),
     ]);
-    if (profilesError || progressError) {
-      setDataMessage(profilesError?.message ?? progressError?.message ?? "Could not load students.");
+    if (profilesError || progressError || accessError) {
+      setDataMessage(profilesError?.message ?? progressError?.message ?? accessError?.message ?? "Could not load students.");
       return;
     }
     const rows = (profiles ?? []).map((profile) => {
       const records = (progress ?? []).filter((item) => item.user_id === profile.id);
       const latest = records[0];
+      const controls = (access ?? []).find((item) => item.user_id === profile.id);
       const lastActivity = latest?.state?.portalLastActivity;
       return {
         id: profile.id,
@@ -48,6 +54,10 @@ export default function AdminDashboardPage() {
         apps: records.length,
         activity: lastActivity?.label ?? latest?.app_id ?? "No activity yet",
         updatedAt: latest?.updated_at ?? null,
+        suspended: controls?.is_suspended ?? false,
+        grade: controls?.grade ?? null,
+        allowedCurricula: controls?.allowed_curricula ?? [],
+        bookletAccess: controls?.booklet_access ?? true,
       };
     });
     setStudents(rows);
@@ -118,6 +128,35 @@ export default function AdminDashboardPage() {
     setCreating(false);
   }
 
+  async function manageStudent(student: StudentRow, action: "suspend" | "reset_password" | "update_access") {
+    let body: Record<string, unknown> = { userId: student.id, action };
+    if (action === "suspend") body.suspended = !student.suspended;
+    if (action === "reset_password") {
+      const password = window.prompt(`Enter a new temporary password for ${student.username}:`);
+      if (!password) return;
+      body.password = password;
+    }
+    if (action === "update_access") {
+      const allowed = window.prompt(
+        "Enter allowed curriculum slugs separated by commas. Leave empty to allow all curricula.",
+        student.allowedCurricula.join(", "),
+      );
+      if (allowed === null) return;
+      const gradeValue = window.prompt("Enter grade from 1 to 6:", String(student.grade ?? 1));
+      if (gradeValue === null) return;
+      body = {
+        ...body,
+        grade: Number(gradeValue),
+        allowedCurricula: allowed.split(",").map((item) => item.trim()).filter(Boolean),
+        bookletAccess: window.confirm("Allow this student to download booklets?"),
+      };
+    }
+    setDataMessage("Saving student controls...");
+    const { data, error } = await getSupabaseBrowserClient().functions.invoke("admin-manage-student", { body });
+    setDataMessage(error || data?.error ? data?.error ?? error?.message ?? "Could not save changes." : "Student controls saved successfully.");
+    if (!error && !data?.error) await loadStudents();
+  }
+
   if (authState !== "allowed") {
     return (
       <main className="admin-page">
@@ -182,7 +221,7 @@ export default function AdminDashboardPage() {
           </section>
           <section className="admin-panel">
             <div className="admin-panel-heading"><div><span className="panel-kicker">STUDENT ACCOUNTS</span><h2>Manage students</h2></div><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search name or username" /></div>
-            <div className="student-table"><div className="student-table-head"><span>Student</span><span>Status</span><span>Saved courses</span><span>Last activity</span><span>Created</span></div>{visibleStudents.map((student) => <div className="student-table-row" key={student.id}><div className="student-cell"><span className="admin-avatar">{student.name.split(" ").map((part) => part[0]).join("").slice(0, 2)}</span><p><b>{student.name}</b><small>{student.username}</small></p></div><span className="status-pill active">Active</span><span>{student.apps}</span><span>{student.activity}</span><span>{new Date(student.createdAt).toLocaleDateString()}</span></div>)}</div>
+            <div className="student-table"><div className="student-table-head"><span>Student</span><span>Status</span><span>Grade / Courses</span><span>Last activity</span><span>Controls</span></div>{visibleStudents.map((student) => <div className="student-table-row" key={student.id}><div className="student-cell"><span className="admin-avatar">{student.name.split(" ").map((part) => part[0]).join("").slice(0, 2)}</span><p><b>{student.name}</b><small>{student.username}</small></p></div><span className={`status-pill ${student.suspended ? "suspended" : "active"}`}>{student.suspended ? "Suspended" : "Active"}</span><span>Primary {student.grade ?? "—"} · {student.allowedCurricula.length ? `${student.allowedCurricula.length} allowed` : "All curricula"} · {student.bookletAccess ? "Booklets on" : "Booklets off"}</span><span>{student.activity}</span><div className="row-actions"><button type="button" onClick={() => void manageStudent(student, "suspend")}>{student.suspended ? "Activate" : "Suspend"}</button><button type="button" onClick={() => void manageStudent(student, "reset_password")}>Password</button><button type="button" onClick={() => void manageStudent(student, "update_access")}>Access</button></div></div>)}</div>
             {dataMessage && <p>{dataMessage}</p>}
           </section>
         </>}
