@@ -114,18 +114,23 @@ export default function AdminDashboardPage() {
     setAuthLoading(false);
   }
 
+  async function invokeAdminFunction(functionName: string, body: Record<string, unknown>) {
+    const supabase = getSupabaseBrowserClient();
+    const { error: refreshError } = await supabase.auth.refreshSession();
+    if (refreshError) return { data: null, error: refreshError };
+    return supabase.functions.invoke(functionName, { body });
+  }
+
   async function createStudent(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formElement = event.currentTarget;
     const form = new FormData(formElement);
     setCreating(true);
     setCreateMessage("Creating account...");
-    const { data, error } = await getSupabaseBrowserClient().functions.invoke("admin-create-student", {
-      body: {
-        fullName: String(form.get("fullName") ?? ""),
-        password: String(form.get("password") ?? ""),
-        grade: Number(form.get("grade") ?? 1),
-      },
+    const { data, error } = await invokeAdminFunction("admin-create-student", {
+      fullName: String(form.get("fullName") ?? ""),
+      password: String(form.get("password") ?? ""),
+      grade: Number(form.get("grade") ?? 1),
     });
     if (error || data?.error) {
       let detail = data?.error ?? error?.message ?? "Could not create account.";
@@ -167,7 +172,7 @@ export default function AdminDashboardPage() {
       allowedCurricula: accessMode === "custom" ? selectedCurricula : [],
       bookletAccess,
     };
-    const { data, error } = await getSupabaseBrowserClient().functions.invoke("admin-manage-student", { body });
+    const { data, error } = await invokeAdminFunction("admin-manage-student", body);
     let detail = data?.error ?? error?.message ?? "Could not save changes.";
     if (error && "context" in error) {
       try { detail = (await (error.context as Response).json())?.error ?? detail; } catch { /* keep fallback */ }
@@ -188,7 +193,7 @@ export default function AdminDashboardPage() {
       body.password = password;
     }
     setDataMessage("Saving student controls...");
-    const { data, error } = await getSupabaseBrowserClient().functions.invoke("admin-manage-student", { body });
+    const { data, error } = await invokeAdminFunction("admin-manage-student", body);
     let detail = data?.error ?? error?.message ?? "Could not save changes.";
     if (error && "context" in error) {
       try { detail = (await (error.context as Response).json())?.error ?? detail; } catch { /* keep fallback */ }
