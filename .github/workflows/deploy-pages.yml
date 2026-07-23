@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAGES: "true"
-      NEXT_PUBLIC_BASE_PATH: "/mr-farid-learning-portal"
+      NEXT_PUBLIC_BASE_PATH: ""
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
