@@ -897,7 +897,6 @@ input::placeholder { color: #9aacc0; }
 .curriculum-term.unavailable span { margin-top:6px; color:var(--muted); }
 .new-curriculum-entry { display:inline-flex; align-items:center; justify-content:center; width:auto; min-height:30px; margin-top:6px; padding:6px 10px; border:1px solid rgba(255,255,255,.38); border-radius:9px; color:#fff; background:linear-gradient(135deg,#1769e8,#5361df 58%,#7055d9); font-size:10px; font-weight:950; line-height:1; text-align:center; text-decoration:none; box-shadow:0 5px 11px rgba(53,105,232,.23); transition:transform 180ms ease, box-shadow 180ms ease, filter 180ms ease; }
 .new-curriculum-entry::after { content:' →'; margin-left:4px; font-size:12px; }
-.new-curriculum-entry::after { content:'  →'; margin-left:8px; font-size:18px; }
 .new-curriculum-entry:hover { transform:translateY(-2px); filter:brightness(1.06); box-shadow:0 12px 24px rgba(53,105,232,.34); }
 .curricula-page { font-family:"Trebuchet MS","Segoe UI",sans-serif; }
 .curricula-page .curricula-heading h1,.curricula-page .grade-card h2 { font-weight:950; }
