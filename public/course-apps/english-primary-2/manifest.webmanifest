@@ -1,0 +1,15 @@
+{
+  "name": "English Primary 2 - Term 1",
+  "short_name": "Primary 2 English",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#eef7ff",
+  "theme_color": "#1769e0",
+  "icons": [
+    {
+      "src": "assets/images/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
