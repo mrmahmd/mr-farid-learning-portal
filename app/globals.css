@@ -1019,6 +1019,36 @@ input::placeholder { color: #9aacc0; }
 .student-access-note { margin: 24px 0 0; color: var(--muted); font-size: 10px; text-align: center; }
 .student-access-note a { color: var(--blue); font-weight: 850; }
 .grade-card-active { border-color: var(--sky); }
+.grade-accessible {
+  position: relative;
+  border-color: rgba(46, 125, 246, 0.45) !important;
+  box-shadow: 0 16px 34px rgba(46, 125, 246, 0.14) !important;
+}
+.grade-locked {
+  position: relative;
+  opacity: 0.48;
+  filter: grayscale(0.72) saturate(0.45);
+  box-shadow: none !important;
+}
+.grade-locked:hover { transform: none !important; box-shadow: none !important; }
+.grade-lock-badge {
+  margin-left: auto;
+  padding: 7px 10px;
+  border: 1px solid rgba(37, 67, 118, 0.15);
+  border-radius: 999px;
+  color: #294575;
+  background: rgba(255, 255, 255, 0.78);
+  font-size: 11px;
+  font-weight: 950;
+  white-space: nowrap;
+}
+.course-locked { pointer-events: none; }
+.locked-entry {
+  cursor: not-allowed;
+  color: #61708c !important;
+  background: #e8edf5 !important;
+  box-shadow: none !important;
+}
 .starting-badge { color: var(--coral); }
 
 .student-welcome-actions { display: flex; align-items: center; gap: 10px; }

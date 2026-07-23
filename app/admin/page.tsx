@@ -142,7 +142,7 @@ export default function AdminDashboardPage() {
     }
     if (action === "update_access") {
       const allowed = window.prompt(
-        "Enter allowed curriculum slugs separated by commas. Leave empty to allow all curricula.",
+        "Enter extra curriculum slugs separated by commas. Leave empty for access to the student's assigned grade only.",
         student.allowedCurricula.join(", "),
       );
       if (allowed === null) return;
@@ -150,7 +150,7 @@ export default function AdminDashboardPage() {
       if (gradeValue === null) return;
       body = {
         ...body,
-        grade: Number(gradeValue),
+        grade: Math.min(6, Math.max(1, Number(gradeValue))),
         allowedCurricula: allowed.split(",").map((item) => item.trim()).filter(Boolean),
         bookletAccess: window.confirm("Allow this student to download booklets?"),
       };
@@ -229,7 +229,7 @@ export default function AdminDashboardPage() {
           </section>
           <section className="admin-panel">
             <div className="admin-panel-heading"><div><span className="panel-kicker">STUDENT ACCOUNTS</span><h2>Manage students</h2></div><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search name or username" /></div>
-            <div className="student-table"><div className="student-table-head"><span>Student</span><span>Status</span><span>Grade / Courses</span><span>Last activity</span><span>Controls</span></div>{visibleStudents.map((student) => <div className="student-table-row" key={student.id}><div className="student-cell"><span className="admin-avatar">{student.name.split(" ").map((part) => part[0]).join("").slice(0, 2)}</span><p><b>{student.name}</b><small>{student.username}</small></p></div><span className={`status-pill ${student.suspended ? "suspended" : "active"}`}>{student.suspended ? "Suspended" : "Active"}</span><span>Primary {student.grade ?? "—"} · {student.allowedCurricula.length ? `${student.allowedCurricula.length} allowed` : "All curricula"} · {student.bookletAccess ? "Booklets on" : "Booklets off"}</span><span>{student.activity}</span><div className="row-actions"><button type="button" onClick={() => void manageStudent(student, "suspend")}>{student.suspended ? "Activate" : "Suspend"}</button><button type="button" onClick={() => void manageStudent(student, "reset_password")}>Password</button><button type="button" onClick={() => void manageStudent(student, "update_access")}>Access</button></div></div>)}</div>
+            <div className="student-table"><div className="student-table-head"><span>Student</span><span>Status</span><span>Grade / Courses</span><span>Last activity</span><span>Controls</span></div>{visibleStudents.map((student) => <div className="student-table-row" key={student.id}><div className="student-cell"><span className="admin-avatar">{student.name.split(" ").map((part) => part[0]).join("").slice(0, 2)}</span><p><b>{student.name}</b><small>{student.username}</small></p></div><span className={`status-pill ${student.suspended ? "suspended" : "active"}`}>{student.suspended ? "Suspended" : "Active"}</span><span>{student.grade ? `Primary ${student.grade}` : "Grade needs assignment"} · {student.allowedCurricula.length ? `${student.allowedCurricula.length} extra` : "Grade only"} · {student.bookletAccess ? "Booklets on" : "Booklets off"}</span><span>{student.activity}</span><div className="row-actions"><button type="button" onClick={() => void manageStudent(student, "suspend")}>{student.suspended ? "Activate" : "Suspend"}</button><button type="button" onClick={() => void manageStudent(student, "reset_password")}>Password</button><button type="button" onClick={() => void manageStudent(student, "update_access")}>Access</button></div></div>)}</div>
             {dataMessage && <p>{dataMessage}</p>}
           </section>
         </>}

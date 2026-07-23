@@ -11,6 +11,7 @@ import {
   getSupabaseBrowserClient,
   type StudentProfile,
 } from "../../lib/supabase";
+import { canOpenCurriculum, useStudentAccess } from "../../lib/useStudentAccess";
 
 const grades = [1, 2, 3, 4, 5, 6];
 
@@ -19,6 +20,7 @@ export default function StudentCurriculaPage() {
   const [status, setStatus] = useState("Checking your account...");
   const [hasError, setHasError] = useState(false);
   const router = useRouter();
+  const access = useStudentAccess();
 
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
@@ -69,7 +71,7 @@ export default function StudentCurriculaPage() {
     router.replace("/");
   }
 
-  if (!profile) {
+  if (!profile || access.loading) {
     return (
       <InnerPageShell className="student-curricula-page">
         <section className="student-curricula-card student-loading-card">
@@ -92,8 +94,8 @@ export default function StudentCurriculaPage() {
         <div className="student-welcome">
           <div>
             <p className="eyebrow"><span /> Student portal</p>
-            <h1>Choose any curriculum</h1>
-            <p>Welcome, {profile.full_name}. Your account can open every curriculum below.</p>
+            <h1>{access.grade ? `Your Primary ${access.grade} learning space` : "Choose your curriculum"}</h1>
+            <p>Welcome, {profile.full_name}. {access.grade ? "Your grade is available below. Higher grades are shown as locked." : "Your account remains active until Mr.Farid assigns your grade."}</p>
           </div>
           <div className="student-welcome-actions">
             <span className="student-account-badge"><small>STUDENT</small>@{profile.username}</span>
@@ -102,8 +104,10 @@ export default function StudentCurriculaPage() {
         </div>
 
         <div className="student-grade-grid">
-          {grades.map((grade) => (
-            <article className="student-grade-card" key={grade}>
+          {(access.grade ? grades.filter((grade) => grade >= access.grade!) : grades).map((grade) => {
+            const gradeAvailable = curricula.filter((curriculum) => curriculum.grade === grade).some((curriculum) => canOpenCurriculum(curriculum.slug, grade, access));
+            return (
+            <article className={`student-grade-card${gradeAvailable ? " grade-accessible" : " grade-locked"}`} key={grade}>
               <div className="student-grade-card-hero">
                 <img src={portalAsset("/curriculum-covers/english-cover.png")} alt={`Primary ${grade} learning`} />
                 <div><span>PRIMARY STAGE</span><strong>Primary {grade}</strong></div>
@@ -111,22 +115,23 @@ export default function StudentCurriculaPage() {
               <header>
                 <span className="grade-number">{grade}</span>
                 <div>
-                  <small>CHOOSE YOUR COURSE</small>
+                  <small>{gradeAvailable ? "YOUR LEARNING COURSES" : "FUTURE GRADE"}</small>
                   <h2>Primary {grade}</h2>
                 </div>
+                {!gradeAvailable && <span className="grade-lock-badge">🔒 Locked</span>}
               </header>
 
                 <div className="student-course-options">
                   {curricula.filter((curriculum) => curriculum.grade === grade).map((curriculum) => (
-                    <section className={`student-course-group ${curriculum.type}-course-group`} key={curriculum.slug}>
+                    <section className={`student-course-group ${curriculum.type}-course-group${canOpenCurriculum(curriculum.slug, grade, access) ? "" : " course-locked"}`} key={curriculum.slug}>
                       <div className="student-course-group-title">
                         <CurriculumIcon type={curriculum.type} grade={grade} compact />
                         <strong>{curriculum.title}</strong>
                       </div>
                       <div className="term-entry-options">
-                        <Link className="term-entry first-term-entry" href={`/courses/${curriculum.slug}`}>
+                        {canOpenCurriculum(curriculum.slug, grade, access) ? <Link className="term-entry first-term-entry" href={`/courses/${curriculum.slug}`}>
                           <span>First Term</span><small>Open →</small>
-                        </Link>
+                        </Link> : <span className="term-entry first-term-entry locked-entry" aria-disabled="true"><span>First Term</span><small>🔒 Locked</small></span>}
                         <span className="term-entry second-term-entry" aria-label="Second Term will be available soon">
                           <span>Second Term</span><small>Coming soon</small>
                         </span>
@@ -135,11 +140,11 @@ export default function StudentCurriculaPage() {
                   ))}
                 </div>
             </article>
-          ))}
+          )})}
         </div>
 
         <p className="student-access-note">
-          You can return to this page at any time and choose a different curriculum.
+          Your assigned grade opens automatically. Mr.Farid can activate an additional curriculum when needed.
         </p>
       </section>
     </InnerPageShell>
