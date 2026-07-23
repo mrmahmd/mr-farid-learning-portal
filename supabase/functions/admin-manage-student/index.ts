@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.110.5";
-const cors = { "Access-Control-Allow-Origin": "https://mrfarid.net", "Access-Control-Allow-Headers": "authorization, content-type, apikey, x-client-info", "Access-Control-Allow-Methods": "POST, OPTIONS" };
+const cors = { "Access-Control-Allow-Origin": "https://www.mrfarid.net", "Access-Control-Allow-Headers": "authorization, content-type, apikey, x-client-info", "Access-Control-Allow-Methods": "POST, OPTIONS" };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
 const namedKey = (name: string) => JSON.parse(Deno.env.get(name) ?? "{}").default;
 const validCurricula = new Set(Array.from({ length: 6 }, (_, index) => {
