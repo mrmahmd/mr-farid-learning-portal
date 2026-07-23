@@ -11,6 +11,8 @@ as $$
 declare
   student_name text := trim(coalesce(new.raw_user_meta_data ->> 'full_name', ''));
   student_username text := lower(trim(coalesce(new.raw_user_meta_data ->> 'username', '')));
+  grade_text text := trim(coalesce(new.raw_user_meta_data ->> 'grade', ''));
+  student_grade smallint;
   expected_email text;
 begin
   if char_length(student_name) < 3 or char_length(student_name) > 100 then
@@ -21,6 +23,11 @@ begin
     raise exception 'Invalid student username';
   end if;
 
+  if grade_text !~ '^[1-6]$' then
+    raise exception 'Invalid primary grade';
+  end if;
+  student_grade := grade_text::smallint;
+
   expected_email := student_username || '@students.mrfarid.invalid';
 
   if lower(coalesce(new.email, '')) <> expected_email then
@@ -29,6 +36,11 @@ begin
 
   insert into public.profiles (id, full_name, username, role)
   values (new.id, student_name, student_username, 'student');
+
+  insert into public.student_access (user_id, grade)
+  values (new.id, student_grade)
+  on conflict (user_id) do update
+  set grade = excluded.grade, updated_at = now();
 
   return new;
 end;

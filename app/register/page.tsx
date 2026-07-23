@@ -23,6 +23,7 @@ export default function RegisterPage() {
     const form = new FormData(event.currentTarget);
     const fullName = String(form.get("fullName") ?? "").trim();
     const username = normalizeUsername(String(form.get("username") ?? ""));
+    const grade = Number(form.get("grade") ?? 0);
     const password = String(form.get("password") ?? "");
     const confirmPassword = String(form.get("confirmPassword") ?? "");
 
@@ -35,6 +36,12 @@ export default function RegisterPage() {
     if (!isValidUsername(username)) {
       setIsError(true);
       setMessage("Use 4–30 English letters, numbers, dots, dashes or underscores for the username.");
+      return;
+    }
+
+    if (!Number.isInteger(grade) || grade < 1 || grade > 6) {
+      setIsError(true);
+      setMessage("Please choose the student's primary grade.");
       return;
     }
 
@@ -55,6 +62,7 @@ export default function RegisterPage() {
         data: {
           full_name: fullName,
           username,
+          grade,
         },
       },
     });
@@ -81,11 +89,11 @@ export default function RegisterPage() {
         <div className="form-intro">
           <p className="eyebrow"><span /> Start your journey</p>
           <h1>Create your student account</h1>
-          <p>One account gives you the freedom to explore every available curriculum in the portal.</p>
+          <p>Choose the student&apos;s grade to open the right curricula, games and booklets from the first sign in.</p>
           <ul className="benefit-list">
             <li><b>01</b><span><strong>Create one account</strong><small>Use a simple username and password</small></span></li>
-            <li><b>02</b><span><strong>Explore every grade</strong><small>Primary 1 through Primary 6</small></span></li>
-            <li><b>03</b><span><strong>Choose any curriculum</strong><small>English or Connect Plus at any time</small></span></li>
+            <li><b>02</b><span><strong>Choose your primary grade</strong><small>Your learning content appears automatically</small></span></li>
+            <li><b>03</b><span><strong>Learn in one organised space</strong><small>English and Connect Plus for your grade</small></span></li>
           </ul>
         </div>
 
@@ -110,6 +118,15 @@ export default function RegisterPage() {
             required
           />
           <p className="field-help">English letters and numbers only. Dots, dashes and underscores are allowed.</p>
+
+          <label htmlFor="grade">Primary Grade</label>
+          <select id="grade" name="grade" defaultValue="" required>
+            <option value="" disabled>Choose the student&apos;s grade</option>
+            {[1, 2, 3, 4, 5, 6].map((grade) => (
+              <option key={grade} value={grade}>Primary {grade}</option>
+            ))}
+          </select>
+          <p className="field-help">The student will see this grade and the higher locked grades.</p>
 
           <div className="two-columns">
             <div><label htmlFor="password">Password</label><input id="password" name="password" type="password" placeholder="At least 8 characters" minLength={8} autoComplete="new-password" required /></div>
