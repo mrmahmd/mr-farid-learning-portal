@@ -11,7 +11,9 @@ const terms = ["First Term", "Second Term"];
 
 export default function BookletsPage() {
   const access = useStudentAccess();
-  const visibleGrades = access.grade ? grades.filter((grade) => grade >= access.grade!) : grades;
+  const visibleGrades = access.grade
+    ? [access.grade, ...grades.filter((grade) => grade !== access.grade)]
+    : grades;
 
   if (!access.loading && access.signedIn && access.grade === null) {
     return (

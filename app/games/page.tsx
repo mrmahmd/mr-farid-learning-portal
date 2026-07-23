@@ -41,14 +41,16 @@ export default function GamesPage() {
     );
   }
 
-  const visibleGrades = access.grade ? grades.filter((grade) => grade >= access.grade!) : grades;
+  const visibleGrades = access.grade
+    ? [access.grade, ...grades.filter((grade) => grade !== access.grade)]
+    : grades;
   return (
     <InnerPageShell className="content-page games-page">
       <section className="games-card">
         <div className="games-heading">
           <p className="eyebrow"><span /> Learn, play, remember</p>
           <h1>Educational Games</h1>
-          <p>Your grade games are available now. Higher grades remain visible as locked learning levels.</p>
+          <p>Your grade appears first. All other primary grades remain visible as locked learning levels.</p>
         </div>
 
         <div className="games-grid">
@@ -59,7 +61,7 @@ export default function GamesPage() {
               <article className={`game-grade-card${gradeAvailable ? " grade-accessible" : " grade-locked"}`} key={grade}>
                 <header>
                   <span className="game-grade-number">P{grade}</span>
-                  <div><small>{gradeAvailable ? "YOUR GRADE" : "FUTURE GRADE"}</small><h2>Primary {grade}</h2></div>
+                  <div><small>{gradeAvailable ? "YOUR GRADE" : "LOCKED GRADE"}</small><h2>Primary {grade}</h2></div>
                   {!gradeAvailable && <span className="grade-lock-badge">🔒 Locked</span>}
                 </header>
                 <div className="game-options">

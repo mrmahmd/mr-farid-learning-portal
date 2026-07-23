@@ -202,7 +202,7 @@ body { font-size: 16px; }
   background: rgba(246, 251, 255, 0.76);
   white-space: nowrap;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 950;
   transition: 0.2s ease;
 }
 
@@ -232,7 +232,7 @@ body { font-size: 16px; }
 .nav-login {
   color: var(--blue-deep);
   font-size: 12px;
-  font-weight: 850;
+  font-weight: 950;
 }
 
 .nav-login:hover { color: var(--coral); }
@@ -245,7 +245,7 @@ body { font-size: 16px; }
   background: linear-gradient(135deg, #487cf1, #5b66df);
   box-shadow: 0 10px 25px rgba(53, 105, 232, 0.24);
   font-size: 12px;
-  font-weight: 850;
+  font-weight: 950;
   transition: 0.2s ease;
 }
 

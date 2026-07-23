@@ -21,6 +21,9 @@ export default function StudentCurriculaPage() {
   const [hasError, setHasError] = useState(false);
   const router = useRouter();
   const access = useStudentAccess();
+  const visibleGrades = access.grade
+    ? [access.grade, ...grades.filter((grade) => grade !== access.grade)]
+    : grades;
 
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
@@ -101,7 +104,7 @@ export default function StudentCurriculaPage() {
           <div>
             <p className="eyebrow"><span /> Student portal</p>
             <h1>{access.grade ? `Your Primary ${access.grade} learning space` : "Choose your curriculum"}</h1>
-            <p>Welcome, {profile.full_name}. {access.grade ? "Your grade is available below. Higher grades are shown as locked." : "Your account remains active until Mr.Farid assigns your grade."}</p>
+            <p>Welcome, {profile.full_name}. {access.grade ? "Your grade appears first. All other primary grades remain visible as locked levels." : "Your account remains active until Mr.Farid assigns your grade."}</p>
           </div>
           <div className="student-welcome-actions">
             <span className="student-account-badge"><small>STUDENT</small>@{profile.username}</span>
@@ -110,7 +113,7 @@ export default function StudentCurriculaPage() {
         </div>
 
         <div className="student-grade-grid">
-          {(access.grade ? grades.filter((grade) => grade >= access.grade!) : grades).map((grade) => {
+          {visibleGrades.map((grade) => {
             const gradeAvailable = curricula.filter((curriculum) => curriculum.grade === grade).some((curriculum) => canOpenCurriculum(curriculum.slug, grade, access));
             return (
             <article className={`student-grade-card${gradeAvailable ? " grade-accessible" : " grade-locked"}`} key={grade}>
@@ -121,7 +124,7 @@ export default function StudentCurriculaPage() {
               <header>
                 <span className="grade-number">{grade}</span>
                 <div>
-                  <small>{gradeAvailable ? "YOUR LEARNING COURSES" : "FUTURE GRADE"}</small>
+                  <small>{gradeAvailable ? "YOUR LEARNING COURSES" : "LOCKED GRADE"}</small>
                   <h2>Primary {grade}</h2>
                 </div>
                 {!gradeAvailable && <span className="grade-lock-badge">🔒 Locked</span>}
