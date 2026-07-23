@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
+import { getSupabaseBrowserClient, usernameToStudentEmail } from "../lib/supabase";
 
 const students = [
   { name: "Ahmed Mohamed", username: "ahmed2026", status: "Active", course: "English Primary 1", progress: 68, activity: "Practice question 9" },
@@ -10,9 +11,35 @@ const students = [
 ];
 
 export default function AdminDashboardPage() {
+  const [authState, setAuthState] = useState<"checking" | "signed-out" | "denied" | "allowed">("checking");
+  const [authMessage, setAuthMessage] = useState("");
+  const [authLoading, setAuthLoading] = useState(false);
   const [section, setSection] = useState("Overview");
   const [query, setQuery] = useState("");
   const visibleStudents = students.filter((student) => `${student.name} ${student.username}`.toLowerCase().includes(query.toLowerCase()));
+
+  useEffect(() => {
+    getSupabaseBrowserClient().auth.getUser().then(({ data }) => {
+      setAuthState(data.user?.app_metadata?.role === "admin" ? "allowed" : data.user ? "denied" : "signed-out");
+    });
+  }, []);
+
+  async function signInAdmin(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    setAuthLoading(true); setAuthMessage("");
+    const { error } = await getSupabaseBrowserClient().auth.signInWithPassword({
+      email: usernameToStudentEmail(String(form.get("username") ?? "")),
+      password: String(form.get("password") ?? ""),
+    });
+    if (error) { setAuthMessage(error.message); setAuthLoading(false); return; }
+    const { data } = await getSupabaseBrowserClient().auth.getUser();
+    if (data.user?.app_metadata?.role === "admin") setAuthState("allowed");
+    else { await getSupabaseBrowserClient().auth.signOut(); setAuthState("denied"); }
+    setAuthLoading(false);
+  }
+
+  if (authState !== "allowed") return <main className="admin-page"><section className="admin-content admin-auth-card"><div className="admin-brand"><span>MF</span><div><b>Mr.Farid</b><small>Admin Control Center</small></div></div>{authState === "checking" ? <p>Checking administrator session…</p> : authState === "denied" ? <p className="form-message error">This account is not authorized as an administrator.</p> : null}<form className="glass-card standalone-form" onSubmit={signInAdmin}><h1>Administrator Sign In</h1><label htmlFor="adminUsername">Username</label><input id="adminUsername" name="username" required autoComplete="username" /><label htmlFor="adminPassword">Password</label><input id="adminPassword" name="password" type="password" required autoComplete="current-password" /><button className="primary-button" type="submit" disabled={authLoading}>{authLoading ? "Signing in…" : "Enter Control Center"}</button>{authMessage && <p className="form-message error">{authMessage}</p>}</form><Link href="/" className="admin-back-link">← Back to Portal</Link></section></main>;
 
   return (
     <main className="admin-page">
