@@ -883,8 +883,9 @@ input::placeholder { color: #9aacc0; }
 .english-option { background: #edf5ff; border-color: rgba(53, 105, 232, 0.13); }
 .english-option:has(.new-curriculum-badge) { position:relative; border-color:rgba(42,194,151,.55); background:linear-gradient(135deg,#e8fff6,#f4fbff); box-shadow:0 8px 20px rgba(42,194,151,.14); }
 .new-curriculum-badge { display:inline-flex; width:max-content; margin-bottom:4px; padding:4px 8px; border-radius:999px; color:#fff; background:linear-gradient(135deg,#18bd73,#3b82f6); font-size:9px; font-weight:950; letter-spacing:.7px; box-shadow:0 5px 12px rgba(35,170,135,.25); animation:newBadgePulse 2.8s ease-in-out infinite; }
-.new-curriculum-entry { display:inline-flex; align-items:center; justify-content:center; margin-top:8px; padding:10px 14px; border-radius:12px; color:#fff; background:linear-gradient(135deg,#2f70e8,#5361df); font-size:13px; font-weight:950; box-shadow:0 7px 15px rgba(53,105,232,.22); }
-.new-curriculum-entry:hover { transform:translateY(-2px); box-shadow:0 10px 20px rgba(53,105,232,.3); }
+.new-curriculum-entry { display:flex; align-items:center; justify-content:center; width:100%; min-height:48px; margin-top:12px; padding:12px 16px; border:1px solid rgba(255,255,255,.38); border-radius:14px; color:#fff; background:linear-gradient(135deg,#1769e8,#5361df 58%,#7055d9); font-size:15px; font-weight:950; letter-spacing:.1px; text-align:center; text-decoration:none; box-shadow:0 9px 18px rgba(53,105,232,.25); transition:transform 180ms ease, box-shadow 180ms ease, filter 180ms ease; }
+.new-curriculum-entry::after { content:'  →'; margin-left:8px; font-size:18px; }
+.new-curriculum-entry:hover { transform:translateY(-2px); filter:brightness(1.06); box-shadow:0 12px 24px rgba(53,105,232,.34); }
 .curricula-page { font-family:"Trebuchet MS","Segoe UI",sans-serif; }
 .curricula-page .curricula-heading h1,.curricula-page .grade-card h2 { font-weight:950; }
 .curricula-page .curricula-heading > p:not(.eyebrow),.curricula-page .curriculum-option strong,.curricula-page .curriculum-option small,.curricula-page .term-badges span { font-size:clamp(13px,1.1vw,17px); font-weight:850; }
