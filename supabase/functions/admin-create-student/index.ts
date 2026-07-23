@@ -37,7 +37,7 @@ Deno.serve(async (request) => {
   const { data: profiles, error: profilesError } = await adminClient.from("profiles").select("username").like("username", "st-%");
   if (profilesError) return json({ error: profilesError.message }, 500);
   const nextNumber = (profiles ?? []).reduce((max, row) => {
-    const match = String(row.username ?? "").match(/^st-(\\d{3,})$/i);
+    const match = String(row.username ?? "").match(/^st-(\d{3,})$/i);
     return match ? Math.max(max, Number(match[1])) : max;
   }, 0) + 1;
   const username = `ST-${String(nextNumber).padStart(3, "0")}`;

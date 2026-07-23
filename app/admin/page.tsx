@@ -1,14 +1,18 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { getSupabaseBrowserClient, usernameToStudentEmail } from "../lib/supabase";
 
-const students = [
-  { name: "Ahmed Mohamed", username: "ahmed2026", status: "Active", course: "English Primary 1", progress: 68, activity: "Practice question 9" },
-  { name: "Sara Ali", username: "sara_ali", status: "Active", course: "Connect Plus Primary 4", progress: 42, activity: "Vocabulary Flashcards" },
-  { name: "Omar Hassan", username: "omar.h", status: "Suspended", course: "English Primary 3", progress: 19, activity: "Unit 2 overview" },
-];
+type StudentRow = {
+  id: string;
+  name: string;
+  username: string;
+  createdAt: string;
+  apps: number;
+  activity: string;
+  updatedAt: string | null;
+};
 
 export default function AdminDashboardPage() {
   const [authState, setAuthState] = useState<"checking" | "signed-out" | "denied" | "allowed">("checking");
@@ -16,7 +20,39 @@ export default function AdminDashboardPage() {
   const [authLoading, setAuthLoading] = useState(false);
   const [section, setSection] = useState("Overview");
   const [query, setQuery] = useState("");
-  const visibleStudents = students.filter((student) => `${student.name} ${student.username}`.toLowerCase().includes(query.toLowerCase()));
+  const [students, setStudents] = useState<StudentRow[]>([]);
+  const [dataMessage, setDataMessage] = useState("Loading student data...");
+  const [createMessage, setCreateMessage] = useState("");
+  const [creating, setCreating] = useState(false);
+
+  const loadStudents = useCallback(async () => {
+    const supabase = getSupabaseBrowserClient();
+    setDataMessage("Loading student data...");
+    const [{ data: profiles, error: profilesError }, { data: progress, error: progressError }] = await Promise.all([
+      supabase.from("profiles").select("id, full_name, username, created_at").order("created_at", { ascending: false }),
+      supabase.from("course_progress").select("user_id, app_id, state, updated_at").order("updated_at", { ascending: false }),
+    ]);
+    if (profilesError || progressError) {
+      setDataMessage(profilesError?.message ?? progressError?.message ?? "Could not load students.");
+      return;
+    }
+    const rows = (profiles ?? []).map((profile) => {
+      const records = (progress ?? []).filter((item) => item.user_id === profile.id);
+      const latest = records[0];
+      const lastActivity = latest?.state?.portalLastActivity;
+      return {
+        id: profile.id,
+        name: profile.full_name,
+        username: profile.username.toUpperCase(),
+        createdAt: profile.created_at,
+        apps: records.length,
+        activity: lastActivity?.label ?? latest?.app_id ?? "No activity yet",
+        updatedAt: latest?.updated_at ?? null,
+      };
+    });
+    setStudents(rows);
+    setDataMessage(rows.length ? "" : "No student accounts found.");
+  }, []);
 
   useEffect(() => {
     getSupabaseBrowserClient().auth.getUser().then(({ data }) => {
@@ -24,44 +60,134 @@ export default function AdminDashboardPage() {
     });
   }, []);
 
+  useEffect(() => {
+    if (authState === "allowed") void loadStudents();
+  }, [authState, loadStudents]);
+
+  const visibleStudents = useMemo(
+    () => students.filter((student) => `${student.name} ${student.username}`.toLowerCase().includes(query.toLowerCase())),
+    [students, query],
+  );
+
   async function signInAdmin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    setAuthLoading(true); setAuthMessage("");
-    const { error } = await getSupabaseBrowserClient().auth.signInWithPassword({
+    setAuthLoading(true);
+    setAuthMessage("");
+    const supabase = getSupabaseBrowserClient();
+    const { error } = await supabase.auth.signInWithPassword({
       email: usernameToStudentEmail(String(form.get("username") ?? "")),
       password: String(form.get("password") ?? ""),
     });
-    if (error) { setAuthMessage(error.message); setAuthLoading(false); return; }
-    const { data } = await getSupabaseBrowserClient().auth.getUser();
+    if (error) {
+      setAuthMessage(error.message);
+      setAuthLoading(false);
+      return;
+    }
+    await supabase.auth.refreshSession();
+    const { data } = await supabase.auth.getUser();
     if (data.user?.app_metadata?.role === "admin") setAuthState("allowed");
-    else { await getSupabaseBrowserClient().auth.signOut(); setAuthState("denied"); }
+    else {
+      await supabase.auth.signOut();
+      setAuthState("denied");
+    }
     setAuthLoading(false);
   }
 
-  if (authState !== "allowed") return <main className="admin-page"><section className="admin-content admin-auth-card"><div className="admin-brand"><span>MF</span><div><b>Mr.Farid</b><small>Admin Control Center</small></div></div>{authState === "checking" ? <p>Checking administrator session…</p> : authState === "denied" ? <p className="form-message error">This account is not authorized as an administrator.</p> : null}<form className="glass-card standalone-form" onSubmit={signInAdmin}><h1>Administrator Sign In</h1><label htmlFor="adminUsername">Username</label><input id="adminUsername" name="username" required autoComplete="username" /><label htmlFor="adminPassword">Password</label><input id="adminPassword" name="password" type="password" required autoComplete="current-password" /><button className="primary-button" type="submit" disabled={authLoading}>{authLoading ? "Signing in…" : "Enter Control Center"}</button>{authMessage && <p className="form-message error">{authMessage}</p>}</form><Link href="/" className="admin-back-link">← Back to Portal</Link></section></main>;
+  async function createStudent(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
+    setCreating(true);
+    setCreateMessage("Creating account...");
+    const { data, error } = await getSupabaseBrowserClient().functions.invoke("admin-create-student", {
+      body: {
+        fullName: String(form.get("fullName") ?? ""),
+        password: String(form.get("password") ?? ""),
+        grade: Number(form.get("grade") ?? 1),
+      },
+    });
+    if (error || data?.error) {
+      setCreateMessage(data?.error ?? error?.message ?? "Could not create account.");
+      setCreating(false);
+      return;
+    }
+    setCreateMessage(`Account created successfully. Username: ${data.username}`);
+    formElement.reset();
+    await loadStudents();
+    setCreating(false);
+  }
+
+  if (authState !== "allowed") {
+    return (
+      <main className="admin-page">
+        <section className="admin-content admin-auth-card">
+          <div className="admin-brand"><span>MF</span><div><b>Mr.Farid</b><small>Admin Control Center</small></div></div>
+          {authState === "checking" && <p>Checking administrator session...</p>}
+          {authState === "denied" && <p className="form-message error">This account is not authorized as an administrator.</p>}
+          <form className="glass-card standalone-form" onSubmit={signInAdmin}>
+            <h1>Administrator Sign In</h1>
+            <label htmlFor="adminUsername">Username</label>
+            <input id="adminUsername" name="username" required autoComplete="username" />
+            <label htmlFor="adminPassword">Password</label>
+            <input id="adminPassword" name="password" type="password" required autoComplete="current-password" />
+            <button className="primary-button" type="submit" disabled={authLoading}>{authLoading ? "Signing in..." : "Enter Control Center"}</button>
+            {authMessage && <p className="form-message error">{authMessage}</p>}
+          </form>
+          <Link href="/" className="admin-back-link">Back to Portal</Link>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="admin-page">
       <aside className="admin-sidebar">
         <Link href="/" className="admin-brand"><span>MF</span><div><b>Mr.Farid</b><small>Admin Control Center</small></div></Link>
         <div className="admin-nav-label">CONTROL CENTER</div>
-        {["Overview", "Students", "Curricula", "Booklets", "Activity Log", "Settings"].map((item) => <button key={item} className={section === item ? "admin-nav-item active" : "admin-nav-item"} onClick={() => setSection(item)}>{item === "Overview" ? "⌂" : item === "Students" ? "♙" : item === "Curricula" ? "▦" : item === "Booklets" ? "▤" : item === "Activity Log" ? "◷" : "⚙"}<span>{item}</span></button>)}
-        <Link href="/" className="admin-back-link">← Back to Portal</Link>
+        {["Overview", "Students", "Curricula", "Booklets", "Activity Log", "Settings"].map((item) => (
+          <button key={item} className={section === item ? "admin-nav-item active" : "admin-nav-item"} onClick={() => setSection(item)}><span>{item}</span></button>
+        ))}
+        <Link href="/" className="admin-back-link">Back to Portal</Link>
       </aside>
 
       <section className="admin-content">
-        <header className="admin-topbar"><div><span className="panel-kicker">ADMINISTRATION</span><h1>{section}</h1><p>Manage students, learning access, and portal resources.</p></div><div className="admin-account"><span className="admin-status-dot" /> Mr. Mohamed Farid</div></header>
+        <header className="admin-topbar"><div><span className="panel-kicker">ADMINISTRATION</span><h1>{section}</h1><p>Live student data from Supabase.</p></div><div className="admin-account"><span className="admin-status-dot" /> Mr. Mohamed Farid</div></header>
 
         {section === "Overview" && <>
-          <div className="admin-alert"><span>◈</span><div><b>Control center preview</b><p>Data actions will be enabled after the administrator role and policies are connected.</p></div><button type="button">Review setup</button></div>
-          <div className="admin-stats"><article><span>Students</span><strong>128</strong><small>+12 this month</small></article><article><span>Active today</span><strong>34</strong><small>26.5% of accounts</small></article><article><span>Courses open</span><strong>8</strong><small>Across 4 grades</small></article><article><span>Booklet downloads</span><strong>246</strong><small>This month</small></article></div>
-          <div className="admin-grid-two"><section className="admin-panel"><div className="admin-panel-heading"><div><span className="panel-kicker">RECENT ACTIVITY</span><h2>Student learning activity</h2></div><button type="button" onClick={() => setSection("Activity Log")}>View all</button></div><div className="activity-list"><div><span className="activity-avatar blue">AM</span><p><b>Ahmed Mohamed</b><small>Completed Practice question 9 · English Primary 1</small></p><time>2 min ago</time></div><div><span className="activity-avatar green">SA</span><p><b>Sara Ali</b><small>Opened Vocabulary Flashcards · Connect Plus Primary 4</small></p><time>18 min ago</time></div><div><span className="activity-avatar pink">OH</span><p><b>Omar Hassan</b><small>Account suspended by administrator</small></p><time>1 hr ago</time></div></div></section><section className="admin-panel access-panel"><div className="admin-panel-heading"><div><span className="panel-kicker">ACCESS CONTROL</span><h2>Quick controls</h2></div></div><button type="button" disabled>＋ Create student account</button><button type="button" disabled>▣ Manage curriculum access</button><button type="button" disabled>↗ Export activity report</button><small>Controls activate after secure Supabase policies are configured.</small></section></div>
+          <div className="admin-alert"><div><b>Supabase is connected</b><p>Student accounts and progress shown below are loaded from the live database.</p></div><button type="button" onClick={() => void loadStudents()}>Refresh</button></div>
+          <div className="admin-stats">
+            <article><span>Students</span><strong>{students.length}</strong><small>Live accounts</small></article>
+            <article><span>With activity</span><strong>{students.filter((student) => student.apps > 0).length}</strong><small>Cloud progress found</small></article>
+            <article><span>Saved courses</span><strong>{students.reduce((total, student) => total + student.apps, 0)}</strong><small>Progress records</small></article>
+            <article><span>Database</span><strong>Live</strong><small>Supabase connected</small></article>
+          </div>
+          <section className="admin-panel">
+            <div className="admin-panel-heading"><div><span className="panel-kicker">RECENT ACTIVITY</span><h2>Student learning activity</h2></div><button type="button" onClick={() => setSection("Students")}>View students</button></div>
+            <div className="activity-list">{students.slice(0, 6).map((student) => <div key={student.id}><span className="activity-avatar blue">{student.name.split(" ").map((part) => part[0]).join("").slice(0, 2)}</span><p><b>{student.name}</b><small>{student.activity}</small></p><time>{student.updatedAt ? new Date(student.updatedAt).toLocaleDateString() : "New"}</time></div>)}</div>
+            {dataMessage && <p>{dataMessage}</p>}
+          </section>
         </>}
 
-        {section === "Students" && <section className="admin-panel"><div className="admin-panel-heading"><div><span className="panel-kicker">STUDENT ACCOUNTS</span><h2>Manage students</h2></div><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search name or username" /></div><div className="student-table"><div className="student-table-head"><span>Student</span><span>Status</span><span>Curriculum</span><span>Progress</span><span>Actions</span></div>{visibleStudents.map((student) => <div className="student-table-row" key={student.username}><div className="student-cell"><span className="admin-avatar">{student.name.split(" ").map((part) => part[0]).join("")}</span><p><b>{student.name}</b><small>@{student.username}</small></p></div><span className={`status-pill ${student.status.toLowerCase()}`}>{student.status}</span><span>{student.course}</span><div><b>{student.progress}%</b><div className="mini-progress"><i style={{ width: `${student.progress}%` }} /></div></div><div className="row-actions"><button type="button" disabled>Open</button><button type="button" disabled>{student.status === "Suspended" ? "Activate" : "Suspend"}</button></div></div>)}</div></section>}
+        {section === "Students" && <>
+          <section className="admin-panel">
+            <div className="admin-panel-heading"><div><span className="panel-kicker">CREATE STUDENT</span><h2>New managed account</h2></div></div>
+            <form className="student-settings-form" onSubmit={createStudent}>
+              <label>Student full name<input name="fullName" minLength={3} maxLength={100} required /></label>
+              <label>Grade<select name="grade" defaultValue="1">{[1, 2, 3, 4, 5, 6].map((grade) => <option key={grade} value={grade}>Primary {grade}</option>)}</select></label>
+              <label>Temporary password<input name="password" type="password" minLength={8} required /></label>
+              <button className="dashboard-primary-button" type="submit" disabled={creating}>{creating ? "Creating..." : "Create Student Account"}</button>
+              {createMessage && <p className="settings-message">{createMessage}</p>}
+            </form>
+          </section>
+          <section className="admin-panel">
+            <div className="admin-panel-heading"><div><span className="panel-kicker">STUDENT ACCOUNTS</span><h2>Manage students</h2></div><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search name or username" /></div>
+            <div className="student-table"><div className="student-table-head"><span>Student</span><span>Status</span><span>Saved courses</span><span>Last activity</span><span>Created</span></div>{visibleStudents.map((student) => <div className="student-table-row" key={student.id}><div className="student-cell"><span className="admin-avatar">{student.name.split(" ").map((part) => part[0]).join("").slice(0, 2)}</span><p><b>{student.name}</b><small>{student.username}</small></p></div><span className="status-pill active">Active</span><span>{student.apps}</span><span>{student.activity}</span><span>{new Date(student.createdAt).toLocaleDateString()}</span></div>)}</div>
+            {dataMessage && <p>{dataMessage}</p>}
+          </section>
+        </>}
 
-        {section !== "Overview" && section !== "Students" && <section className="admin-empty-state"><span>✦</span><h2>{section} management</h2><p>This section is designed and ready for secure Supabase data actions.</p><button type="button" onClick={() => setSection("Overview")}>Back to overview</button></section>}
+        {section !== "Overview" && section !== "Students" && <section className="admin-empty-state"><h2>{section} management</h2><p>This section will be connected in the next stage.</p><button type="button" onClick={() => setSection("Overview")}>Back to overview</button></section>}
       </section>
     </main>
   );
