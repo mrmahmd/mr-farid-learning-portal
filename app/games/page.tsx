@@ -28,6 +28,19 @@ export default function GamesPage() {
     );
   }
 
+  if (!access.loading && access.mustChangePassword) {
+    return (
+      <InnerPageShell className="content-page games-page">
+        <section className="glass-card standalone-form">
+          <span className="mini-logo">MF</span>
+          <h1>Create your private password first</h1>
+          <p>For your account security, choose a new personal password before opening the games.</p>
+          <Link className="primary-button" href="/student/change-password">Create New Password</Link>
+        </section>
+      </InnerPageShell>
+    );
+  }
+
   if (!access.loading && access.signedIn && access.grade === null) {
     return (
       <InnerPageShell className="content-page games-page">

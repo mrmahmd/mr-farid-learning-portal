@@ -33,7 +33,7 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
 
       const { data: access } = await getSupabaseBrowserClient()
         .from("student_access")
-        .select("is_suspended, grade, access_mode, allowed_curricula")
+        .select("is_suspended, grade, access_mode, allowed_curricula, must_change_password")
         .eq("user_id", data.session.user.id)
         .maybeSingle();
 
@@ -42,10 +42,16 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
         if (isActive) setDeniedReason("Your account is suspended. Please contact Mr.Farid.");
         return;
       }
+      if (access?.must_change_password) {
+        router.replace("/student/change-password");
+        return;
+      }
 
       const assignedGrade = typeof access?.grade === "number" ? access.grade : null;
-      const accessMode = ["grade", "custom", "all", "none"].includes(access?.access_mode)
-        ? access.access_mode
+      const candidateMode = access?.access_mode;
+      const accessMode = typeof candidateMode === "string"
+        && ["grade", "custom", "all", "none"].includes(candidateMode)
+        ? candidateMode
         : "grade";
       const extraCurricula = Array.isArray(access?.allowed_curricula) ? access.allowed_curricula : [];
       if (assignedGrade === null) {
@@ -109,7 +115,7 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
     );
   }
 
-  if (!isReady) {
+  if (!isReady || !sessionBridge) {
     return (
       <section className="course-app-card student-loading-card">
         <span className="mini-logo">MF</span>

@@ -25,7 +25,7 @@ export default function StudentGradeSetupPage() {
       }
       const { data, error } = await supabase
         .from("student_access")
-        .select("grade, is_suspended")
+        .select("grade, is_suspended, must_change_password")
         .eq("user_id", sessionData.session.user.id)
         .maybeSingle();
       if (!active) return;
@@ -37,6 +37,10 @@ export default function StudentGradeSetupPage() {
       if (data.is_suspended) {
         await supabase.auth.signOut();
         router.replace("/login");
+        return;
+      }
+      if (data.must_change_password) {
+        router.replace("/student/change-password");
         return;
       }
       if (typeof data.grade === "number") {

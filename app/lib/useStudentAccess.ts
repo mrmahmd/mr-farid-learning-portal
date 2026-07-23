@@ -9,6 +9,7 @@ export type StudentAccessState = {
   suspended: boolean;
   grade: number | null;
   accessMode: "grade" | "custom" | "all" | "none";
+  mustChangePassword: boolean;
   allowedCurricula: string[];
   bookletAccess: boolean;
 };
@@ -19,6 +20,7 @@ const initialState: StudentAccessState = {
   suspended: false,
   grade: null,
   accessMode: "grade",
+  mustChangePassword: false,
   allowedCurricula: [],
   bookletAccess: true,
 };
@@ -41,19 +43,23 @@ export function useStudentAccess() {
 
       const { data } = await supabase
         .from("student_access")
-        .select("is_suspended, grade, access_mode, allowed_curricula, booklet_access")
+        .select("is_suspended, grade, access_mode, allowed_curricula, booklet_access, must_change_password")
         .eq("user_id", session.user.id)
         .maybeSingle();
 
       if (!active) return;
+      const candidateMode = data?.access_mode;
+      const accessMode: StudentAccessState["accessMode"] = typeof candidateMode === "string"
+        && ["grade", "custom", "all", "none"].includes(candidateMode)
+        ? candidateMode as StudentAccessState["accessMode"]
+        : "grade";
       setState({
         loading: false,
         signedIn: true,
         suspended: data?.is_suspended ?? false,
         grade: typeof data?.grade === "number" ? data.grade : null,
-        accessMode: ["grade", "custom", "all", "none"].includes(data?.access_mode)
-          ? data.access_mode
-          : "grade",
+        accessMode,
+        mustChangePassword: data?.must_change_password === true,
         allowedCurricula: Array.isArray(data?.allowed_curricula) ? data.allowed_curricula : [],
         bookletAccess: data?.booklet_access !== false,
       });

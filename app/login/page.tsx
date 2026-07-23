@@ -48,9 +48,13 @@ export default function LoginPage() {
 
     const { data: access } = await supabase
       .from("student_access")
-      .select("grade")
+      .select("grade, must_change_password")
       .eq("user_id", data.user.id)
       .maybeSingle();
+    if (access?.must_change_password) {
+      router.push("/student/change-password");
+      return;
+    }
     router.push(typeof access?.grade === "number" ? "/student/dashboard" : "/student/setup-grade");
   }
 

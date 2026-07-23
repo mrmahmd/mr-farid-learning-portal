@@ -41,7 +41,7 @@ Deno.serve(async (request) => {
   await fetch(`${url}/rest/v1/student_access?on_conflict=user_id`, {
     method: "POST",
     headers: { apikey: secretKey, "Content-Type": "application/json", Prefer: "resolution=merge-duplicates" },
-    body: JSON.stringify({ user_id: created.id, grade, access_mode: "grade", allowed_curricula: [], booklet_access: true }),
+    body: JSON.stringify({ user_id: created.id, grade, access_mode: "grade", allowed_curricula: [], booklet_access: true, must_change_password: true }),
   });
   return json({ username, studentId: created.id, fullName, grade });
 });

@@ -40,7 +40,9 @@ Deno.serve(async (request) => {
     const password = String(body.password ?? "");
     if (password.length < 8) return json({ error: "Password must contain at least 8 characters" }, 400);
     const { response, data } = await updateAuth({ password });
-    return response.ok ? json({ success: true }) : json({ error: data.msg ?? data.message ?? "Could not reset password" }, response.status);
+    if (!response.ok) return json({ error: data.msg ?? data.message ?? "Could not reset password" }, response.status);
+    const saved = await saveAccess({ must_change_password: true });
+    return saved.ok ? json({ success: true, mustChangePassword: true }) : json({ error: "Password changed but first-login requirement could not be saved" }, 500);
   }
   if (body.action === "update_access") {
     const grade = body.grade == null ? null : Number(body.grade);

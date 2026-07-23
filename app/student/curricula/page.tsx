@@ -69,10 +69,14 @@ export default function StudentCurriculaPage() {
   }, [router]);
 
   useEffect(() => {
+    if (!access.loading && access.signedIn && access.mustChangePassword) {
+      router.replace("/student/change-password");
+      return;
+    }
     if (!access.loading && access.signedIn && access.grade === null) {
       router.replace("/student/setup-grade");
     }
-  }, [access.grade, access.loading, access.signedIn, router]);
+  }, [access.grade, access.loading, access.mustChangePassword, access.signedIn, router]);
 
   async function handleSignOut() {
     setStatus("Signing out...");
@@ -80,7 +84,7 @@ export default function StudentCurriculaPage() {
     router.replace("/");
   }
 
-  if (!profile || access.loading || access.grade === null) {
+  if (!profile || access.loading || access.mustChangePassword || access.grade === null) {
     return (
       <InnerPageShell className="student-curricula-page">
         <section className="student-curricula-card student-loading-card">
