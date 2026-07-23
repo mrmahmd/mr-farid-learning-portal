@@ -8,6 +8,7 @@ export type StudentAccessState = {
   signedIn: boolean;
   suspended: boolean;
   grade: number | null;
+  accessMode: "grade" | "custom" | "all" | "none";
   allowedCurricula: string[];
   bookletAccess: boolean;
 };
@@ -17,6 +18,7 @@ const initialState: StudentAccessState = {
   signedIn: false,
   suspended: false,
   grade: null,
+  accessMode: "grade",
   allowedCurricula: [],
   bookletAccess: true,
 };
@@ -39,7 +41,7 @@ export function useStudentAccess() {
 
       const { data } = await supabase
         .from("student_access")
-        .select("is_suspended, grade, allowed_curricula, booklet_access")
+        .select("is_suspended, grade, access_mode, allowed_curricula, booklet_access")
         .eq("user_id", session.user.id)
         .maybeSingle();
 
@@ -49,6 +51,9 @@ export function useStudentAccess() {
         signedIn: true,
         suspended: data?.is_suspended ?? false,
         grade: typeof data?.grade === "number" ? data.grade : null,
+        accessMode: ["grade", "custom", "all", "none"].includes(data?.access_mode)
+          ? data.access_mode
+          : "grade",
         allowedCurricula: Array.isArray(data?.allowed_curricula) ? data.allowed_curricula : [],
         bookletAccess: data?.booklet_access !== false,
       });
@@ -67,11 +72,16 @@ export function useStudentAccess() {
 
 export function canOpenGrade(grade: number, access: StudentAccessState) {
   if (!access.signedIn || access.suspended) return false;
-  if (access.grade === null) return false;
-  if (access.grade === grade) return true;
+  if (access.accessMode === "all") return true;
+  if (access.accessMode === "none") return false;
+  if (access.accessMode === "grade" && access.grade === grade) return true;
   return access.allowedCurricula.some((slug) => slug.endsWith(`primary-${grade}`));
 }
 
 export function canOpenCurriculum(slug: string, grade: number, access: StudentAccessState) {
-  return canOpenGrade(grade, access) || access.allowedCurricula.includes(slug);
+  if (!access.signedIn || access.suspended) return false;
+  if (access.accessMode === "all") return true;
+  if (access.accessMode === "none") return false;
+  if (access.accessMode === "grade" && access.grade === grade) return true;
+  return access.allowedCurricula.includes(slug);
 }

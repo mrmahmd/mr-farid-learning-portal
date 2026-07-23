@@ -33,7 +33,7 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
 
       const { data: access } = await getSupabaseBrowserClient()
         .from("student_access")
-        .select("is_suspended, grade, allowed_curricula")
+        .select("is_suspended, grade, access_mode, allowed_curricula")
         .eq("user_id", data.session.user.id)
         .maybeSingle();
 
@@ -44,13 +44,20 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
       }
 
       const assignedGrade = typeof access?.grade === "number" ? access.grade : null;
+      const accessMode = ["grade", "custom", "all", "none"].includes(access?.access_mode)
+        ? access.access_mode
+        : "grade";
       const extraCurricula = Array.isArray(access?.allowed_curricula) ? access.allowed_curricula : [];
       if (assignedGrade === null) {
         router.replace("/student/setup-grade");
         return;
       }
-      if (assignedGrade !== null && assignedGrade !== curriculum.grade && !extraCurricula.includes(curriculum.slug)) {
-        if (isActive) setDeniedReason(`This curriculum is locked because your account is assigned to Primary ${assignedGrade}.`);
+      const curriculumAllowed =
+        accessMode === "all"
+        || (accessMode === "grade" && assignedGrade === curriculum.grade)
+        || (accessMode !== "none" && extraCurricula.includes(curriculum.slug));
+      if (!curriculumAllowed) {
+        if (isActive) setDeniedReason("This curriculum is locked for your account. Please contact Mr.Farid if you need access.");
         return;
       }
 

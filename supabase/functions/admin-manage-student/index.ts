@@ -3,6 +3,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.110.5";
 const cors = { "Access-Control-Allow-Origin": "https://mrfarid.net", "Access-Control-Allow-Headers": "authorization, content-type, apikey, x-client-info", "Access-Control-Allow-Methods": "POST, OPTIONS" };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
 const namedKey = (name: string) => JSON.parse(Deno.env.get(name) ?? "{}").default;
+const validCurricula = new Set(Array.from({ length: 6 }, (_, index) => {
+  const grade = index + 1;
+  return [`english-primary-${grade}`, `connect-plus-primary-${grade}`];
+}).flat());
+const validAccessModes = new Set(["grade", "custom", "all", "none"]);
 
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") return new Response("ok", { headers: cors });
@@ -40,8 +45,17 @@ Deno.serve(async (request) => {
   if (body.action === "update_access") {
     const grade = body.grade == null ? null : Number(body.grade);
     if (grade !== null && (!Number.isInteger(grade) || grade < 1 || grade > 6)) return json({ error: "Invalid grade" }, 400);
-    const allowed = Array.isArray(body.allowedCurricula) ? body.allowedCurricula.map(String) : [];
-    const saved = await saveAccess({ grade, allowed_curricula: allowed, booklet_access: Boolean(body.bookletAccess) });
+    const accessMode = String(body.accessMode ?? "grade");
+    if (!validAccessModes.has(accessMode)) return json({ error: "Invalid access mode" }, 400);
+    const allowed = Array.isArray(body.allowedCurricula)
+      ? [...new Set(body.allowedCurricula.map(String))].filter((slug) => validCurricula.has(slug))
+      : [];
+    const saved = await saveAccess({
+      grade,
+      access_mode: accessMode,
+      allowed_curricula: accessMode === "custom" ? allowed : [],
+      booklet_access: Boolean(body.bookletAccess),
+    });
     return saved.ok ? json({ success: true }) : json({ error: await saved.text() }, saved.status);
   }
   return json({ error: "Unknown action" }, 400);

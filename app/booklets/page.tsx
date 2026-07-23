@@ -3,7 +3,7 @@
 import { InnerPageShell } from "../components/InnerPageShell";
 import { CurriculumCover } from "../components/CurriculumCover";
 import { BookletAccessGate } from "../components/BookletAccessGate";
-import { canOpenGrade, useStudentAccess } from "../lib/useStudentAccess";
+import { canOpenCurriculum, canOpenGrade, useStudentAccess } from "../lib/useStudentAccess";
 import Link from "next/link";
 
 const grades = [1, 2, 3, 4, 5, 6];
@@ -44,6 +44,8 @@ export default function BookletsPage() {
         <div className="booklets-grid">
           {visibleGrades.map((grade) => {
             const gradeAvailable = canOpenGrade(grade, access);
+            const englishAvailable = canOpenCurriculum(`english-primary-${grade}`, grade, access);
+            const connectAvailable = canOpenCurriculum(`connect-plus-primary-${grade}`, grade, access);
             return (
             <article className={`booklet-grade-card${gradeAvailable ? " grade-accessible" : " grade-locked"}`} key={grade}>
               <header>
@@ -65,7 +67,7 @@ export default function BookletsPage() {
                       {terms.map((term) => (
                         <div className="booklet-term-option" key={term}>
                           <strong>{term}</strong>
-                          {gradeAvailable && grade === 1 && term === "First Term" ? <a className="booklet-download-button" href="https://ia902800.us.archive.org/20/items/grade-1enlgish-1termbook/.Grade1enlgish-1termbook.pdf" target="_blank" rel="noreferrer">Download PDF ↗</a> : <button type="button" disabled>{gradeAvailable ? "Soon" : "Locked"}</button>}
+                          {englishAvailable && grade === 1 && term === "First Term" ? <a className="booklet-download-button" href="https://ia902800.us.archive.org/20/items/grade-1enlgish-1termbook/.Grade1enlgish-1termbook.pdf" target="_blank" rel="noreferrer">Download PDF ↗</a> : <button type="button" disabled>{englishAvailable ? "Soon" : "Locked"}</button>}
                         </div>
                       ))}
                     </div>
@@ -81,7 +83,7 @@ export default function BookletsPage() {
                       {terms.map((term) => (
                         <div className="booklet-term-option" key={term}>
                           <strong>{term}</strong>
-                          <button type="button" disabled>{gradeAvailable ? "Soon" : "Locked"}</button>
+                          <button type="button" disabled>{connectAvailable ? "Soon" : "Locked"}</button>
                         </div>
                       ))}
                     </div>

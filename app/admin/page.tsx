@@ -3,6 +3,9 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { getSupabaseBrowserClient, usernameToStudentEmail } from "../lib/supabase";
+import { curricula } from "../data/curricula";
+
+type AccessMode = "grade" | "custom" | "all" | "none";
 
 type StudentRow = {
   id: string;
@@ -14,6 +17,7 @@ type StudentRow = {
   updatedAt: string | null;
   suspended: boolean;
   grade: number | null;
+  accessMode: AccessMode;
   allowedCurricula: string[];
   bookletAccess: boolean;
 };
@@ -28,6 +32,10 @@ export default function AdminDashboardPage() {
   const [dataMessage, setDataMessage] = useState("Loading student data...");
   const [createMessage, setCreateMessage] = useState("");
   const [creating, setCreating] = useState(false);
+  const [editingStudentId, setEditingStudentId] = useState<string | null>(null);
+  const [accessMode, setAccessMode] = useState<AccessMode>("grade");
+  const [selectedCurricula, setSelectedCurricula] = useState<string[]>([]);
+  const [bookletAccess, setBookletAccess] = useState(true);
 
   const loadStudents = useCallback(async () => {
     const supabase = getSupabaseBrowserClient();
@@ -35,7 +43,7 @@ export default function AdminDashboardPage() {
     const [{ data: profiles, error: profilesError }, { data: progress, error: progressError }, { data: access, error: accessError }] = await Promise.all([
       supabase.from("profiles").select("id, full_name, username, created_at").order("created_at", { ascending: false }),
       supabase.from("course_progress").select("user_id, app_id, state, updated_at").order("updated_at", { ascending: false }),
-      supabase.from("student_access").select("user_id, is_suspended, grade, allowed_curricula, booklet_access"),
+      supabase.from("student_access").select("user_id, is_suspended, grade, access_mode, allowed_curricula, booklet_access"),
     ]);
     if (profilesError || progressError || accessError) {
       setDataMessage(profilesError?.message ?? progressError?.message ?? accessError?.message ?? "Could not load students.");
@@ -56,6 +64,7 @@ export default function AdminDashboardPage() {
         updatedAt: latest?.updated_at ?? null,
         suspended: controls?.is_suspended ?? false,
         grade: controls?.grade ?? null,
+        accessMode: (["grade", "custom", "all", "none"].includes(controls?.access_mode) ? controls?.access_mode : "grade") as AccessMode,
         allowedCurricula: controls?.allowed_curricula ?? [],
         bookletAccess: controls?.booklet_access ?? true,
       };
@@ -132,28 +141,49 @@ export default function AdminDashboardPage() {
     setCreating(false);
   }
 
-  async function manageStudent(student: StudentRow, action: "suspend" | "reset_password" | "update_access") {
+  function openAccessEditor(student: StudentRow) {
+    setEditingStudentId(student.id);
+    setAccessMode(student.accessMode);
+    setSelectedCurricula(student.allowedCurricula);
+    setBookletAccess(student.bookletAccess);
+    setDataMessage("");
+  }
+
+  function toggleCurriculum(slug: string) {
+    setSelectedCurricula((current) => current.includes(slug)
+      ? current.filter((item) => item !== slug)
+      : [...current, slug]);
+  }
+
+  async function saveStudentAccess(student: StudentRow) {
+    setDataMessage("Saving student access...");
+    const body = {
+      userId: student.id,
+      action: "update_access",
+      grade: student.grade,
+      accessMode,
+      allowedCurricula: accessMode === "custom" ? selectedCurricula : [],
+      bookletAccess,
+    };
+    const { data, error } = await getSupabaseBrowserClient().functions.invoke("admin-manage-student", { body });
+    let detail = data?.error ?? error?.message ?? "Could not save changes.";
+    if (error && "context" in error) {
+      try { detail = (await (error.context as Response).json())?.error ?? detail; } catch { /* keep fallback */ }
+    }
+    setDataMessage(error || data?.error ? detail : "Student access updated successfully.");
+    if (!error && !data?.error) {
+      setEditingStudentId(null);
+      await loadStudents();
+    }
+  }
+
+  async function manageStudent(student: StudentRow, action: "suspend" | "reset_password") {
     let body: Record<string, unknown> = { userId: student.id, action };
     if (action === "suspend") body.suspended = !student.suspended;
     if (action === "reset_password") {
       const password = window.prompt(`Enter a new temporary password for ${student.username}:`);
       if (!password) return;
       body.password = password;
-    }
-    if (action === "update_access") {
-      const allowed = window.prompt(
-        "Enter extra curriculum slugs separated by commas. Leave empty for access to the student's assigned grade only.",
-        student.allowedCurricula.join(", "),
-      );
-      if (allowed === null) return;
-      const gradeValue = window.prompt("Enter grade from 1 to 6:", String(student.grade ?? 1));
-      if (gradeValue === null) return;
-      body = {
-        ...body,
-        grade: Math.min(6, Math.max(1, Number(gradeValue))),
-        allowedCurricula: allowed.split(",").map((item) => item.trim()).filter(Boolean),
-        bookletAccess: window.confirm("Allow this student to download booklets?"),
-      };
     }
     setDataMessage("Saving student controls...");
     const { data, error } = await getSupabaseBrowserClient().functions.invoke("admin-manage-student", { body });
@@ -229,7 +259,31 @@ export default function AdminDashboardPage() {
           </section>
           <section className="admin-panel">
             <div className="admin-panel-heading"><div><span className="panel-kicker">STUDENT ACCOUNTS</span><h2>Manage students</h2></div><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search name or username" /></div>
-            <div className="student-table"><div className="student-table-head"><span>Student</span><span>Status</span><span>Grade / Courses</span><span>Last activity</span><span>Controls</span></div>{visibleStudents.map((student) => <div className="student-table-row" key={student.id}><div className="student-cell"><span className="admin-avatar">{student.name.split(" ").map((part) => part[0]).join("").slice(0, 2)}</span><p><b>{student.name}</b><small>{student.username}</small></p></div><span className={`status-pill ${student.suspended ? "suspended" : "active"}`}>{student.suspended ? "Suspended" : "Active"}</span><span>{student.grade ? `Primary ${student.grade}` : "Grade needs assignment"} · {student.allowedCurricula.length ? `${student.allowedCurricula.length} extra` : "Grade only"} · {student.bookletAccess ? "Booklets on" : "Booklets off"}</span><span>{student.activity}</span><div className="row-actions"><button type="button" onClick={() => void manageStudent(student, "suspend")}>{student.suspended ? "Activate" : "Suspend"}</button><button type="button" onClick={() => void manageStudent(student, "reset_password")}>Password</button><button type="button" onClick={() => void manageStudent(student, "update_access")}>Access</button></div></div>)}</div>
+            <div className="student-table"><div className="student-table-head"><span>Student</span><span>Status</span><span>Grade / Courses</span><span>Last activity</span><span>Controls</span></div>{visibleStudents.map((student) => <div className="student-table-row" key={student.id}><div className="student-cell"><span className="admin-avatar">{student.name.split(" ").map((part) => part[0]).join("").slice(0, 2)}</span><p><b>{student.name}</b><small>{student.username}</small></p></div><span className={`status-pill ${student.suspended ? "suspended" : "active"}`}>{student.suspended ? "Suspended" : "Active"}</span><span>{student.grade ? `Primary ${student.grade}` : "Grade needs assignment"} · {student.accessMode === "all" ? "Full portal" : student.accessMode === "none" ? "All locked" : student.accessMode === "custom" ? `${student.allowedCurricula.length} selected` : "Grade only"} · {student.bookletAccess ? "Booklets on" : "Booklets off"}</span><span>{student.activity}</span><div className="row-actions"><button type="button" onClick={() => void manageStudent(student, "suspend")}>{student.suspended ? "Activate" : "Suspend"}</button><button type="button" onClick={() => void manageStudent(student, "reset_password")}>Password</button><button type="button" onClick={() => openAccessEditor(student)}>Access</button></div></div>)}</div>
+            {editingStudentId && (() => {
+              const student = students.find((item) => item.id === editingStudentId);
+              if (!student) return null;
+              return <div className="student-access-editor">
+                <div className="access-editor-heading">
+                  <div><span className="panel-kicker">CONTENT ACCESS</span><h3>{student.name}</h3><p>{student.username} · Primary {student.grade ?? "not assigned"}</p></div>
+                  <button type="button" onClick={() => setEditingStudentId(null)}>Close</button>
+                </div>
+                <div className="access-presets">
+                  <button className={accessMode === "grade" ? "active" : ""} type="button" onClick={() => setAccessMode("grade")}><b>Grade Only</b><small>Open both curricula for Primary {student.grade ?? "—"}</small></button>
+                  <button className={accessMode === "custom" ? "active" : ""} type="button" onClick={() => setAccessMode("custom")}><b>Choose Curricula</b><small>Open only the courses selected below</small></button>
+                  <button className={accessMode === "all" ? "active" : ""} type="button" onClick={() => setAccessMode("all")}><b>Full Portal</b><small>Open every curriculum, game and booklet</small></button>
+                  <button className={accessMode === "none" ? "active danger" : "danger"} type="button" onClick={() => setAccessMode("none")}><b>Close All</b><small>Lock all learning content</small></button>
+                </div>
+                <div className={`curriculum-access-grid${accessMode === "custom" ? "" : " disabled"}`}>
+                  {curricula.map((curriculum) => <label key={curriculum.slug}>
+                    <input type="checkbox" checked={selectedCurricula.includes(curriculum.slug)} disabled={accessMode !== "custom"} onChange={() => toggleCurriculum(curriculum.slug)} />
+                    <span><b>{curriculum.title}</b><small>Curriculum · Games · Booklets</small></span>
+                  </label>)}
+                </div>
+                <label className="booklet-master-switch"><input type="checkbox" checked={bookletAccess} onChange={(event) => setBookletAccess(event.target.checked)} /><span><b>Allow booklet area</b><small>Selected curriculum permissions still apply inside the booklet page.</small></span></label>
+                <div className="access-editor-actions"><button type="button" onClick={() => setEditingStudentId(null)}>Cancel</button><button className="save" type="button" onClick={() => void saveStudentAccess(student)}>Save Access</button></div>
+              </div>;
+            })()}
             {dataMessage && <p>{dataMessage}</p>}
           </section>
         </>}

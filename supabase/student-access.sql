@@ -2,10 +2,21 @@ create table if not exists public.student_access (
   user_id uuid primary key references auth.users(id) on delete cascade,
   is_suspended boolean not null default false,
   grade smallint check (grade between 1 and 6),
+  access_mode text not null default 'grade' check (access_mode in ('grade', 'custom', 'all', 'none')),
   allowed_curricula text[] not null default array[]::text[],
   booklet_access boolean not null default true,
   updated_at timestamptz not null default now()
 );
+
+alter table public.student_access
+add column if not exists access_mode text not null default 'grade';
+
+alter table public.student_access
+drop constraint if exists student_access_access_mode_check;
+
+alter table public.student_access
+add constraint student_access_access_mode_check
+check (access_mode in ('grade', 'custom', 'all', 'none'));
 
 alter table public.student_access enable row level security;
 grant select on table public.student_access to authenticated;

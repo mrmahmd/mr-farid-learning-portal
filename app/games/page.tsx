@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { InnerPageShell } from "../components/InnerPageShell";
 import { portalAsset } from "../asset-path";
-import { canOpenGrade, useStudentAccess } from "../lib/useStudentAccess";
+import { canOpenCurriculum, canOpenGrade, useStudentAccess } from "../lib/useStudentAccess";
 
 const grades = [1, 2, 3, 4, 5, 6];
 const englishGameWorlds: Record<number, string> = {
@@ -56,6 +56,8 @@ export default function GamesPage() {
         <div className="games-grid">
           {visibleGrades.map((grade) => {
             const gradeAvailable = canOpenGrade(grade, access);
+            const englishAvailable = canOpenCurriculum(`english-primary-${grade}`, grade, access);
+            const connectAvailable = canOpenCurriculum(`connect-plus-primary-${grade}`, grade, access);
             const englishGames = englishGameWorlds[grade];
             return (
               <article className={`game-grade-card${gradeAvailable ? " grade-accessible" : " grade-locked"}`} key={grade}>
@@ -70,9 +72,9 @@ export default function GamesPage() {
                     <div>
                       <h3>English Primary {grade}</h3>
                       <p>Vocabulary, grammar and lesson games</p>
-                      {gradeAvailable && englishGames
+                      {englishAvailable && englishGames
                         ? <a className="game-launch" href={portalAsset(englishGames)}>Open English Primary {grade} Games</a>
-                        : <button type="button" disabled>{gradeAvailable ? "Coming Soon" : "Locked"}</button>}
+                        : <button type="button" disabled>{englishAvailable ? "Coming Soon" : "Locked"}</button>}
                     </div>
                   </div>
                   <div className="game-option connect-game-option">
@@ -80,7 +82,7 @@ export default function GamesPage() {
                     <div>
                       <h3>Connect Plus Primary {grade}</h3>
                       <p>Interactive practice for Connect Plus lessons</p>
-                      <button type="button" disabled>{gradeAvailable ? "Coming Soon" : "Locked"}</button>
+                      <button type="button" disabled>{connectAvailable ? "Coming Soon" : "Locked"}</button>
                     </div>
                   </div>
                 </div>
