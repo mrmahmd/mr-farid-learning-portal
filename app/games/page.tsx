@@ -28,6 +28,19 @@ export default function GamesPage() {
     );
   }
 
+  if (!access.loading && access.signedIn && access.grade === null) {
+    return (
+      <InnerPageShell className="content-page games-page">
+        <section className="glass-card standalone-form">
+          <span className="mini-logo">MF</span>
+          <h1>Choose your primary grade first</h1>
+          <p dir="rtl">اختر مرحلتك الدراسية أولًا حتى تظهر لك الألعاب الخاصة بمرحلتك.</p>
+          <Link className="primary-button" href="/student/setup-grade">Choose My Grade · اختيار المرحلة</Link>
+        </section>
+      </InnerPageShell>
+    );
+  }
+
   const visibleGrades = access.grade ? grades.filter((grade) => grade >= access.grade!) : grades;
   return (
     <InnerPageShell className="content-page games-page">

@@ -1049,6 +1049,54 @@ input::placeholder { color: #9aacc0; }
   background: #e8edf5 !important;
   box-shadow: none !important;
 }
+.grade-setup-page { min-height: calc(100vh - 90px); display: grid; place-items: center; padding: 42px 18px; }
+.grade-setup-card {
+  width: min(900px, 100%);
+  padding: 34px;
+  border: 1px solid rgba(70, 118, 185, 0.2);
+  border-radius: 30px;
+  background: linear-gradient(145deg, rgba(255,255,255,.96), rgba(238,248,255,.93));
+  box-shadow: 0 26px 70px rgba(39, 78, 131, 0.18);
+  text-align: center;
+}
+.grade-setup-heading h1 { margin: 12px 0; color: var(--blue-deep); font-size: clamp(30px, 5vw, 48px); font-weight: 950; }
+.grade-setup-heading p { max-width: 700px; margin: 0 auto; color: var(--muted); font-size: 17px; font-weight: 700; line-height: 1.7; }
+.grade-setup-arabic {
+  max-width: 720px;
+  margin: 22px auto;
+  padding: 18px 22px;
+  border-radius: 20px;
+  color: #153b79;
+  background: linear-gradient(135deg, #fff4c9, #fffbea);
+  text-align: right;
+}
+.grade-setup-arabic h2 { margin: 0 0 7px; font-size: 27px; font-weight: 950; }
+.grade-setup-arabic p { margin: 0; font-size: 17px; font-weight: 800; line-height: 1.8; }
+.grade-choice-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 24px 0; }
+.grade-choice {
+  min-height: 92px;
+  padding: 15px;
+  border: 2px solid rgba(55, 105, 179, .13);
+  border-radius: 20px;
+  color: #244575;
+  background: rgba(255,255,255,.9);
+  box-shadow: 0 9px 22px rgba(46, 85, 140, .08);
+  transition: .2s ease;
+}
+.grade-choice:hover { transform: translateY(-3px); border-color: #76bdf8; }
+.grade-choice small, .grade-choice strong { display: block; }
+.grade-choice small { margin-bottom: 5px; color: var(--muted); font-weight: 900; }
+.grade-choice strong { font-size: 21px; font-weight: 950; }
+.grade-choice.selected { color: white; border-color: #3979f2; background: linear-gradient(135deg, #3589f7, #5a58e6); box-shadow: 0 15px 30px rgba(54, 105, 235, .28); }
+.grade-choice.selected small { color: rgba(255,255,255,.85); }
+.grade-choice-warning { display: grid; gap: 5px; margin: 20px 0; padding: 15px; border-radius: 17px; color: #7a5310; background: #fff7dc; font-weight: 800; }
+.grade-confirm-button { width: min(520px, 100%); margin: 5px auto 16px; }
+.grade-setup-signout { border: 0; color: #61708c; background: transparent; font-weight: 850; cursor: pointer; }
+@media (max-width: 680px) {
+  .grade-setup-card { padding: 23px 16px; border-radius: 24px; }
+  .grade-choice-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .grade-choice { min-height: 82px; }
+}
 .starting-badge { color: var(--coral); }
 
 .student-welcome-actions { display: flex; align-items: center; gap: 10px; }

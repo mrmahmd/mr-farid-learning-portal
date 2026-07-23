@@ -9,3 +9,19 @@ create table if not exists public.student_access (
 
 alter table public.student_access enable row level security;
 grant select on table public.student_access to authenticated;
+grant update (grade) on table public.student_access to authenticated;
+
+drop policy if exists "Students can choose their grade once" on public.student_access;
+create policy "Students can choose their grade once"
+on public.student_access
+for update
+to authenticated
+using (
+  (select auth.uid()) = user_id
+  and grade is null
+  and is_suspended = false
+)
+with check (
+  (select auth.uid()) = user_id
+  and grade between 1 and 6
+);

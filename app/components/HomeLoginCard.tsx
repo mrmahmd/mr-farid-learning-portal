@@ -236,7 +236,8 @@ export function HomeLoginCard() {
     setIsError(false);
     setMessage("Signing you in...");
 
-    const { error } = await getSupabaseBrowserClient().auth.signInWithPassword({
+    const supabase = getSupabaseBrowserClient();
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: usernameToStudentEmail(username),
       password,
     });
@@ -250,7 +251,12 @@ export function HomeLoginCard() {
 
     setIsSignedIn(true);
     setResumeActivity(null);
-    router.push("/student/dashboard");
+    const { data: access } = await supabase
+      .from("student_access")
+      .select("grade")
+      .eq("user_id", data.user.id)
+      .maybeSingle();
+    router.push(typeof access?.grade === "number" ? "/student/dashboard" : "/student/setup-grade");
   }
 
   async function handleSignOut() {

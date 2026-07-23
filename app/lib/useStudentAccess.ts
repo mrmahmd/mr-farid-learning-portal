@@ -67,9 +67,7 @@ export function useStudentAccess() {
 
 export function canOpenGrade(grade: number, access: StudentAccessState) {
   if (!access.signedIn || access.suspended) return false;
-  // Legacy accounts created before grade controls remain usable until the
-  // administrator assigns their grade from the control center.
-  if (access.grade === null) return true;
+  if (access.grade === null) return false;
   if (access.grade === grade) return true;
   return access.allowedCurricula.some((slug) => slug.endsWith(`primary-${grade}`));
 }

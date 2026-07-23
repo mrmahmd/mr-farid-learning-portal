@@ -45,6 +45,10 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
 
       const assignedGrade = typeof access?.grade === "number" ? access.grade : null;
       const extraCurricula = Array.isArray(access?.allowed_curricula) ? access.allowed_curricula : [];
+      if (assignedGrade === null) {
+        router.replace("/student/setup-grade");
+        return;
+      }
       if (assignedGrade !== null && assignedGrade !== curriculum.grade && !extraCurricula.includes(curriculum.slug)) {
         if (isActive) setDeniedReason(`This curriculum is locked because your account is assigned to Primary ${assignedGrade}.`);
         return;

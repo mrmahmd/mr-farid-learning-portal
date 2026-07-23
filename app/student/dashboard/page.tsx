@@ -54,6 +54,12 @@ export default function StudentDashboardPage() {
     return () => { active = false; };
   }, [router]);
 
+  useEffect(() => {
+    if (!access.loading && access.signedIn && access.grade === null) {
+      router.replace("/student/setup-grade");
+    }
+  }, [access.grade, access.loading, access.signedIn, router]);
+
   const gradeCurricula = useMemo(
     () => access.grade ? curricula.filter((course) => course.grade === access.grade) : curricula,
     [access.grade],
@@ -65,7 +71,7 @@ export default function StudentDashboardPage() {
     router.replace("/");
   }
 
-  if (!profile) return <InnerPageShell className="student-dashboard-page"><section className="student-dashboard-loading"><span className="mini-logo">MF</span><h1>Student Dashboard</h1><p>{status}</p></section></InnerPageShell>;
+  if (!profile || access.loading || access.grade === null) return <InnerPageShell className="student-dashboard-page"><section className="student-dashboard-loading"><span className="mini-logo">MF</span><h1>Student Dashboard</h1><p>{status}</p></section></InnerPageShell>;
 
   const latest = rows[0];
   const latestCourse = latest ? courseFromAppId(latest.app_id) : null;

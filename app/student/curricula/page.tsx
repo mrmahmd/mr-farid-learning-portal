@@ -65,13 +65,19 @@ export default function StudentCurriculaPage() {
     };
   }, [router]);
 
+  useEffect(() => {
+    if (!access.loading && access.signedIn && access.grade === null) {
+      router.replace("/student/setup-grade");
+    }
+  }, [access.grade, access.loading, access.signedIn, router]);
+
   async function handleSignOut() {
     setStatus("Signing out...");
     await getSupabaseBrowserClient().auth.signOut();
     router.replace("/");
   }
 
-  if (!profile || access.loading) {
+  if (!profile || access.loading || access.grade === null) {
     return (
       <InnerPageShell className="student-curricula-page">
         <section className="student-curricula-card student-loading-card">

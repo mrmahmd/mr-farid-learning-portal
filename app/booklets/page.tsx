@@ -4,6 +4,7 @@ import { InnerPageShell } from "../components/InnerPageShell";
 import { CurriculumCover } from "../components/CurriculumCover";
 import { BookletAccessGate } from "../components/BookletAccessGate";
 import { canOpenGrade, useStudentAccess } from "../lib/useStudentAccess";
+import Link from "next/link";
 
 const grades = [1, 2, 3, 4, 5, 6];
 const terms = ["First Term", "Second Term"];
@@ -11,6 +12,19 @@ const terms = ["First Term", "Second Term"];
 export default function BookletsPage() {
   const access = useStudentAccess();
   const visibleGrades = access.grade ? grades.filter((grade) => grade >= access.grade!) : grades;
+
+  if (!access.loading && access.signedIn && access.grade === null) {
+    return (
+      <InnerPageShell className="booklets-page">
+        <section className="glass-card standalone-form">
+          <span className="mini-logo">MF</span>
+          <h1>Choose your primary grade first</h1>
+          <p dir="rtl">اختر مرحلتك الدراسية أولًا حتى تظهر لك البوكلتس الخاصة بمرحلتك.</p>
+          <Link className="primary-button" href="/student/setup-grade">Choose My Grade · اختيار المرحلة</Link>
+        </section>
+      </InnerPageShell>
+    );
+  }
 
   return (
     <InnerPageShell className="booklets-page">
