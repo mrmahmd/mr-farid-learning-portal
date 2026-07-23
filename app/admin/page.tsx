@@ -33,6 +33,7 @@ export default function AdminDashboardPage() {
   const [createMessage, setCreateMessage] = useState("");
   const [creating, setCreating] = useState(false);
   const [editingStudentId, setEditingStudentId] = useState<string | null>(null);
+  const [editingGrade, setEditingGrade] = useState(1);
   const [accessMode, setAccessMode] = useState<AccessMode>("grade");
   const [selectedCurricula, setSelectedCurricula] = useState<string[]>([]);
   const [bookletAccess, setBookletAccess] = useState(true);
@@ -143,6 +144,7 @@ export default function AdminDashboardPage() {
 
   function openAccessEditor(student: StudentRow) {
     setEditingStudentId(student.id);
+    setEditingGrade(student.grade ?? 1);
     setAccessMode(student.accessMode);
     setSelectedCurricula(student.allowedCurricula);
     setBookletAccess(student.bookletAccess);
@@ -160,7 +162,7 @@ export default function AdminDashboardPage() {
     const body = {
       userId: student.id,
       action: "update_access",
-      grade: student.grade,
+      grade: editingGrade,
       accessMode,
       allowedCurricula: accessMode === "custom" ? selectedCurricula : [],
       bookletAccess,
@@ -265,11 +267,17 @@ export default function AdminDashboardPage() {
               if (!student) return null;
               return <div className="student-access-editor">
                 <div className="access-editor-heading">
-                  <div><span className="panel-kicker">CONTENT ACCESS</span><h3>{student.name}</h3><p>{student.username} · Primary {student.grade ?? "not assigned"}</p></div>
+                  <div><span className="panel-kicker">CONTENT ACCESS</span><h3>{student.name}</h3><p>{student.username} · Primary {editingGrade}</p></div>
                   <button type="button" onClick={() => setEditingStudentId(null)}>Close</button>
                 </div>
+                <label className="access-grade-control">
+                  <span><b>Student Grade</b><small>Changing this updates the grade shown beside the student after saving.</small></span>
+                  <select value={editingGrade} onChange={(event) => setEditingGrade(Number(event.target.value))}>
+                    {[1, 2, 3, 4, 5, 6].map((grade) => <option key={grade} value={grade}>Primary {grade}</option>)}
+                  </select>
+                </label>
                 <div className="access-presets">
-                  <button className={accessMode === "grade" ? "active" : ""} type="button" onClick={() => setAccessMode("grade")}><b>Grade Only</b><small>Open both curricula for Primary {student.grade ?? "—"}</small></button>
+                  <button className={accessMode === "grade" ? "active" : ""} type="button" onClick={() => setAccessMode("grade")}><b>Grade Only</b><small>Open both curricula for Primary {editingGrade}</small></button>
                   <button className={accessMode === "custom" ? "active" : ""} type="button" onClick={() => setAccessMode("custom")}><b>Choose Curricula</b><small>Open only the courses selected below</small></button>
                   <button className={accessMode === "all" ? "active" : ""} type="button" onClick={() => setAccessMode("all")}><b>Full Portal</b><small>Open every curriculum, game and booklet</small></button>
                   <button className={accessMode === "none" ? "active danger" : "danger"} type="button" onClick={() => setAccessMode("none")}><b>Close All</b><small>Lock all learning content</small></button>
