@@ -28,6 +28,9 @@
           ...remote,
           lessons: { ...(current.lessons || {}), ...(remote.lessons || {}) },
           reviews: { ...(current.reviews || {}), ...(remote.reviews || {}) },
+          stations: { ...(current.stations || {}), ...(remote.stations || {}) },
+          rewardedQuestions: { ...(current.rewardedQuestions || {}), ...(remote.rewardedQuestions || {}) },
+          badges: remote.badges || current.badges || [],
         }),
         onStatus: ({ online, message }) => window.Primary2Store?.setSyncStatus?.(online, message),
       });

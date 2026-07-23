@@ -37,3 +37,9 @@
 - Lesson 2: Let’s Talk About Our Home! - pages 86-87 - 25 questions
 - Lesson 3: Where Things Are in My House! - pages 88-89 - 25 questions
 - Lesson 4: I Can Read and Write About My Home! - pages 90-92 - 25 questions
+## Professional interface update
+- Every lesson now contains six independent stations.
+- Vocabulary is displayed in one-page flashcard grids.
+- Lesson explanation points have a dedicated station.
+- Questions use a game arena with XP, stars, hearts, streaks, confetti, sounds, and visual answer states.
+- Unit artwork is displayed horizontally and uncropped.
