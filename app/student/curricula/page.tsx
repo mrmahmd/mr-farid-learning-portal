@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { InnerPageShell } from "../../components/InnerPageShell";
 import { CurriculumIcon } from "../../components/CurriculumIcon";
+import { portalAsset } from "../../asset-path";
 import { curricula } from "../../data/curricula";
 import {
   getSupabaseBrowserClient,
@@ -103,6 +104,10 @@ export default function StudentCurriculaPage() {
         <div className="student-grade-grid">
           {grades.map((grade) => (
             <article className="student-grade-card" key={grade}>
+              <div className="student-grade-card-hero">
+                <img src={portalAsset("/curriculum-covers/english-cover.png")} alt={`Primary ${grade} learning`} />
+                <div><span>PRIMARY STAGE</span><strong>Primary {grade}</strong></div>
+              </div>
               <header>
                 <span className="grade-number">{grade}</span>
                 <div>
