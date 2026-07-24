@@ -1,20 +1,15 @@
-# Connect Plus 4 – Interactive Activity Book Pro
+# Connect Plus 4 Interactive Activity Book – Final Rebuild
 
-## Start
-Open `START_HERE.html` after extracting the ZIP file.
+Open `START_HERE.html` or `index.html` after extracting the ZIP.
 
-## What is included
-- The complete Activity Book, page by page, in the original order.
-- Lessons that span two or three pages are grouped into one lesson station.
-- Every exercise is presented as an individual activity card, not as a whole-page worksheet.
-- The relevant exercise image from the original book is placed beside digital controls.
-- Colorful multiple-choice buttons, writing fields, matching, ordering, drawing and project areas.
-- Creative/pair activities are marked **Optional Activity** and do not block progress.
-- `Show Original Page` / `Hide Original Page` displays all original pages belonging to the lesson.
-- XP, stars, lesson completion, progress saving and Continue Last Activity.
-- Works locally after extracting the project; no server is required.
-
-## Important
-This build focuses on accurate visual transformation and student interaction. Open-ended and image-based activities are saved for teacher review. The project structure is ready for adding a manually verified automatic answer key later.
+## What is different in this rebuild
+- Questions and reading passages are written inside the HTML interface.
+- Students answer directly in colorful inputs, buttons, True/False controls and writing areas.
+- Relevant workbook images are placed beside activities.
+- `Show Original Page` is only an optional reference and toggles to `Hide Original Page`.
+- Lessons that span two or three pages are grouped together with page tabs.
+- Creative, partner and Braille-style activities are marked Optional and do not block completion.
+- Progress, XP, stars, sound and answers are saved locally in the browser.
+- No web server or internet connection is required.
 
 Prepared and Designed by: Mr.Mohamed Farid
