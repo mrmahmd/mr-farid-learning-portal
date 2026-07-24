@@ -1,76 +1,113 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Connect Plus 4 — Interactive Activity Book</title>
-<link rel="stylesheet" href="styles.css">
-<style>.portalLinks{position:fixed;top:88px;left:16px;z-index:9999;display:flex;gap:8px}.portalLinks a{padding:9px 13px;border-radius:999px;color:#fff;background:#173e7d;font:800 12px Segoe UI,Arial;text-decoration:none;box-shadow:0 8px 18px #173e7d55}.portalLinks a:hover{background:#2563eb}@media(max-width:640px){.portalLinks{top:78px;left:8px;right:8px;justify-content:center}.portalLinks a{font-size:11px;padding:8px 10px}}</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Connect Plus 4 — Interactive Activity Book</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>.portalLinks{position:fixed;top:88px;left:16px;z-index:9999;display:flex;gap:8px}.portalLinks a{padding:9px 13px;border-radius:999px;color:#fff;background:#173e7d;font:800 12px Segoe UI,Arial;text-decoration:none;box-shadow:0 8px 18px #173e7d55}.portalLinks a:hover{background:#2563eb}@media(max-width:640px){.portalLinks{top:78px;left:8px;right:8px;justify-content:center}.portalLinks a{font-size:11px;padding:8px 10px}}</style>
+  <script defer src="book-data.js"></script>
+  <script defer src="app.js"></script>
 </head>
 <body>
 <nav class="portalLinks" aria-label="Portal navigation"><a href="../">Assessment Books</a><a href="../../">Portal Home</a></nav>
-<div id="app">
-<header class="topbar">
-  <button class="brand" onclick="showHome()">
-    <span class="brandIcon">📚</span>
-    <span><strong>Connect Plus 4</strong><small>Interactive Activity Book • Term 1</small></span>
-  </button>
-  <div class="topStats">
-    <div class="stat"><span>⭐</span><b id="stars">0</b><small>Stars</small></div>
-    <div class="stat"><span>🏆</span><b id="xp">0</b><small>XP</small></div>
-    <div class="progressBox">
-      <div><b>Progress</b><span id="progressText">0%</span></div>
-      <div class="progressTrack"><div id="progressBar"></div></div>
-    </div>
-    <button id="soundBtn" class="iconBtn" onclick="toggleSound()">🔊</button>
-  </div>
-</header>
+<div id="cp4-app" class="cp4-app">
+  <div id="cp4-error" class="cp4-error cp4-hidden" role="alert"></div>
 
-<main id="homeView">
-  <section class="hero">
-    <div class="heroText">
-      <span class="eyebrow">A genuine digital workbook</span>
-      <h1>Every exercise rewritten as a real interactive activity.</h1>
-      <p>The original page is available only as an optional reference. Students answer directly inside colorful activities.</p>
-      <div class="heroButtons">
-        <button class="primary big" onclick="startBook()">Start the Book →</button>
-        <button class="secondary big" onclick="continueBook()">Continue Last Activity</button>
+  <header class="cp4-topbar">
+    <button type="button" class="cp4-brand" data-action="home" aria-label="Return to book home">
+      <span class="cp4-brand__icon">📚</span>
+      <span class="cp4-brand__text">
+        <strong>Connect Plus 4</strong>
+        <small>Interactive Activity Book • Term 1</small>
+      </span>
+    </button>
+
+    <div class="cp4-topstats">
+      <div class="cp4-stat">
+        <span class="cp4-stat__icon">⭐</span>
+        <b id="cp4-stars">0</b>
+        <small>Stars</small>
       </div>
+      <div class="cp4-stat">
+        <span class="cp4-stat__icon">🏆</span>
+        <b id="cp4-xp">0</b>
+        <small>XP</small>
+      </div>
+      <div class="cp4-progressbox">
+        <div class="cp4-progressbox__head">
+          <b>Progress</b>
+          <span id="cp4-progress-text">0%</span>
+        </div>
+        <div class="cp4-progress-track">
+          <div id="cp4-progress-bar" class="cp4-progress-bar"></div>
+        </div>
+      </div>
+      <button type="button" class="cp4-iconbtn" data-action="toggle-sound" id="cp4-sound-btn" aria-label="Toggle sound">🔊</button>
     </div>
-    <div class="heroVisual">
-      <div class="orbit orbit1">🧩<b>Drag & Drop</b></div>
-      <div class="orbit orbit2">✅<b>Choose</b></div>
-      <div class="orbit orbit3">✍️<b>Write</b></div>
-      <div class="bookEmoji">📖</div>
-    </div>
-  </section>
-  <section class="unitsSection">
-    <div class="sectionHead"><span>Explore the book</span><h2>Themes, units, reviews and readers</h2></div>
-    <div id="unitGrid" class="unitGrid"></div>
-  </section>
-</main>
+  </header>
 
-<main id="bookView" class="bookLayout hidden">
-  <aside id="sidebar" class="sidebar"></aside>
-  <section class="workspace">
-    <div id="lessonHeader" class="lessonHeader"></div>
-    <section id="originalPages" class="originalPages hidden"></section>
-    <div id="pageTabs" class="pageTabs"></div>
-    <div id="activities"></div>
-    <div class="lessonNav">
-      <button class="secondary" onclick="previousLesson()">← Previous Lesson</button>
-      <button class="primary" onclick="completeLesson()">Complete Lesson ✓</button>
-      <button class="primary" onclick="nextLesson()">Next Lesson →</button>
-    </div>
-  </section>
-</main>
+  <main id="cp4-home-view">
+    <section class="cp4-hero">
+      <div class="cp4-hero__copy">
+        <span class="cp4-eyebrow">A genuine digital workbook</span>
+        <h1>Learn, practise and enjoy every activity.</h1>
+        <p>Every exercise is rewritten as a real interactive task. The original workbook page remains available only as an optional reference.</p>
+        <div class="cp4-hero__buttons">
+          <button type="button" class="cp4-btn cp4-btn--white cp4-btn--large" data-action="start-book">
+            Start the Book <span aria-hidden="true">→</span>
+          </button>
+          <button type="button" class="cp4-btn cp4-btn--glass cp4-btn--large" data-action="continue-book">
+            Continue Last Activity
+          </button>
+        </div>
+      </div>
 
-<div id="toast" class="toast"></div>
-<div id="celebration" class="celebration hidden">
-  <div class="celebrationCard"><div class="celebrateEmoji">🎉</div><h2>Lesson Complete!</h2><p>You earned stars and XP.</p><button class="primary" onclick="closeCelebration()">Continue</button></div>
+      <div class="cp4-hero__visual" aria-hidden="true">
+        <div class="cp4-feature cp4-feature--one"><span>🧩</span><b>Drag & Drop</b></div>
+        <div class="cp4-feature cp4-feature--two"><span>✅</span><b>Choose</b></div>
+        <div class="cp4-feature cp4-feature--three"><span>✍️</span><b>Write</b></div>
+        <div class="cp4-bookicon">📖</div>
+      </div>
+    </section>
+
+    <section class="cp4-units-section">
+      <div class="cp4-section-head">
+        <span>Explore the book</span>
+        <h2>Themes, units, reviews and readers</h2>
+      </div>
+      <div id="cp4-unit-grid" class="cp4-unit-grid"></div>
+    </section>
+  </main>
+
+  <main id="cp4-book-view" class="cp4-book-layout cp4-hidden">
+    <aside id="cp4-sidebar" class="cp4-sidebar" aria-label="Book navigation"></aside>
+
+    <section class="cp4-workspace">
+      <div id="cp4-lesson-header" class="cp4-lesson-header"></div>
+      <section id="cp4-original-pages" class="cp4-original-pages cp4-hidden"></section>
+      <div id="cp4-page-tabs" class="cp4-page-tabs"></div>
+      <div id="cp4-activities"></div>
+
+      <div class="cp4-lesson-nav">
+        <button type="button" class="cp4-btn cp4-btn--soft" data-action="previous-lesson">← Previous Lesson</button>
+        <button type="button" class="cp4-btn cp4-btn--success" data-action="complete-lesson">Complete Lesson ✓</button>
+        <button type="button" class="cp4-btn cp4-btn--primary" data-action="next-lesson">Next Lesson →</button>
+      </div>
+    </section>
+  </main>
+
+  <div id="cp4-toast" class="cp4-toast" role="status" aria-live="polite"></div>
+
+  <div id="cp4-celebration" class="cp4-celebration cp4-hidden" role="dialog" aria-modal="true">
+    <div class="cp4-celebration__card">
+      <div class="cp4-celebration__emoji">🎉</div>
+      <h2>Lesson Complete!</h2>
+      <p>You earned stars and XP.</p>
+      <button type="button" class="cp4-btn cp4-btn--primary cp4-btn--large" data-action="close-celebration">Continue</button>
+    </div>
+  </div>
 </div>
-</div>
-<script src="book-data.js"></script>
-<script src="app.js"></script>
 </body>
 </html>
