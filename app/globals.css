@@ -121,7 +121,7 @@ body { font-size: 16px; }
   margin: 14px auto 0;
   padding: 0 18px;
   display: grid;
-  grid-template-columns: auto auto 1fr;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 28px;
   border: 1px solid rgba(255, 255, 255, 0.82);
@@ -186,10 +186,11 @@ body { font-size: 16px; }
 }
 
 .desktop-nav {
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  justify-self: end;
+  justify-self: stretch;
   gap: 8px;
   direction: ltr;
 }
@@ -225,8 +226,9 @@ body { font-size: 16px; }
 .header-actions {
   display: flex;
   align-items: center;
-  justify-self: start;
-  gap: 12px;
+  justify-self: end;
+  gap: 8px;
+  white-space: nowrap;
 }
 
 .nav-login {
@@ -1189,9 +1191,10 @@ input::placeholder { color: #9aacc0; }
 @media (max-width: 1260px) {
   .hero-content { grid-template-columns: 34% 38% 28%; gap: 0; }
   .hero-copy h1 { font-size: 60px; }
-  .site-header { gap: 18px; }
+  .site-header { gap: 12px; }
   .desktop-nav { gap: 6px; }
-  .desktop-nav a { padding: 9px 11px; font-size: 11px; }
+  .desktop-nav a { padding: 8px 9px; font-size: 10px; }
+  .nav-login, .nav-create { padding-left: 10px; padding-right: 10px; font-size: 11px; }
 }
 
 @media (max-width: 1050px) {
