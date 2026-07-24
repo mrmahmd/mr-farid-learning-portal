@@ -7,8 +7,15 @@
 <link rel="icon" href="assets/icons/book.svg">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="stylesheet" href="css/styles.css">
+<style>
+  .portal-links{position:fixed;top:14px;left:18px;z-index:20;display:flex;gap:8px;pointer-events:none}
+  .portal-links a{pointer-events:auto;padding:9px 13px;border:1px solid rgba(255,255,255,.28);border-radius:999px;color:#fff;background:rgba(23,37,84,.88);box-shadow:0 8px 20px rgba(15,23,42,.18);font:800 12px/1.1 Segoe UI,Arial,sans-serif;text-decoration:none;backdrop-filter:blur(12px);transition:.2s ease}
+  .portal-links a:hover{transform:translateY(-2px);background:#2563eb}
+  @media(max-width:640px){.portal-links{top:8px;left:8px;right:8px;justify-content:center}.portal-links a{font-size:11px;padding:8px 10px}}
+</style>
 </head>
 <body>
+<nav class="portal-links" aria-label="Portal navigation"><a href="../">← Assessment Books</a><a href="../../">Portal Home →</a></nav>
 <header class="topbar">
   <button class="brand" id="homeBtn" aria-label="Home"><img src="assets/icons/book.svg"><span><b>Primary 4 English</b><small>Interactive Assessment Workbook</small></span></button>
   <div class="global-progress"><div><span id="progressLabel">Book progress</span><strong id="progressText">0%</strong></div><div class="track"><i id="progressFill"></i></div></div>
