@@ -1,7 +1,76 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connect Plus 4 Interactive Activity Book</title><link rel="stylesheet" href="styles.css"><style>.portalLinks{position:fixed;top:88px;left:16px;z-index:9999;display:flex;gap:8px}.portalLinks a{padding:9px 13px;border-radius:999px;color:#fff;background:#173e7d;font:800 12px Segoe UI,Arial;text-decoration:none;box-shadow:0 8px 18px #173e7d55}.portalLinks a:hover{background:#2563eb}@media(max-width:640px){.portalLinks{top:78px;left:8px;right:8px;justify-content:center}.portalLinks a{font-size:11px;padding:8px 10px}}</style></head><body>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Connect Plus 4 — Interactive Activity Book</title>
+<link rel="stylesheet" href="styles.css">
+<style>.portalLinks{position:fixed;top:88px;left:16px;z-index:9999;display:flex;gap:8px}.portalLinks a{padding:9px 13px;border-radius:999px;color:#fff;background:#173e7d;font:800 12px Segoe UI,Arial;text-decoration:none;box-shadow:0 8px 18px #173e7d55}.portalLinks a:hover{background:#2563eb}@media(max-width:640px){.portalLinks{top:78px;left:8px;right:8px;justify-content:center}.portalLinks a{font-size:11px;padding:8px 10px}}</style>
+</head>
+<body>
 <nav class="portalLinks" aria-label="Portal navigation"><a href="../">Assessment Books</a><a href="../../">Portal Home</a></nav>
-<header class="appHeader"><div class="brand"><span class="brandIcon">📚</span><div><strong>Connect Plus 4</strong><small>Activity Book • Term 1</small></div></div><div class="progressBox"><div class="progressLabel"><span>Progress</span><span data-pct>0%</span></div><div class="progressTrack"><div class="progressBar"></div></div></div><div class="stats"><span class="stat">⭐ <span data-stars>0</span></span><span class="stat">🏆 <span data-xp>0</span> XP</span><button class="soundBtn" id="soundBtn" onclick="toggleSound()">🔊</button></div></header>
-<section id="home" class="home"><div class="hero"><div class="heroText"><span class="eyebrow">✨ A real interactive workbook</span><h1>Learn, play and complete every activity!</h1><p>Every question, reading passage and exercise has been rewritten as a direct interactive activity. The original workbook page stays available only as an optional reference.</p><div class="heroActions"><button class="primaryBtn" onclick="openLesson(0,0,0)">Start the Book →</button><button class="ghostBtn" onclick="continueBook()">Continue Last Activity</button></div></div><div class="heroVisual"><img src="assets/hero-preview.png" alt="Colorful interactive workbook preview"></div></div><div class="sectionHead"><div><h2>Units, Reviews and Readers</h2><p>Choose a unit and start solving directly.</p></div></div><div id="unitGrid" class="unitGrid"></div><div class="footer">Prepared and Designed by: Mr.Mohamed Farid</div></section>
-<section id="book" class="book hidden"><aside id="sideNav" class="sidebar"></aside><main class="main"><section id="lessonTop" class="lessonTop"><div><small id="lessonDesc"></small><h1 id="lessonTitle"></h1></div><div id="lessonIcon" class="lessonIcon"></div></section><div id="pageTabs" class="pageTabs"></div><button id="originalToggle" class="originalToggle" onclick="toggleOriginal()">👁 Show Original Page</button><section id="originalPanel" class="originalPanel"><img id="originalImage" alt="Original workbook page"></section><div id="activityList" class="activityList"></div><div class="lessonNav"><button class="navBtn prev" onclick="lessonStep(-1)">← Previous</button><button class="completeLesson" onclick="completeLesson()">✓ Complete Lesson</button><button class="navBtn next" onclick="lessonStep(1)">Next →</button></div><div class="footer">Prepared and Designed by: Mr.Mohamed Farid</div></main></section>
-<div id="celebrate" class="celebrate"><div class="celebrateCard"><div class="big">🎉</div><h2 id="celebrateTitle">Lesson completed!</h2><p>You earned 5 stars and 40 XP. Great work!</p><button onclick="document.getElementById('celebrate').classList.remove('open');lessonStep(1)">Continue →</button></div></div>
-<script src="book-data.js"></script><script src="app.js"></script></body></html>
+<div id="app">
+<header class="topbar">
+  <button class="brand" onclick="showHome()">
+    <span class="brandIcon">📚</span>
+    <span><strong>Connect Plus 4</strong><small>Interactive Activity Book • Term 1</small></span>
+  </button>
+  <div class="topStats">
+    <div class="stat"><span>⭐</span><b id="stars">0</b><small>Stars</small></div>
+    <div class="stat"><span>🏆</span><b id="xp">0</b><small>XP</small></div>
+    <div class="progressBox">
+      <div><b>Progress</b><span id="progressText">0%</span></div>
+      <div class="progressTrack"><div id="progressBar"></div></div>
+    </div>
+    <button id="soundBtn" class="iconBtn" onclick="toggleSound()">🔊</button>
+  </div>
+</header>
+
+<main id="homeView">
+  <section class="hero">
+    <div class="heroText">
+      <span class="eyebrow">A genuine digital workbook</span>
+      <h1>Every exercise rewritten as a real interactive activity.</h1>
+      <p>The original page is available only as an optional reference. Students answer directly inside colorful activities.</p>
+      <div class="heroButtons">
+        <button class="primary big" onclick="startBook()">Start the Book →</button>
+        <button class="secondary big" onclick="continueBook()">Continue Last Activity</button>
+      </div>
+    </div>
+    <div class="heroVisual">
+      <div class="orbit orbit1">🧩<b>Drag & Drop</b></div>
+      <div class="orbit orbit2">✅<b>Choose</b></div>
+      <div class="orbit orbit3">✍️<b>Write</b></div>
+      <div class="bookEmoji">📖</div>
+    </div>
+  </section>
+  <section class="unitsSection">
+    <div class="sectionHead"><span>Explore the book</span><h2>Themes, units, reviews and readers</h2></div>
+    <div id="unitGrid" class="unitGrid"></div>
+  </section>
+</main>
+
+<main id="bookView" class="bookLayout hidden">
+  <aside id="sidebar" class="sidebar"></aside>
+  <section class="workspace">
+    <div id="lessonHeader" class="lessonHeader"></div>
+    <section id="originalPages" class="originalPages hidden"></section>
+    <div id="pageTabs" class="pageTabs"></div>
+    <div id="activities"></div>
+    <div class="lessonNav">
+      <button class="secondary" onclick="previousLesson()">← Previous Lesson</button>
+      <button class="primary" onclick="completeLesson()">Complete Lesson ✓</button>
+      <button class="primary" onclick="nextLesson()">Next Lesson →</button>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast"></div>
+<div id="celebration" class="celebration hidden">
+  <div class="celebrationCard"><div class="celebrateEmoji">🎉</div><h2>Lesson Complete!</h2><p>You earned stars and XP.</p><button class="primary" onclick="closeCelebration()">Continue</button></div>
+</div>
+</div>
+<script src="book-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

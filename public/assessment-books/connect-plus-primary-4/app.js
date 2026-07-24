@@ -1,39 +1,193 @@
 
-const B=window.BOOK_DATA;function loadState(){const d={xp:0,stars:0,done:{},answers:{},last:null,sound:true};try{return Object.assign(d,JSON.parse(localStorage.getItem('cp4_final_state')||'{}'))}catch(e){return d}}const S=loadState();let currentUnit=0,currentLesson=0,currentPage=0;const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const colors={violet:'#873bf1',blue:'#2877f6',green:'#19a66a',orange:'#ff8b2c',pink:'#ef4f9b',purple:'#7551df',teal:'#00a8a8',red:'#ed5656',gold:'#e9a719',rose:'#d94d75'};
-const CHOICE_OVERRIDES={"You shouldn’t eat too much sugar / salad.":{"stem":"You shouldn’t eat too much ______.","opts":["sugar","salad"]},"Veins carry blood away from / to the heart.":{"stem":"Veins carry blood ______ the heart.","opts":["away from","to"]},"Triplets are three sisters / siblings.":{"stem":"Triplets are three ______.","opts":["sisters","siblings"]},"A copy editor / designer checks the story before it is printed.":{"stem":"A ______ checks the story before it is printed.","opts":["copy editor","designer"]},"The body absorbs saliva / nutrients from our food.":{"stem":"The body absorbs ______ from our food.","opts":["saliva","nutrients"]},"A magnet will pick up wooden / metal objects.":{"stem":"A magnet will pick up ______ objects.","opts":["wooden","metal"]},"Artists use shading to make a picture look three-dimensional / flat.":{"stem":"Artists use shading to make a picture look ______.","opts":["three-dimensional","flat"]},"The North Pole is hotter / colder than the Equator.":{"stem":"The North Pole is ______ than the Equator.","opts":["hotter","colder"]},"People who are deaf / blind or can’t hear well can learn sign language.":{"stem":"People who are ______ or can’t hear well can learn sign language.","opts":["deaf","blind"]},"We use our hands / feet, faces and bodies to communicate.":{"stem":"We use our ______, faces and bodies to communicate.","opts":["hands","feet"]},"Sign language is the same / different in each country.":{"stem":"Sign language is ______ in each country.","opts":["the same","different"]},"People use sight / smell instead of hearing.":{"stem":"People use ______ instead of hearing.","opts":["sight","smell"]},"People who are blind or cannot hear / see well can learn Braille.":{"stem":"People who are blind or cannot ______ well can learn Braille.","opts":["hear","see"]},"Braille uses combinations of dots / letters.":{"stem":"Braille uses combinations of ______.","opts":["dots","letters"]},"People hear / feel the dots with their fingers.":{"stem":"People ______ the dots with their fingers.","opts":["hear","feel"]},"They use hearing / touch instead of sight to read.":{"stem":"They use ______ instead of sight to read.","opts":["hearing","touch"]},"At school, I like creative subjects / math and science subjects / all subjects.":{"stem":"At school, I like…","opts":["creative subjects","math and science subjects","all subjects"]},"At the weekend, I like playing sports / doing quizzes / drawing pictures.":{"stem":"At the weekend, I like…","opts":["playing sports","doing quizzes","drawing pictures"]},"I practice math every day / sometimes / only in math lessons.":{"stem":"I practice math…","opts":["every day","sometimes","only in math lessons"]},"I listen to music every day / sometimes / never.":{"stem":"I listen to music…","opts":["every day","sometimes","never"]},"The Paralympic Games is an Egyptian competition / an international competition.":{"stem":"The Paralympic Games is…","opts":["an Egyptian competition","an international competition"]},"It is for athletes with disabilities / athletes who do more than one sport.":{"stem":"The Paralympic Games is for…","opts":["athletes with disabilities","athletes who do more than one sport"]},"It is held four times a year / every four years.":{"stem":"The Paralympic Games is held…","opts":["four times a year","every four years"]},"It is held in a different country each time / in the same country each time.":{"stem":"The Paralympic Games is held…","opts":["in a different country each time","in the same country each time"]},"Sugary foods are bad for you / Eat well and be healthy! / Eat more protein and get fit / What food do you like?":{"stem":"Choose the best title.","opts":["Sugary foods are bad for you","Eat well and be healthy!","Eat more protein and get fit","What food do you like?"]},"This invertebrate has a hard / soft shell and lives on land.":{"stem":"This invertebrate has a ______ shell and lives on land.","opts":["hard","soft"]},"The atlas moth is one of the most colorful / biggest insects on Earth.":{"stem":"The atlas moth is one of the most ______ insects on Earth.","opts":["colorful","biggest"]},"Under the sea, some fish and plants are brightly colored / have no colors.":{"stem":"Under the sea, some fish and plants…","opts":["are brightly colored","have no colors"]},"Bright colors can help fish find / hide from predators.":{"stem":"Bright colors can help fish ______ predators.","opts":["find","hide from"]},"Coral has one color / different colors.":{"stem":"Coral has…","opts":["one color","different colors"]},"Many predators eat / don’t eat prey that is brightly colored.":{"stem":"Many predators ______ prey that is brightly colored.","opts":["eat","don’t eat"]},"Bright colors can warn that an animal is a predator / poisonous.":{"stem":"Bright colors can warn that an animal is…","opts":["a predator","poisonous"]},"A dynasty was an important person / family that ruled for many years.":{"stem":"A dynasty was an important ______ that ruled for many years.","opts":["person","family"]},"People started to live near the Nile about 8,000 / 9,000 years ago.":{"stem":"People started to live near the Nile about ______ years ago.","opts":["8,000","9,000"]},"Mena united / divided the north and south to form Egypt.":{"stem":"Mena ______ the north and south to form Egypt.","opts":["united","divided"]},"There are four / three parts to the history of Ancient Egypt.":{"stem":"There are ______ parts to the history of Ancient Egypt.","opts":["four","three"]},"I live in a sparsely populated / densely populated area.":{"stem":"I live in a ______ area.","opts":["sparsely populated","densely populated"]},"There aren’t many / are some services.":{"stem":"There ______ services.","opts":["aren’t many","are some"]},"It is a rural / urban environment.":{"stem":"It is a ______ environment.","opts":["rural","urban"]},"I study hard although / so that I can get high grades.":{"stem":"I study hard ______ I can get high grades.","opts":["although","so that"]},"The guide explained how carpets are made so that / while we watched.":{"stem":"The guide explained how carpets are made ______ we watched.","opts":["so that","while"]},"I always wash my hands before / while I have my meal.":{"stem":"I always wash my hands ______ I have my meal.","opts":["before","while"]},"My brother worked hard after / so he was very tired.":{"stem":"My brother worked hard, ______ he was very tired.","opts":["after","so"]},"Before / After I went to the club, I met my friends there.":{"stem":"______ I went to the club, I met my friends there.","opts":["Before","After"]},"I opened the door after / while the doorbell rang.":{"stem":"I opened the door ______ the doorbell rang.","opts":["after","while"]},"Yunis is saving money after / so that he can buy his grandma a present.":{"stem":"Yunis is saving money ______ he can buy his grandma a present.","opts":["after","so that"]},"Samira met Dina as soon as / although she finished her homework.":{"stem":"Samira met Dina ______ she finished her homework.","opts":["as soon as","although"]},"I don’t like synthetic dyes, although / before the colors look bright.":{"stem":"I don’t like synthetic dyes, ______ the colors look bright.","opts":["although","before"]},"You must visit Karnak Temple while / before you leave Luxor.":{"stem":"You must visit Karnak Temple ______ you leave Luxor.","opts":["while","before"]},"Every time / Even though Dad goes to Cairo, he buys us a present.":{"stem":"______ Dad goes to Cairo, he buys us a present.","opts":["Every time","Even though"]},"We sometimes go to Hurghada so that / after we have our mid-year vacation.":{"stem":"We sometimes go to Hurghada ______ we have our mid-year vacation.","opts":["so that","after"]},"Youssef gave his / her cousin a present.":{"stem":"Youssef gave ______ cousin a present.","opts":["his","her"]},"Lara gave his / her cousin a card.":{"stem":"Lara gave ______ cousin a card.","opts":["his","her"]},"When their cousin opened his / their present, he was very happy.":{"stem":"When their cousin opened ______ present, he was very happy.","opts":["his","their"]},"The government will send water to new desert cities through a pipe / by road.":{"stem":"The government will send water to new desert cities…","opts":["through a pipe","by road"]},"The best way from Luxor to Aswan is by rail / road because it is comfortable.":{"stem":"The best way from Luxor to Aswan is by…","opts":["rail","road"]},"The fastest way to send goods from Cairo to the UK is by water / air.":{"stem":"The fastest way to send goods from Cairo to the UK is by…","opts":["water","air"]},"Ancient Egyptians sent most goods by rail / water on the River Nile.":{"stem":"Ancient Egyptians sent most goods by…","opts":["rail","water on the River Nile"]},"The easiest way from the suburbs to the city center is by road / pipe.":{"stem":"The easiest way from the suburbs to the city center is by…","opts":["road","pipe"]},"do / don’t use names, birthdays, phone numbers or addresses.":{"stem":"______ use names, birthdays, phone numbers or addresses.","opts":["do","don’t"]},"do / don’t use more than eight characters.":{"stem":"______ use more than eight characters.","opts":["do","don’t"]},"do / don’t use easy words or numbers like password or 1234.":{"stem":"______ use easy words or numbers like password or 1234.","opts":["do","don’t"]},"do / don’t tell your friends your passwords.":{"stem":"______ tell your friends your passwords.","opts":["do","don’t"]},"do / don’t use different passwords for different accounts.":{"stem":"______ use different passwords for different accounts.","opts":["do","don’t"]},"There is a topic sentence / There is no topic sentence.":{"stem":"The model text…","opts":["has a topic sentence","has no topic sentence"]},"The introduction shows the main idea / does not show the main idea.":{"stem":"The introduction…","opts":["shows the main idea","does not show the main idea"]},"There are transitions to link ideas / There are no transitions.":{"stem":"The model text…","opts":["has transitions to link ideas","has no transitions"]},"The introduction is developed with details / without details.":{"stem":"The introduction is developed…","opts":["with details","without details"]},"The conclusion summarizes the topic / adds a new topic.":{"stem":"The conclusion…","opts":["summarizes the topic","adds a new topic"]},"Use the safe search option / Do not use it":{"stem":"When searching online…","opts":["Use the safe search option","Do not use it"]},"Click on ads / Do not click on ads":{"stem":"When searching online…","opts":["Click on ads","Do not click on ads"]},"Add “for kids” to your search / Do not add it":{"stem":"When searching online…","opts":["Add “for kids” to your search","Do not add it"]},"Use specific words / Use very general words":{"stem":"When searching online…","opts":["Use specific words","Use very general words"]},"Click the word “sponsor” / Avoid sponsored results":{"stem":"When searching online…","opts":["Click the word “sponsor”","Avoid sponsored results"]},"Read the options carefully / Choose the first result immediately":{"stem":"When searching online…","opts":["Read the options carefully","Choose the first result immediately"]},"Choose the best option for you / Choose any result":{"stem":"When searching online…","opts":["Choose the best option for you","Choose any result"]},"Changing one kind of energy into another is wind power / transfer of energy.":{"stem":"Changing one kind of energy into another is…","opts":["wind power","transfer of energy"]},"Solar panels collect turbine / solar energy.":{"stem":"Solar panels collect…","opts":["turbine","solar energy"]},"Solar panels turn solar energy into electrical / potential energy.":{"stem":"Solar panels turn solar energy into…","opts":["electrical energy","potential energy"]},"When this energy turns on a light, it becomes kinetic / light energy.":{"stem":"When this energy turns on a light, it becomes…","opts":["kinetic energy","light energy"]},"I’ll take you to the park as soon as / though I’ve finished.":{"stem":"I’ll take you to the park ______ I’ve finished.","opts":["as soon as","though"]},"You have to cook the egg after / before you eat it.":{"stem":"You have to cook the egg ______ you eat it.","opts":["after","before"]},"Every time / While we see our teacher, we feel happy.":{"stem":"______ we see our teacher, we feel happy.","opts":["Every time","While"]},"Dina brought her phone so that / although she could take photos.":{"stem":"Dina brought her phone ______ she could take photos.","opts":["so that","although"]},"She wants to buy a carpet so that / while she can use it in her bedroom.":{"stem":"She wants to buy a carpet ______ she can use it in her bedroom.","opts":["so that","while"]},"We ate sandwiches even though / while we watched football.":{"stem":"We ate sandwiches ______ we watched football.","opts":["even though","while"]},"Zeinab wanted to visit her Grandpa / Grandma.":{"stem":"Zeinab wanted to visit her…","opts":["Grandpa","Grandma"]},"Grandpa was one of the best teachers / artisans in Khayameya Street.":{"stem":"Grandpa was one of the best…","opts":["teachers","artisans"]},"Grandpa took Zeinab to the market / shop and showed her his work.":{"stem":"Grandpa took Zeinab to the ______ and showed her his work.","opts":["market","shop"]},"Grandpa says his eyes / hands are not good now.":{"stem":"Grandpa says his ______ are not good now.","opts":["eyes","hands"]},"Grandpa agrees to teach Zeinab how to sing / sew.":{"stem":"Grandpa agrees to teach Zeinab how to…","opts":["sing","sew"]},"Zeinab invites her four friends / cousins.":{"stem":"Zeinab invites her four…","opts":["friends","cousins"]},"Soon Grandpa is teaching lots of / a few children.":{"stem":"Soon Grandpa is teaching…","opts":["lots of children","a few children"]},"Grandpa and Zeinab will teach sewing at the Khayameya shop / school.":{"stem":"Grandpa and Zeinab will teach sewing at the Khayameya…","opts":["shop","school"]}};
-function save(){try{localStorage.setItem('cp4_final_state',JSON.stringify(S))}catch(e){}stats()}
-function totalLessons(){return B.units.reduce((n,u)=>n+u.lessons.length,0)}function doneCount(){return Object.keys(S.done).length}
-function stats(){const pct=Math.round(doneCount()/totalLessons()*100);$$('[data-stars]').forEach(x=>x.textContent=S.stars);$$('[data-xp]').forEach(x=>x.textContent=S.xp);$$('[data-pct]').forEach(x=>x.textContent=pct+'%');$$('.progressBar').forEach(x=>x.style.width=pct+'%')}
-function speak(text){if(!S.sound||!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=.88;speechSynthesis.speak(u)}
-function home(){save();$('#home').classList.remove('hidden');$('#book').classList.add('hidden');renderHome();window.scrollTo(0,0)}
-function renderHome(){const grid=$('#unitGrid');grid.innerHTML='';B.units.forEach((u,ui)=>{const dn=u.lessons.filter(l=>S.done[l.id]).length,p=Math.round(dn/u.lessons.length*100);const c=document.createElement('article');c.className='unitCard';c.style.setProperty('--accent',colors[u.color]);c.innerHTML=`<div class="unitTop"><div class="unitIcon">${u.icon}</div><div><small>${u.overline}</small><h3>${u.title}</h3></div></div><p>${u.description}</p><div class="unitFoot"><div class="miniProgress"><span style="width:${p}%"></span></div><span class="openPill">${dn}/${u.lessons.length} • Open →</span></div>`;c.onclick=()=>openLesson(ui,0,0);grid.appendChild(c)});stats()}
-function openLesson(ui,li,pi=0){currentUnit=ui;currentLesson=li;currentPage=pi;S.last={ui,li,pi};save();$('#home').classList.add('hidden');$('#book').classList.remove('hidden');renderSide();renderLesson();window.scrollTo(0,0)}
-function renderSide(){const side=$('#sideNav');side.innerHTML=`<div class="sideTitle">☰ Book Navigation</div><button class="homeLink" onclick="home()">🏠 Home</button>`;B.units.forEach((u,ui)=>{const wrap=document.createElement('div');wrap.className='sideUnit';wrap.style.setProperty('--accent',colors[u.color]);wrap.innerHTML=`<button class="sideUnitBtn">${u.icon} ${u.title}</button><div class="sideLessons"></div>`;const ls=wrap.querySelector('.sideLessons');u.lessons.forEach((l,li)=>{const b=document.createElement('button');b.className='lessonBtn'+(ui===currentUnit&&li===currentLesson?' active':'')+(S.done[l.id]?' done':'');b.textContent=`${l.icon} ${l.title}`;b.onclick=()=>openLesson(ui,li,0);ls.appendChild(b)});side.appendChild(wrap)})}
-function parseChoice(line){let raw=String(line).replace(/^\d+[\s.)-]*/,'').trim();if(CHOICE_OVERRIDES[raw])return CHOICE_OVERRIDES[raw];if(raw.includes(' / ')){let parts=raw.split(/\s+\/\s+/).map(x=>x.trim()).filter(Boolean);let first=parts.shift()||'';let stem='',opt1='';const qm=first.lastIndexOf('?');const cm=first.indexOf(':');if(qm>=0){stem=first.slice(0,qm+1).trim();opt1=first.slice(qm+1).trim()}else if(cm>=0&&cm<first.length-2){stem=first.slice(0,cm+1).trim();opt1=first.slice(cm+1).trim()}else{const counts=parts.map(x=>x.replace(/[.!?]+$/,'').trim().split(/\s+/).length).sort((a,b)=>a-b);let n=counts.length?counts[Math.floor((counts.length-1)/2)]:1;n=Math.max(1,Math.min(5,n));const words=first.split(/\s+/);opt1=words.slice(-n).join(' ');stem=words.slice(0,-n).join(' ').trim()}const opts=[opt1,...parts].map(x=>x.replace(/[.!?]+$/,'').trim()).filter(Boolean);return{stem:stem||'Choose the correct answer.',opts}}const m=[...raw.matchAll(/(?:^|\s)([abc])\s+(.+?)(?=(?:\s[abc]\s)|$)/gi)];if(m.length>=2)return{stem:'Choose the correct answer.',opts:m.map(x=>x[2].trim())};return{stem:raw,opts:[]}}
-function isQuestion(line){return /^\d+[\s.)-]/.test(line)||/\?$/.test(line)}
-function cleanQuestion(line){return line.replace(/^\d+[\s.)-]*/,'').trim()}
-function activityHTML(a,idx,page){const accent=colors[B.units[currentUnit].color];let lines=a.lines||[],visual=page.visuals&&page.visuals[idx%page.visuals.length];let body='';const key=`${B.units[currentUnit].lessons[currentLesson].id}-${page.page}-${a.id}`;const saved=S.answers[key]||{};
- const passageLines=lines.filter(x=>x.length>100&&!isQuestion(x));const qLines=lines.filter(x=>isQuestion(x)||x.includes(' / ')||x.includes('___')||x.includes('......'));
- if(a.type==='reading'&&passageLines.length){body+=`<div class="passage">${passageLines.join(' ')}</div>`}
- let work=lines.filter(x=>!passageLines.includes(x));if(!work.length&&passageLines.length)work=passageLines;
- if(a.type==='tf'){work.filter(x=>isQuestion(x)||x.length>18).forEach((l,i)=>{body+=`<div class="questionRow"><div class="questionText">${cleanQuestion(l)}</div><div class="tf"><button class="true ${saved[i]==='True'?'selected':''}" data-set="${key}" data-i="${i}" data-v="True">✓ True</button><button class="false ${saved[i]==='False'?'selected':''}" data-set="${key}" data-i="${i}" data-v="False">✕ False</button></div></div>`})}
- else if(a.type==='choice'){work.filter(x=>x.length>3).forEach((l,i)=>{const parsed=parseChoice(l),opts=parsed.opts;if(opts.length>=2){body+=`<div class="questionRow"><div class="questionText">${esc(parsed.stem)}</div><div class="choiceGrid">${opts.map(o=>`<button class="choice ${saved[i]===o?'selected':''}" data-set="${key}" data-i="${i}" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div></div>`}else{body+=inputRow(l,key,i,saved[i])}})}
- else if(a.type==='match'){const bank=extractBank(lines);if(bank.length)body+=`<div class="wordBank">${bank.map(w=>`<span class="wordChip">${esc(w)}</span>`).join('')}</div>`;work.filter(x=>isQuestion(x)||x.length>8).forEach((l,i)=>body+=inputRow(l,key,i,saved[i],'Type or choose the matching answer'))}
- else if(a.type==='order'){work.filter(x=>x.length>5).forEach((l,i)=>{const words=l.split(/\s*[—–-]\s*/).filter(x=>x.trim().length>0);body+=`<div class="questionRow"><div class="questionText">${cleanQuestion(l)}</div>${words.length>2?`<div class="wordBank">${words.map(w=>`<span class="wordChip">${esc(w)}</span>`).join('')}</div>`:''}<input class="answerInput autosave" data-set="${key}" data-i="${i}" value="${esc(saved[i]||'')}" placeholder="Write the correct order"></div>`})}
- else if(a.type==='creative'||a.optional){body+=`<div class="creativeBox"><p>${work.join(' ')}</p><textarea class="answerArea autosave" data-set="${key}" data-i="0" placeholder="Write your optional response or notes here...">${esc(saved[0]||'')}</textarea></div>`}
- else{const bank=extractBank(lines);if(bank.length)body+=`<div class="wordBank">${bank.map(w=>`<span class="wordChip">${esc(w)}</span>`).join('')}</div>`;let candidates=work.filter(x=>x.length>4);if(!candidates.length)candidates=[a.instruction];candidates.forEach((l,i)=>body+=inputRow(l,key,i,saved[i],a.type==='reading'?'Write your answer':'Type your answer'))}
- return `<section class="activity" style="--accent:${accent}"><div class="activityHeader"><div class="activityNo">${idx+1}</div><h2>${esc(a.instruction)}</h2>${a.optional?'<span class="optional">Optional Activity</span>':''}<button class="smallBtn" onclick="speak(${JSON.stringify((a.instruction+' '+lines.join(' ')).slice(0,1200))})">🔊 Read Aloud</button></div><div class="activityBody ${visual?'hasVisual':''}">${visual?`<div class="visualCard"><img src="${visual}" alt="Activity picture from the workbook"></div>`:''}<div>${body}<div class="saveBar"><button class="saveBtn" onclick="saveActivity(this)">Save Activity</button><span class="savedMsg">Saved ✓</span></div></div></div></section>`}
-function extractBank(lines){const s=lines.find(x=>x.startsWith('(')&&x.endsWith(')'));if(!s)return[];return s.slice(1,-1).split(/\s{2,}|\s+-\s+|,|;/).map(x=>x.trim()).filter(x=>x.length>1&&x.length<30)}
-function inputRow(l,key,i,val='',ph='Type your answer'){const q=cleanQuestion(l);const long=/\?|write|describe|why|how/i.test(q)&&q.length>55;return `<div class="questionRow"><div class="questionText">${esc(q)}</div>${long?`<textarea class="answerArea autosave" data-set="${key}" data-i="${i}" placeholder="${ph}">${esc(val||'')}</textarea>`:`<input class="answerInput autosave" data-set="${key}" data-i="${i}" value="${esc(val||'')}" placeholder="${ph}">`}</div>`}
-function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function renderLesson(){const u=B.units[currentUnit],l=u.lessons[currentLesson],p=l.pageData[currentPage];document.documentElement.style.setProperty('--accent',colors[u.color]);$('#lessonTop').style.setProperty('--accent',colors[u.color]);$('#lessonTitle').textContent=l.title;$('#lessonDesc').textContent=`${u.title} • Interactive page ${currentPage+1} of ${l.pageData.length}`;$('#lessonIcon').textContent=l.icon;const tabs=$('#pageTabs');tabs.innerHTML='';l.pageData.forEach((x,i)=>{const b=document.createElement('button');b.className='pageTab'+(i===currentPage?' active':'');b.textContent=`Workbook Page ${x.page}`;b.onclick=()=>{currentPage=i;S.last={ui:currentUnit,li:currentLesson,pi:i};save();renderLesson()};tabs.appendChild(b)});$('#originalImage').src=p.original;$('#originalPanel').classList.remove('open');$('#originalToggle').textContent='👁 Show Original Page';const list=$('#activityList');list.innerHTML=p.activities.map((a,i)=>activityHTML(a,i,p)).join('')||`<section class="activity"><h2>Page activity</h2><textarea class="answerArea autosave" data-set="${l.id}-${p.page}-general" data-i="0" placeholder="Write your answer here..."></textarea></section>`;bindAnswers();renderSide();stats();window.scrollTo(0,0)}
-function bindAnswers(){$$('.autosave').forEach(el=>{el.oninput=()=>{const k=el.dataset.set,i=el.dataset.i;S.answers[k]=S.answers[k]||{};S.answers[k][i]=el.value;save()}});$$('[data-v]').forEach(el=>el.onclick=()=>{const k=el.dataset.set,i=el.dataset.i;S.answers[k]=S.answers[k]||{};S.answers[k][i]=el.dataset.v;el.parentElement.querySelectorAll('[data-v]').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');S.xp+=2;save()})}
-function saveActivity(btn){S.xp+=5;S.stars+=1;save();const m=btn.parentElement.querySelector('.savedMsg');m.classList.add('show');setTimeout(()=>m.classList.remove('show'),1800)}
-function toggleOriginal(){const p=$('#originalPanel');p.classList.toggle('open');$('#originalToggle').textContent=p.classList.contains('open')?'🙈 Hide Original Page':'👁 Show Original Page'}
-function lessonStep(d){const u=B.units[currentUnit],l=u.lessons[currentLesson];if(d>0&&currentPage<l.pageData.length-1){currentPage++;renderLesson();return}if(d<0&&currentPage>0){currentPage--;renderLesson();return}let ui=currentUnit,li=currentLesson+d;if(li<0){ui--;if(ui<0)return;li=B.units[ui].lessons.length-1}if(li>=u.lessons.length){ui++;li=0;if(ui>=B.units.length)return}openLesson(ui,li,d>0?0:B.units[ui].lessons[li].pageData.length-1)}
-function completeLesson(){const l=B.units[currentUnit].lessons[currentLesson];if(!S.done[l.id]){S.done[l.id]=true;S.xp+=40;S.stars+=5;save()}$('#celebrateTitle').textContent=l.title+' completed!';$('#celebrate').classList.add('open');renderSide()}
-function continueBook(){if(S.last)openLesson(S.last.ui,S.last.li,S.last.pi);else openLesson(0,0,0)}
-function toggleSound(){S.sound=!S.sound;save();$('#soundBtn').textContent=S.sound?'🔊':'🔇'}
-window.home=home;window.openLesson=openLesson;window.speak=speak;window.saveActivity=saveActivity;window.toggleOriginal=toggleOriginal;window.lessonStep=lessonStep;window.completeLesson=completeLesson;window.continueBook=continueBook;window.toggleSound=toggleSound;
-document.addEventListener('DOMContentLoaded',()=>{renderHome();stats();$('#soundBtn').textContent=S.sound?'🔊':'🔇'})
+const B=window.BOOK_DATA;
+const COLORS={violet:'#7047e8',blue:'#2877f5',green:'#18a765',orange:'#ff7a3c',pink:'#e64eb6',teal:'#13aaa6',gold:'#e5a500',red:'#e75555'};
+const state=JSON.parse(localStorage.getItem('cp4_rebuilt_state')||'{"answers":{},"completed":{},"xp":0,"stars":0,"last":{"u":0,"l":0,"p":0},"sound":true}');
+let U=0,L=0,P=0,selectedToken=null;
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function save(){localStorage.setItem('cp4_rebuilt_state',JSON.stringify(state));updateStats()}
+function allLessons(){return B.units.flatMap((u,ui)=>u.lessons.map((l,li)=>({ui,li,l})))}
+function updateStats(){
+ $('#stars').textContent=state.stars;$('#xp').textContent=state.xp;
+ const lessons=allLessons(),done=lessons.filter(x=>state.completed[x.l.id]).length,pct=Math.round(done/lessons.length*100);
+ $('#progressText').textContent=pct+'%';$('#progressBar').style.width=pct+'%';
+ $('#soundBtn').textContent=state.sound?'🔊':'🔇';
+}
+function showHome(){$('#homeView').classList.remove('hidden');$('#bookView').classList.add('hidden');renderHome();window.scrollTo(0,0)}
+function startBook(){U=0;L=0;P=0;openBook()}
+function continueBook(){U=state.last.u||0;L=state.last.l||0;P=state.last.p||0;openBook()}
+function openUnit(i){U=i;L=0;P=0;openBook()}
+function openBook(){$('#homeView').classList.add('hidden');$('#bookView').classList.remove('hidden');renderSidebar();renderLesson();window.scrollTo(0,0)}
+function renderHome(){
+ $('#unitGrid').innerHTML=B.units.map((u,i)=>`<button class="unitCard" onclick="openUnit(${i})" style="background:linear-gradient(135deg,${COLORS[u.color]||'#7047e8'},${shade(COLORS[u.color]||'#7047e8',35)})"><span class="icon">${u.icon||'📘'}</span><h3>${esc(u.title)}</h3><p>${esc(u.description||'')}</p><small>${u.lessons.length} learning stations →</small></button>`).join('');
+}
+function shade(hex,amount){let c=hex.replace('#',''),n=parseInt(c,16),r=Math.min(255,(n>>16)+amount),g=Math.min(255,((n>>8)&255)+amount),b=Math.min(255,(n&255)+amount);return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1)}
+function renderSidebar(){
+ $('#sidebar').innerHTML=`<button class="sideHome" onclick="showHome()">⌂ Book Home</button>`+B.units.map((u,ui)=>`<div class="sideUnit"><div class="sideUnitTitle">${u.icon||'📘'} ${esc(u.title)}</div>${u.lessons.map((l,li)=>`<button class="lessonBtn ${ui===U&&li===L?'active':''} ${state.completed[l.id]?'done':''}" onclick="goLesson(${ui},${li})">${li+1}. ${esc(l.title)}</button>`).join('')}</div>`).join('');
+}
+function goLesson(ui,li){U=ui;L=li;P=0;renderSidebar();renderLesson();window.scrollTo(0,0)}
+function renderLesson(){
+ const u=B.units[U],l=u.lessons[L];P=Math.min(P,l.pageData.length-1);
+ state.last={u:U,l:L,p:P};save();
+ $('#lessonHeader').innerHTML=`<div><h1>${u.icon||'📘'} ${esc(l.title)}</h1><p>${esc(u.title)} • ${l.pageData.length>1?l.pageData.length+' workbook pages':'Workbook page '+l.pageData[0].page}</p></div><button id="referenceBtn" class="referenceBtn" onclick="toggleOriginal()">👁 Show Original Page${l.pageData.length>1?'s':''}</button>`;
+ $('#originalPages').classList.add('hidden');
+ $('#originalPages').innerHTML=`<h3>Original workbook reference</h3><p class="noteBox">These pages are for reference only. Complete every exercise in the interactive activities below.</p><div class="originalGrid">${l.pageData.map(p=>`<img src="${esc(p.original)}" alt="Original workbook page ${p.page}">`).join('')}</div>`;
+ $('#pageTabs').innerHTML=l.pageData.map((p,i)=>`<button class="pageTab ${i===P?'active':''}" onclick="selectPage(${i})">Page ${p.page}</button>`).join('');
+ renderActivities();
+}
+function toggleOriginal(){
+ const box=$('#originalPages'),btn=$('#referenceBtn'),open=box.classList.toggle('hidden')===false;
+ btn.textContent=open?'🙈 Hide Original Page'+(B.units[U].lessons[L].pageData.length>1?'s':''):'👁 Show Original Page'+(B.units[U].lessons[L].pageData.length>1?'s':'');
+}
+function selectPage(i){P=i;state.last.p=P;save();renderLesson();window.scrollTo({top:90,behavior:'smooth'})}
+function renderActivities(){
+ const u=B.units[U],l=u.lessons[L],page=l.pageData[P],accent=COLORS[u.color]||'#7047e8';
+ $('#activities').innerHTML=page.activities.map((a,i)=>activityHTML(a,i,page,accent)).join('');
+ bindControls();
+}
+function activityKey(a){return `${B.units[U].lessons[L].id}|${B.units[U].lessons[L].pageData[P].page}|${a.id}`}
+function activityHTML(a,idx,page,accent){
+ const key=activityKey(a),saved=state.answers[key]||{},isOptional=!!a.optional,isListening=!!a.listening;
+ const badge=isOptional?`<span class="badgeOptional ${isListening?'listenOptional':''}">${isListening?'🎧 Optional Listening Activity':'Optional Activity'}</span>`:'';
+ let body='';
+ if(a.type==='choice')body=renderChoice(a,key,saved);
+ else if(a.type==='fill')body=renderFill(a,key,saved);
+ else if(a.type==='match')body=renderMatch(a,key,saved);
+ else if(a.type==='tf')body=renderTF(a,key,saved);
+ else if(a.type==='order')body=renderOrder(a,key,saved);
+ else if(a.type==='reading')body=renderReading(a,key,saved);
+ else if(a.type==='creative'||a.type==='open')body=renderOpen(a,key,saved,isOptional);
+ else if(a.type==='crossword')body=renderOpen(a,key,saved,isOptional);
+ else body=renderOpen(a,key,saved,isOptional);
+ const speakText=encodeURIComponent((a.instruction+" "+a.lines.join(" ")).slice(0,1800));
+ return `<section class="activity" style="--accent:${accent}"><div class="activityHeader"><div class="activityNo">${idx+1}</div><h2>${esc(a.instruction)}</h2>${badge}<button class="readBtn" data-speak="${speakText}">🔊 Read Aloud</button></div>${body}<div class="saveRow"><span class="saved" id="saved-${safeId(key)}">Saved ✓</span><button class="saveActivity" onclick='saveActivity(${JSON.stringify(key)})'>Save Activity</button></div></section>`;
+}
+function safeId(s){return s.replace(/[^a-z0-9]/gi,'_')}
+function parseChoice(line){
+ const s=line.replace(/^\s*\d+[\.\-\)]?\s*/,'').trim();
+ const parts=s.split(/\s*\/\s*/).map(x=>x.trim()).filter(Boolean);
+ if(parts.length<2)return {stem:s,opts:[]};
+ let stem=parts[0],first='';
+ const m=stem.match(/^(.*?)([A-Za-z][A-Za-z '-]*)$/);
+ if(m&&m[1].trim().length>3){stem=m[1].trim();first=m[2].trim()}else{first=parts.shift();stem='Choose the correct answer.'}
+ return {stem,opts:[first,...parts]};
+}
+function renderChoice(a,key,saved){
+ return a.lines.map((line,i)=>{const p=parseChoice(line);return p.opts.length>1?`<div class="questionCard"><div class="questionText">${esc(p.stem)}</div><div class="choiceGrid">${p.opts.map(o=>`<button class="choice ${saved[i]===o?'selected':''}" data-choice-key="${esc(key)}" data-index="${i}" data-value="${esc(o)}">${esc(o)}</button>`).join('')}</div></div>`:`<div class="questionCard"><div class="questionText">${esc(line)}</div><input class="answerInput answerField" data-key="${esc(key)}" data-index="${i}" value="${esc(saved[i]||'')}" placeholder="Type your answer"></div>`}).join('');
+}
+function countBlanks(s){return (s.match(/_{2,}|\.{4,}|…{2,}|\(\d+\)\s*_{2,}/g)||[]).length}
+function textWithBlanks(text,key,saved,bank){
+ let n=0,last=0,out='',re=/_{2,}|\.{4,}|…{2,}/g,m;
+ while((m=re.exec(text))){out+=esc(text.slice(last,m.index));const val=saved[n]||'';out+=`<span class="inlineBlank ${val?'filled':''}" data-blank-key="${esc(key)}" data-index="${n}" data-bank="${esc(JSON.stringify(bank))}">${esc(val||'Drop or choose')}</span>`;n++;last=m.index+m[0].length}
+ out+=esc(text.slice(last));return {html:out,count:n}
+}
+function bankHTML(bank,key){return bank.length?`<div class="wordBankPanel"><div class="wordBankTitle">🧩 Word Box — choose from these words</div><div class="wordBank">${bank.map(w=>`<button class="bankChip" draggable="true" data-token="${esc(w)}" data-token-key="${esc(key)}">${esc(w)}</button>`).join('')}</div></div>`:''}
+function renderFill(a,key,saved){
+ const bank=a.bank||[],long=a.lines.length===1&&countBlanks(a.lines[0])>1;
+ let out=bankHTML(bank,key);
+ if(long){
+   const rendered=textWithBlanks(a.lines[0],key,saved,bank);
+   out+=`<div class="inlineText">${rendered.html}</div>`;
+   if(!bank.length)out+=`<div class="noteBox">Click each blank and type its answer.</div>`;
+   return out;
+ }
+ out+=a.lines.map((line,i)=>{
+   const blanks=countBlanks(line);
+   if(blanks>1){
+     const r=textWithBlanks(line,key,saved,bank);return `<div class="questionCard"><div class="inlineText">${r.html}</div></div>`;
+   }
+   if(blanks===1&&bank.length){
+     return `<div class="questionCard"><div class="questionText">${esc(line)}</div><select class="answerSelect answerField" data-key="${esc(key)}" data-index="${i}"><option value="">Choose a word...</option>${bank.map(w=>`<option ${saved[i]===w?'selected':''}>${esc(w)}</option>`).join('')}</select></div>`;
+   }
+   return `<div class="questionCard"><div class="questionText">${esc(line)}</div><input class="answerInput answerField" data-key="${esc(key)}" data-index="${i}" value="${esc(saved[i]||'')}" placeholder="Type your answer"></div>`;
+ }).join('');
+ return out;
+}
+function matchData(a){
+ const lines=a.lines.slice(),bank=a.bank||[];
+ const categories=lines.filter(x=>/:$/.test(x));
+ if(categories.length>=2)return {mode:'sort',items:bank.length?bank:lines.filter(x=>!/:$/.test(x)),categories:categories.map(x=>x.replace(/:$/,''))};
+ if(/advantages and disadvantages/i.test(a.instruction))return {mode:'sort',items:lines,categories:['Advantages','Disadvantages']};
+ if(/vertebrate or invertebrate/i.test(a.instruction))return {mode:'sort',items:lines,categories:['Vertebrate','Invertebrate']};
+ if(/warm or cold/i.test(a.instruction))return {mode:'sort',items:lines,categories:['Warm','Cold']};
+ const explicit=bank.length?bank:[];
+ let prompts=lines;
+ if(explicit.length)return {mode:'pair',prompts,options:explicit};
+ if(lines.every(x=>/^\d+\s/.test(x)))return {mode:'pair',prompts:lines,options:lines.map((_,i)=>`Answer ${i+1}`),imageDependent:true};
+ return {mode:'pair',prompts:lines,options:lines.slice()};
+}
+function renderMatch(a,key,saved){
+ const d=matchData(a);
+ if(d.mode==='sort'){
+   return `<div class="noteBox">Drag each colored card into the correct category. On phones, tap a card and then tap a category.</div><div class="matchSource">${d.items.map(x=>`<button class="dragChip" draggable="true" data-token="${esc(x)}" data-token-key="${esc(key)}">${esc(x)}</button>`).join('')}</div><div class="sortBoard">${d.categories.map((c,i)=>`<div class="sortColumn"><h3>${esc(c)}</h3><div class="sortDrop" data-sort-key="${esc(key)}" data-category="${esc(c)}">${Object.entries(saved).filter(([_,v])=>v===c).map(([item])=>`<span class="dragChip">${esc(item)}</span>`).join('')}</div></div>`).join('')}</div>`;
+ }
+ const note=d.imageDependent?`<div class="noteBox">This activity refers to numbered pictures. Open <b>Show Original Page</b> above to view the full page, then complete the interactive matches here.</div>`:'';
+ return `${note}<div class="matchBoard"><div class="matchSource">${d.options.map(o=>`<button class="dragChip" draggable="true" data-token="${esc(o)}" data-token-key="${esc(key)}">${esc(o)}</button>`).join('')}</div><div class="matchTargets">${d.prompts.map((p,i)=>`<div class="dropRow"><div class="questionText">${esc(p)}</div><div class="dropZone ${saved[i]?'filled':''}" data-drop-key="${esc(key)}" data-index="${i}">${esc(saved[i]||'Drop an answer here')}</div></div>`).join('')}</div></div>`;
+}
+function renderTF(a,key,saved){return a.lines.map((line,i)=>`<div class="questionCard"><div class="questionText">${esc(line)}</div><div class="choiceGrid"><button class="choice ${saved[i]==='True'?'selected':''}" data-choice-key="${esc(key)}" data-index="${i}" data-value="True">✓ True</button><button class="choice ${saved[i]==='False'?'selected':''}" data-choice-key="${esc(key)}" data-index="${i}" data-value="False">✕ False</button></div></div>`).join('')}
+function renderOrder(a,key,saved){return a.lines.map((line,i)=>{const words=line.replace(/^\d+[\.\-\)]?\s*/,'').split(/\s*[–—-]\s*/).filter(Boolean);return `<div class="questionCard"><div class="questionText">Arrange the words to make a correct sentence.</div><div class="orderArea">${words.map(w=>`<span class="orderChip" draggable="true">${esc(w)}</span>`).join('')}</div><input class="answerInput answerField" data-key="${esc(key)}" data-index="${i}" value="${esc(saved[i]||'')}" placeholder="Write the complete sentence"></div>`}).join('')}
+function renderReading(a,key,saved){
+ const passage=a.lines.find(x=>x.length>120&&!/^\d+/.test(x))||a.lines[0]||'';
+ const qs=a.lines.filter(x=>x!==passage);
+ return `<div class="passage">${esc(passage)}</div>${qs.map((q,i)=>`<div class="questionCard"><div class="questionText">${esc(q)}</div><textarea class="answerArea answerField" data-key="${esc(key)}" data-index="${i}" placeholder="Write your answer">${esc(saved[i]||'')}</textarea></div>`).join('')}`;
+}
+function renderOpen(a,key,saved,isOptional){
+ return `${isOptional?'<div class="noteBox">This activity is optional and does not block lesson completion.</div>':''}${a.lines.map((q,i)=>`<div class="questionCard"><div class="questionText">${esc(q)}</div><textarea class="answerArea answerField" data-key="${esc(key)}" data-index="${i}" placeholder="Write your response">${esc(saved[i]||'')}</textarea></div>`).join('')}`;
+}
+function bindControls(){
+ $$('.readBtn[data-speak]').forEach(el=>el.onclick=()=>speak(decodeURIComponent(el.dataset.speak)));
+ $$('.answerField').forEach(el=>{const h=()=>setAnswer(el.dataset.key,el.dataset.index,el.value);el.oninput=h;el.onchange=h});
+ $$('[data-choice-key]').forEach(el=>el.onclick=()=>{setAnswer(el.dataset.choiceKey,el.dataset.index,el.dataset.value);el.parentElement.querySelectorAll('.choice').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');});
+ $$('.bankChip,.dragChip').forEach(el=>{
+   el.onclick=()=>selectToken(el);
+   el.ondragstart=e=>{selectedToken=el.dataset.token;e.dataTransfer.setData('text/plain',selectedToken)};
+ });
+ $$('.inlineBlank').forEach(el=>{
+   el.onclick=()=>placeInBlank(el);
+   el.ondragover=e=>e.preventDefault();
+   el.ondrop=e=>{e.preventDefault();selectedToken=e.dataTransfer.getData('text/plain');placeInBlank(el)};
+ });
+ $$('.dropZone').forEach(el=>{
+   el.onclick=()=>placeInDrop(el);
+   el.ondragover=e=>e.preventDefault();
+   el.ondrop=e=>{e.preventDefault();selectedToken=e.dataTransfer.getData('text/plain');placeInDrop(el)};
+ });
+ $$('.sortDrop').forEach(el=>{
+   el.onclick=()=>placeInSort(el);
+   el.ondragover=e=>e.preventDefault();
+   el.ondrop=e=>{e.preventDefault();selectedToken=e.dataTransfer.getData('text/plain');placeInSort(el)};
+ });
+}
+function selectToken(el){selectedToken=el.dataset.token;$$('.bankChip,.dragChip').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');showToast('Now choose a blank or drop zone.')}
+function placeInBlank(el){
+ const bank=JSON.parse(el.dataset.bank||'[]');
+ let value=selectedToken;
+ if(!value&&bank.length)value=prompt('Choose or type a word:',state.answers[el.dataset.blankKey]?.[el.dataset.index]||'');
+ if(!value&&!bank.length)value=prompt('Type the answer:',state.answers[el.dataset.blankKey]?.[el.dataset.index]||'');
+ if(!value)return;setAnswer(el.dataset.blankKey,el.dataset.index,value);el.textContent=value;el.classList.add('filled');clearToken()
+}
+function placeInDrop(el){if(!selectedToken){showToast('Choose an answer card first.');return}setAnswer(el.dataset.dropKey,el.dataset.index,selectedToken);el.textContent=selectedToken;el.classList.add('filled');clearToken()}
+function placeInSort(el){if(!selectedToken){showToast('Choose a card first.');return}const key=el.dataset.sortKey;state.answers[key]=state.answers[key]||{};state.answers[key][selectedToken]=el.dataset.category;save();renderActivities();clearToken()}
+function clearToken(){selectedToken=null;$$('.bankChip,.dragChip').forEach(x=>x.classList.remove('selected'))}
+function setAnswer(key,index,value){state.answers[key]=state.answers[key]||{};state.answers[key][index]=value;save()}
+function saveActivity(key){save();const el=$('#saved-'+safeId(key));if(el){el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1800)}showToast('Activity saved ✓')}
+function requiredActivitiesAnswered(){
+ const l=B.units[U].lessons[L];
+ return l.pageData.every(page=>page.activities.filter(a=>!a.optional).every(a=>{
+   const k=`${l.id}|${page.page}|${a.id}`,ans=state.answers[k]||{};
+   return Object.values(ans).some(v=>String(v).trim()!=='');
+ }));
+}
+function completeLesson(){
+ const l=B.units[U].lessons[L];
+ if(!requiredActivitiesAnswered()){showToast('Complete at least one answer in every required activity first.');return}
+ if(!state.completed[l.id]){state.completed[l.id]=true;state.xp+=50;state.stars+=5;save()}
+ renderSidebar();$('#celebration').classList.remove('hidden')
+}
+function closeCelebration(){$('#celebration').classList.add('hidden');nextLesson()}
+function previousLesson(){const all=allLessons(),idx=all.findIndex(x=>x.ui===U&&x.li===L),t=all[Math.max(0,idx-1)];U=t.ui;L=t.li;P=0;renderSidebar();renderLesson();window.scrollTo(0,0)}
+function nextLesson(){const all=allLessons(),idx=all.findIndex(x=>x.ui===U&&x.li===L),t=all[Math.min(all.length-1,idx+1)];U=t.ui;L=t.li;P=0;renderSidebar();renderLesson();window.scrollTo(0,0)}
+function toggleSound(){state.sound=!state.sound;save()}
+function speak(text){if(!state.sound)return;if(!('speechSynthesis'in window)){showToast('Read Aloud is not supported in this browser.');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=.88;speechSynthesis.speak(u)}
+function showToast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>t.classList.remove('show'),2200)}
+renderHome();updateStats();
