@@ -33,7 +33,7 @@ export default function AssessmentBooksPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="curriculum-option connect-option">
+                  {connectAvailable && <div className="curriculum-option connect-option">
                     <CurriculumCover type="connect" grade={grade} />
                     <div className="curriculum-option-content">
                       <strong>Connect Plus Primary {grade}</strong><small>Interactive activity book</small>
@@ -42,7 +42,7 @@ export default function AssessmentBooksPage() {
                         <div className="curriculum-term unavailable"><strong>Second Term</strong><span>Coming soon</span></div>
                       </div>
                     </div>
-                  </div>
+                  </div>}
                 </div>
               </article>
             );
