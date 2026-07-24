@@ -52,6 +52,7 @@ export function SiteHeader() {
         <a href={pageHref("/")}>Home</a>
         <a href={pageHref("/teacher")}>Meet the Teacher</a>
         <a href={pageHref(curriculaHref)}>{curriculaLabel}</a>
+        <a className="whats-new-nav" href={pageHref("/assessment-books")}><span>Assessment Books</span><i aria-hidden="true">New</i></a>
         <a href={pageHref("/games")}>Games</a>
         <a className="whats-new-nav" href={pageHref("/whats-new")}><span>What's New?</span><i aria-hidden="true">New</i></a>
         <a href={pageHref("/booklets")}>Booklets</a>
@@ -78,6 +79,7 @@ export function SiteHeader() {
           <a href={pageHref("/")}>Home</a>
           <a href={pageHref("/teacher")}>Meet the Teacher</a>
           <a href={pageHref(curriculaHref)}>{curriculaLabel}</a>
+          <a className="whats-new-nav" href={pageHref("/assessment-books")}><span>Assessment Books</span><i aria-hidden="true">New</i></a>
           <a href={pageHref("/games")}>Games</a>
           <a className="whats-new-nav" href={pageHref("/whats-new")}><span>What's New?</span><i aria-hidden="true">New</i></a>
           <a href={pageHref("/booklets")}>Booklets</a>
