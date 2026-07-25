@@ -38,7 +38,7 @@
   min-height: 100svh;
   overflow-x: hidden;
   color: var(--marketing-ink);
-  background: var(--marketing-paper);
+  background: transparent;
   font-family: "Cairo", Tahoma, sans-serif;
 }
 
@@ -86,9 +86,12 @@
   inset: 0;
   pointer-events: none;
   background:
+    linear-gradient(rgba(247, 251, 255, 0.78), rgba(247, 251, 255, 0.84)),
+    url("/hero-learning-world-v2.png") center / cover no-repeat fixed,
     radial-gradient(circle at 8% 30%, rgba(84, 215, 229, 0.22), transparent 28%),
     radial-gradient(circle at 92% 62%, rgba(255, 214, 90, 0.22), transparent 24%),
     linear-gradient(180deg, #f7fbff, #f9fcff 42%, #f3f9ff);
+  background-blend-mode: normal, normal, screen, screen, normal;
 }
 
 .shell {
