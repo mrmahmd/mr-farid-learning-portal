@@ -716,6 +716,11 @@
 }
 
 @media (max-width: 900px) {
+  .ambient {
+    background-position: 70% center;
+    background-attachment: fixed;
+  }
+
   .topbar {
     top: 8px;
     border-radius: 20px;
