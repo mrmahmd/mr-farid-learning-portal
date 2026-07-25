@@ -1,4 +1,4 @@
-const CACHE_NAME = "primary5-premium-v1";
+const CACHE_NAME = "primary5-premium-v2";
 const CORE_ASSETS = [
   "./",
   "./index.html",
