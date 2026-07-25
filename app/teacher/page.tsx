@@ -10,8 +10,8 @@ const profileDetails = [
   },
   {
     icon: "CP",
-    label: "Current Position",
-    text: "English Teacher at AlAndalus Private Schools — Egyptian Section, Al-Hamdaniyah, Jeddah.",
+    label: "Teaching Focus",
+    text: "Creates clear, practical, and enjoyable English learning experiences for young learners.",
   },
   {
     icon: "ET",
@@ -32,7 +32,7 @@ export default function TeacherPage() {
         <aside className="teacher-visual">
           <div className="teacher-photo-frame">
             <img src={portalAsset("/mr-farid-avatar.png")} alt="Mr. Mohamed Farid" />
-            <span className="teacher-status"><i /> Senior English Instructor</span>
+            <span className="teacher-status"><i /> English Teacher</span>
           </div>
           <div className="teacher-contact-panel">
             <small>CONNECT WITH THE TEACHER</small>
@@ -44,7 +44,7 @@ export default function TeacherPage() {
           <p className="eyebrow"><span /> Meet the teacher</p>
           <h1>Mr. Mohamed Farid</h1>
           <div className="teacher-titles">
-            <strong>Senior English Instructor</strong>
+            <strong>English Teacher</strong>
             <span>English Teacher &amp; Educational Content Designer</span>
           </div>
 
