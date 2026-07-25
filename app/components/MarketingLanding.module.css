@@ -258,15 +258,14 @@
 }
 
 .heroCopy {
-  width: min(600px, 52%);
-  margin-inline-start: auto;
+  width: min(760px, 78%);
+  margin-inline: auto;
   padding: 36px 0 28px;
-  text-align: start;
+  text-align: center;
 }
 
 .arabic .heroCopy {
-  margin-inline-start: 0;
-  margin-inline-end: auto;
+  margin-inline: auto;
 }
 
 .eyebrow {
@@ -310,7 +309,7 @@
 
 .heroCopy > p {
   max-width: 570px;
-  margin: 0 0 26px;
+  margin: 0 auto 26px;
   color: #46698f;
   font-size: 19px;
   line-height: 1.9;
@@ -320,12 +319,14 @@
 .heroActions,
 .closingActions {
   display: flex;
+  justify-content: center;
   gap: 12px;
   flex-wrap: wrap;
 }
 
 .trustRow {
   display: flex;
+  justify-content: center;
   gap: 10px;
   flex-wrap: wrap;
   margin-top: 28px;

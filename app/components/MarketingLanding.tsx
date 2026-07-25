@@ -278,7 +278,7 @@ export function MarketingLanding() {
 
       <section className={`${styles.features} ${styles.shell}`}>
         {content.features.map((feature, index) => (
-          <article className={styles.feature} data-marketing-feature key={feature.title}>
+          <article className={styles.feature} data-marketing-feature key={index}>
             <div className={styles.featureMedia}>
               <img src={portalAsset(feature.image)} alt={feature.alt} />
             </div>
