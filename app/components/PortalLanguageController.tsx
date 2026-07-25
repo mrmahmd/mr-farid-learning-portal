@@ -22,6 +22,9 @@ const translations: Record<string, string> = {
   "Create New Account": "إنشاء حساب جديد",
   "New": "جديد",
   "Welcome back": "مرحبًا بعودتك",
+  "Quick help": "مساعدة سريعة",
+  "Your learning space": "مساحتك التعليمية",
+  "Choose a section from your student menu and continue your learning journey.": "اختر قسمًا من قائمة الطالب لمواصلة رحلتك التعليمية.",
   "Student Login": "دخول الطالب",
   "Username": "اسم المستخدم",
   "Password": "كلمة المرور",
@@ -266,6 +269,10 @@ function translatedText(value: string) {
   if (!translated && welcomeStudentMatch) translated = `مرحبًا بك، ${welcomeStudentMatch[1]}، في مساحتك التعليمية.`;
   if (!translated && trimmed.startsWith("Welcome back, ")) {
     translated = `مرحبًا بعودتك، ${trimmed.slice("Welcome back, ".length)}`;
+  }
+  if (!translated && trimmed.startsWith("Ready to keep learning, ") && trimmed.endsWith("?")) {
+    const name = trimmed.slice("Ready to keep learning, ".length, -1);
+    translated = `مستعد لمواصلة التعلم، ${name}؟`;
   }
   if (!translated && trimmed.startsWith("Welcome, ")) {
     const separator = trimmed.indexOf(". ");
