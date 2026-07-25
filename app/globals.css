@@ -232,6 +232,80 @@ body { font-size: 16px; }
   white-space: nowrap;
 }
 
+.language-toggle,
+.mobile-language-toggle {
+  min-height: 39px;
+  padding: 0 12px;
+  border: 1px solid rgba(53, 105, 232, .22);
+  border-radius: 13px;
+  color: #173e7d;
+  background: rgba(255, 255, 255, .86);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 950;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.language-toggle:hover,
+.mobile-language-toggle:hover {
+  color: #fff;
+  background: linear-gradient(135deg, #3d79ef, #5365dc);
+}
+
+.mobile-language-toggle { width: 100%; }
+
+.portal-arabic .content-page,
+.portal-arabic .hero-content,
+.portal-arabic .login-card,
+.portal-arabic .student-dashboard-page {
+  direction: rtl;
+  text-align: right;
+}
+
+body.portal-arabic {
+  font-family: "Noto Kufi Arabic", "Segoe UI Variable", "Segoe UI", Tahoma, Arial, sans-serif;
+  letter-spacing: 0;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.portal-arabic h1,
+.portal-arabic h2,
+.portal-arabic h3,
+.portal-arabic h4,
+.portal-arabic button,
+.portal-arabic a,
+.portal-arabic label,
+.portal-arabic strong,
+.portal-arabic .eyebrow,
+.portal-arabic .panel-kicker {
+  font-family: "Noto Kufi Arabic", "Segoe UI Variable", "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+.portal-arabic h1,
+.portal-arabic h2,
+.portal-arabic h3 {
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.portal-arabic .desktop-nav a,
+.portal-arabic .header-actions a,
+.portal-arabic .language-toggle,
+.portal-arabic .mobile-menu-panel a,
+.portal-arabic .mobile-language-toggle {
+  font-weight: 700;
+}
+
+.portal-arabic .site-header { direction: ltr; }
+.portal-arabic .desktop-nav,
+.portal-arabic .mobile-menu-panel { direction: rtl; }
+.portal-arabic input,
+.portal-arabic textarea,
+.portal-arabic select { direction: rtl; text-align: right; }
+
 .nav-login {
   min-height: 43px;
   padding: 0 16px;

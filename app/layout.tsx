@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import { portalAsset } from "./asset-path";
+import { PortalLanguageController } from "./components/PortalLanguageController";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -21,8 +22,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   } as CSSProperties;
 
   return (
-    <html lang="en">
-      <body style={portalTheme}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body style={portalTheme}><PortalLanguageController />{children}</body>
     </html>
   );
 }

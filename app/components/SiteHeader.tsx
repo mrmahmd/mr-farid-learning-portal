@@ -6,8 +6,10 @@ import { getSupabaseBrowserClient } from "../lib/supabase";
 
 export function SiteHeader() {
   const [isSignedIn, setIsSignedIn] = useState(false);
+  const [language, setLanguage] = useState<"en" | "ar">("en");
 
   useEffect(() => {
+    setLanguage(localStorage.getItem("mrfarid-language") === "ar" ? "ar" : "en");
     const supabase = getSupabaseBrowserClient();
     let isActive = true;
 
@@ -29,6 +31,13 @@ export function SiteHeader() {
     await getSupabaseBrowserClient().auth.signOut();
     setIsSignedIn(false);
     window.location.assign(portalAsset("/"));
+  }
+
+  function toggleLanguage() {
+    const nextLanguage = language === "en" ? "ar" : "en";
+    localStorage.setItem("mrfarid-language", nextLanguage);
+    setLanguage(nextLanguage);
+    window.dispatchEvent(new CustomEvent("mrfarid-language-change", { detail: nextLanguage }));
   }
 
   const curriculaHref = isSignedIn ? "/student/curricula" : "/curricula";
@@ -60,6 +69,9 @@ export function SiteHeader() {
       </nav>
 
       <div className="header-actions">
+        <button className="language-toggle" type="button" onClick={toggleLanguage} data-no-translate>
+          {language === "en" ? "العربية" : "English"}
+        </button>
         {isSignedIn ? (
           <>
             <a href={pageHref("/student/dashboard")} className="nav-login">Student Dashboard</a>
@@ -76,6 +88,9 @@ export function SiteHeader() {
       <details className="mobile-menu">
         <summary aria-label="Open navigation">☰</summary>
         <div className="mobile-menu-panel">
+          <button className="mobile-language-toggle" type="button" onClick={toggleLanguage} data-no-translate>
+            {language === "en" ? "العربية" : "English"}
+          </button>
           <a href={pageHref("/")}>Home</a>
           <a href={pageHref("/teacher")}>Meet the Teacher</a>
           <a href={pageHref(curriculaHref)}>{curriculaLabel}</a>
