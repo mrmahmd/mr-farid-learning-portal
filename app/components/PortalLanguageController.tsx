@@ -86,6 +86,14 @@ const translations: Record<string, string> = {
   "Discover the latest curricula, learning apps, games, and features added to Mr.Farid Learning Portal.": "اكتشف أحدث المناهج والتطبيقات التعليمية والألعاب والخصائص المضافة إلى بوابة مستر فريد.",
   "More exciting learning experiences are coming soon.": "تجارب تعليمية ممتعة جديدة ستُضاف قريبًا.",
   "A complete English learning world for every primary learner.": "عالم متكامل لتعلّم اللغة الإنجليزية لكل طالب في المرحلة الابتدائية.",
+  "A clear learning path": "مسار تعلّم واضح",
+  "Each grade is organised into curricula, units, lessons and activities.": "يُنظَّم كل صف في مناهج ووحدات ودروس وأنشطة.",
+  "Made for young learners": "مصمم للمتعلمين الصغار",
+  "A cheerful, simple experience that works beautifully on phones and computers.": "تجربة ممتعة وبسيطة تعمل بشكل رائع على الهواتف وأجهزة الكمبيوتر.",
+  "Progress that matters": "تقدّم يستحق المتابعة",
+  "Students will be able to continue lessons and follow their achievements.": "يستطيع الطلاب متابعة دروسهم ومتابعة إنجازاتهم.",
+  "Teacher connection": "التواصل مع المعلم",
+  "Direct communication with Mr. Mohamed Farid through trusted channels.": "تواصل مباشر مع مستر محمد فريد عبر قنوات موثوقة.",
   "Mr.Farid Learning Portal brings English and Connect Plus curricula from Primary 1 to Primary 6 together in one welcoming portal.": "تجمع بوابة مستر فريد مناهج اللغة الإنجليزية وConnect Plus من الصف الأول إلى الصف السادس في بوابة تعليمية واحدة.",
   "DESIGNED & DEVELOPED BY": "تصميم وتطوير",
   "English Teacher & Educational Content Designer": "معلم لغة إنجليزية ومصمم محتوى تعليمي",
@@ -240,8 +248,20 @@ function translatedText(value: string) {
   if (!translated && englishGradeMatch) translated = `اللغة الإنجليزية - الصف ${gradeOrdinals[englishGradeMatch[1]] ?? englishGradeMatch[1]}${englishGradeMatch[2]}`;
   const connectGradeMatch = trimmed.match(/^Connect Plus Primary (\d+)(.*)$/);
   if (!translated && connectGradeMatch) translated = `Connect Plus - الصف ${gradeOrdinals[connectGradeMatch[1]] ?? connectGradeMatch[1]}${connectGradeMatch[2]}`;
+  const studentSpaceMatch = trimmed.match(/^Your Primary (\d+) learning space$/);
+  if (!translated && studentSpaceMatch) translated = `مساحتك التعليمية - الصف ${gradeOrdinals[studentSpaceMatch[1]] ?? studentSpaceMatch[1]}`;
+  const welcomeStudentMatch = trimmed.match(/^Welcome, (.+)\.$/);
+  if (!translated && welcomeStudentMatch) translated = `مرحبًا بك، ${welcomeStudentMatch[1]}، في مساحتك التعليمية.`;
   if (!translated && trimmed.startsWith("Welcome back, ")) {
     translated = `مرحبًا بعودتك، ${trimmed.slice("Welcome back, ".length)}`;
+  }
+  if (!translated && trimmed.startsWith("Welcome, ")) {
+    const separator = trimmed.indexOf(". ");
+    if (separator > 0) {
+      const name = trimmed.slice("Welcome, ".length, separator);
+      const remainder = trimmed.slice(separator + 2);
+      translated = `مرحبًا بك، ${name}. ${translatedText(remainder).trim()}`;
+    }
   }
   if (!translated) return value;
   const start = value.match(/^\s*/)?.[0] ?? "";

@@ -351,6 +351,12 @@ body.portal-arabic * {
   text-align: right;
 }
 
+/* Keep the primary title of every inner portal page visually centred in RTL. */
+.portal-arabic .inner-content h1:first-of-type {
+  text-align: center;
+  margin-inline: auto;
+}
+
 .portal-arabic h2,
 .portal-arabic h3,
 .portal-arabic .curriculum-term strong,
