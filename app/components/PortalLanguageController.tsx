@@ -300,12 +300,11 @@ function applyLanguage(language: PortalLanguage) {
       if (!source) {
         source = renderedValue;
         originalText.set(text, source);
-      } else {
-        const expectedValue = language === "ar" ? translatedText(source) : source;
-        if (renderedValue !== expectedValue) {
-          source = renderedValue;
-          originalText.set(text, source);
-        }
+      } else if (language === "en" && renderedValue !== source && renderedValue !== translatedText(source)) {
+        // A translated text node must never replace its original English
+        // source, otherwise switching back to English leaves mixed content.
+        source = renderedValue;
+        originalText.set(text, source);
       }
       const nextValue = language === "ar" ? translatedText(source) : source;
       if (text.nodeValue !== nextValue) text.nodeValue = nextValue;
