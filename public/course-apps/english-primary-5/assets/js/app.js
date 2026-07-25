@@ -11,7 +11,7 @@ const previewMode = params.get("unlockAll") === "1" || params.get("preview") ===
 
 let student = {
   id: params.get("studentId") || params.get("id") || "guest",
-  name: params.get("studentName") || params.get("name") || "Student",
+  name: params.get("studentName") || params.get("student") || params.get("name") || "Student",
   className: params.get("className") || params.get("class") || "Primary 5"
 };
 
@@ -132,6 +132,9 @@ window.Primary5App = {
 
 window.addEventListener("message", event => {
   const message = event.data || {};
+  if (message.type === "PLATFORM_STUDENT" && message.student) {
+    window.Primary5App.setStudent(message.student);
+  }
   if (message.type === "PRIMARY5_SET_STUDENT" && message.student) {
     window.Primary5App.setStudent(message.student);
   }
