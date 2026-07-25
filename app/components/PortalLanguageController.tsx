@@ -64,8 +64,10 @@ const translations: Record<string, string> = {
   "New curricula and interactive learning resources are being added gradually.": "تُضاف المناهج والمصادر التعليمية التفاعلية تدريجيًا.",
   "Choose your curriculum": "اختر منهجك",
   "About Mr.Mohamed Farid": "عن مستر محمد فريد",
+  "Meet the teacher": "تعرّف على المعلم",
   "Senior English Instructor": "معلم أول لغة إنجليزية",
   "Education": "المؤهلات العلمية",
+  "Current Position": "المنصب الحالي",
   "Educational Technology": "تكنولوجيا التعليم",
   "Teacher Development": "تطوير المعلمين",
   "My Mission": "رسالتي",
@@ -87,6 +89,11 @@ const translations: Record<string, string> = {
   "Mr.Farid Learning Portal brings English and Connect Plus curricula from Primary 1 to Primary 6 together in one welcoming portal.": "تجمع بوابة مستر فريد مناهج اللغة الإنجليزية وConnect Plus من الصف الأول إلى الصف السادس في بوابة تعليمية واحدة.",
   "DESIGNED & DEVELOPED BY": "تصميم وتطوير",
   "English Teacher & Educational Content Designer": "معلم لغة إنجليزية ومصمم محتوى تعليمي",
+  "Bachelor of Arts and Education, Faculty of Education, Mansoura University — 2007.": "ليسانس الآداب والتربية، كلية التربية، جامعة المنصورة — 2007.",
+  "English Teacher at AlAndalus Private Schools — Egyptian Section, Al-Hamdaniyah, Jeddah.": "معلم لغة إنجليزية في مدارس الأندلس الخاصة — القسم المصري، الحمدانية، جدة.",
+  "Designs interactive educational applications, digital learning experiences, worksheets, games, and AI-powered learning content.": "يصمم تطبيقات تعليمية تفاعلية وتجارب تعلم رقمية وأوراق عمل وألعابًا ومحتوى تعليميًا مدعومًا بالذكاء الاصطناعي.",
+  "Supports and trains teachers in using artificial intelligence for lesson planning and educational content creation.": "يدعم المعلمين ويدرّبهم على استخدام الذكاء الاصطناعي في تخطيط الدروس وإنشاء المحتوى التعليمي.",
+  "“To make English clear, enjoyable, practical, and memorable for every learner.”": "لجعل اللغة الإنجليزية واضحة وممتعة وعملية ولا تُنسى لكل متعلم.",
   "MY MISSION": "رسالتي",
   "CONNECT WITH THE TEACHER": "تواصل مع المعلم",
   "Student sign in required": "يلزم تسجيل دخول الطالب",
@@ -188,6 +195,21 @@ const translations: Record<string, string> = {
   "Continue": "استمرار",
   "Ready to learn?": "هل أنت مستعد للتعلم؟",
   "Student shortcuts": "اختصارات الطالب",
+  "Every primary grade from Primary 1 to Primary 6 includes two dedicated learning pathways. English and Connect Plus. This page provides an overview of the curricula available across the portal. Students access their assigned curricula from their personal accounts after signing in.": "يضم كل صف من الصف الأول إلى الصف السادس مسارين تعليميين: اللغة الإنجليزية وConnect Plus. تعرض هذه الصفحة نظرة عامة على المناهج المتاحة في البوابة، ويدخل الطلاب إلى مناهجهم من حساباتهم الشخصية بعد تسجيل الدخول.",
+  "Every primary grade from": "يضم كل صف من",
+  "includes two dedicated learning pathways.": "مسارين تعليميين مخصصين.",
+  "This page provides an overview of the curricula available across the portal.": "تعرض هذه الصفحة نظرة عامة على المناهج المتاحة في البوابة.",
+  "Students access their assigned curricula from their personal accounts after signing in.": "يدخل الطلاب إلى مناهجهم من حساباتهم الشخصية بعد تسجيل الدخول.",
+  "Explore interactive assessment workbooks organized by primary grade. The available book opens directly in your browser and does not require a student account at this stage.": "استكشف كتب التقييمات التفاعلية المنظمة حسب المرحلة الدراسية. يفتح الكتاب المتاح مباشرة في المتصفح ولا يحتاج إلى حساب طالب في الوقت الحالي.",
+  "Your grade appears first. All other primary grades remain visible as locked learning levels.": "تظهر مرحلتك أولًا، بينما تبقى المراحل الأخرى ظاهرة كمستويات تعليمية مغلقة.",
+  "Booklets and printable explanations organized by primary grade and curriculum.": "بوكلتس وشروحات قابلة للطباعة منظمة حسب المرحلة والمنهج.",
+  "Download PDF ↗": "تحميل ملف PDF ↗",
+  "Learning resources, interactive curricula, games and assessment books for young learners.": "مصادر تعلم ومناهج تفاعلية وألعاب وكتب تقييمات للطلاب الصغار.",
+  "Your learning journey": "رحلتك التعليمية",
+  "Your progress is saved to your account and follows you across your devices.": "يُحفظ تقدمك في حسابك ويظل متاحًا لك على أجهزتك المختلفة.",
+  "The available book opens directly in your browser.": "يفتح الكتاب المتاح مباشرة في المتصفح.",
+  "English": "اللغة الإنجليزية",
+  "Connect Plus": "Connect Plus",
 };
 
 const placeholders: Record<string, string> = {
@@ -199,16 +221,25 @@ const placeholders: Record<string, string> = {
 
 const originalText = new WeakMap<Text, string>();
 const originalAttributes = new WeakMap<Element, Map<string, string>>();
+const originalElementText = new WeakMap<Element, string>();
+const gradeOrdinals: Record<string, string> = {
+  "1": "الأول",
+  "2": "الثاني",
+  "3": "الثالث",
+  "4": "الرابع",
+  "5": "الخامس",
+  "6": "السادس",
+};
 
 function translatedText(value: string) {
   const trimmed = value.trim();
   let translated = translations[trimmed];
   const gradeMatch = trimmed.match(/^Primary (\d+)$/);
-  if (!translated && gradeMatch) translated = `الصف ${gradeMatch[1]}`;
+  if (!translated && gradeMatch) translated = `الصف ${gradeOrdinals[gradeMatch[1]] ?? gradeMatch[1]}`;
   const englishGradeMatch = trimmed.match(/^English Primary (\d+)(.*)$/);
-  if (!translated && englishGradeMatch) translated = `اللغة الإنجليزية - الصف ${englishGradeMatch[1]}${englishGradeMatch[2]}`;
+  if (!translated && englishGradeMatch) translated = `اللغة الإنجليزية - الصف ${gradeOrdinals[englishGradeMatch[1]] ?? englishGradeMatch[1]}${englishGradeMatch[2]}`;
   const connectGradeMatch = trimmed.match(/^Connect Plus Primary (\d+)(.*)$/);
-  if (!translated && connectGradeMatch) translated = `Connect Plus - الصف ${connectGradeMatch[1]}${connectGradeMatch[2]}`;
+  if (!translated && connectGradeMatch) translated = `Connect Plus - الصف ${gradeOrdinals[connectGradeMatch[1]] ?? connectGradeMatch[1]}${connectGradeMatch[2]}`;
   if (!translated && trimmed.startsWith("Welcome back, ")) {
     translated = `مرحبًا بعودتك، ${trimmed.slice("Welcome back, ".length)}`;
   }
@@ -228,11 +259,22 @@ function applyLanguage(language: PortalLanguage) {
   document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
   document.body.classList.toggle("portal-arabic", language === "ar");
 
+  document.body.querySelectorAll("h1, h2, h3, h4, p, strong, span, small, a, button, label, option").forEach((element) => {
+    if (element.children.length > 0 || element.closest("script, style, code, pre, iframe, svg, [data-no-translate]")) return;
+    const currentValue = element.textContent ?? "";
+    const storedSource = element.getAttribute("data-portal-en-text");
+    let source = storedSource ?? originalElementText.get(element) ?? currentValue;
+    if (!storedSource) element.setAttribute("data-portal-en-text", source);
+    originalElementText.set(element, source);
+    const nextValue = language === "ar" ? translatedText(source) : source;
+    if (element.textContent !== nextValue) element.textContent = nextValue;
+  });
+
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   let current = walker.nextNode();
   while (current) {
     const text = current as Text;
-    if (!shouldSkip(text) && text.nodeValue?.trim()) {
+    if (!shouldSkip(text) && text.parentElement?.children.length !== 0 && text.nodeValue?.trim()) {
       const renderedValue = text.nodeValue;
       let source = originalText.get(text);
       if (!source) {
@@ -245,7 +287,8 @@ function applyLanguage(language: PortalLanguage) {
           originalText.set(text, source);
         }
       }
-      text.nodeValue = language === "ar" ? translatedText(source) : source;
+      const nextValue = language === "ar" ? translatedText(source) : source;
+      if (text.nodeValue !== nextValue) text.nodeValue = nextValue;
     }
     current = walker.nextNode();
   }
@@ -266,8 +309,8 @@ function applyLanguage(language: PortalLanguage) {
         }
       }
       if (!source) return;
-      if (language === "en") element.setAttribute(attribute, source);
-      else element.setAttribute(attribute, placeholders[source] ?? translations[source] ?? source);
+      const nextValue = language === "en" ? source : placeholders[source] ?? translations[source] ?? source;
+      if (element.getAttribute(attribute) !== nextValue) element.setAttribute(attribute, nextValue);
     });
     originalAttributes.set(element, saved);
   });
@@ -294,13 +337,29 @@ export function PortalLanguageController() {
 
     const changeLanguage = (event: Event) => {
       language = (event as CustomEvent<PortalLanguage>).detail;
+      observer.disconnect();
       applyLanguage(language);
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+        attributes: true,
+        attributeFilter: ["placeholder", "aria-label", "title"],
+      });
     };
 
     const syncLanguage = (event: StorageEvent) => {
       if (event.key !== "mrfarid-language") return;
       language = event.newValue === "ar" ? "ar" : "en";
+      observer.disconnect();
       applyLanguage(language);
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+        attributes: true,
+        attributeFilter: ["placeholder", "aria-label", "title"],
+      });
     };
 
     applyLanguage(language);

@@ -258,7 +258,8 @@ body { font-size: 16px; }
 .portal-arabic .content-page,
 .portal-arabic .hero-content,
 .portal-arabic .login-card,
-.portal-arabic .student-dashboard-page {
+.portal-arabic .student-dashboard-page,
+.portal-arabic .inner-content {
   direction: rtl;
   text-align: right;
 }
@@ -284,12 +285,41 @@ body { font-size: 16px; }
   justify-content: flex-start;
 }
 
+.portal-arabic .inner-content button,
+.portal-arabic .inner-content .primary-button,
+.portal-arabic .inner-content .secondary-button,
+.portal-arabic .inner-content a.dashboard-primary-button,
+.portal-arabic .inner-content a.dashboard-whatsapp-button,
+.portal-arabic .hero-login-stack button,
+.portal-arabic .hero-login-stack a.primary-button,
+.portal-arabic .hero-login-stack a.secondary-button {
+  text-align: right;
+}
+
+.portal-arabic .inner-content .primary-button,
+.portal-arabic .inner-content .secondary-button,
+.portal-arabic .inner-content a.dashboard-primary-button,
+.portal-arabic .inner-content a.dashboard-whatsapp-button {
+  justify-content: flex-start;
+}
+
 body.portal-arabic {
-  font-family: "Noto Kufi Arabic", "Noto Sans Arabic", "Segoe UI Variable", "Segoe UI", Tahoma, Arial, sans-serif;
+  /* A polished, readable Arabic stack: use the first installed font and
+     gracefully fall back on Windows/Android/iOS without a network font load. */
+  --portal-arabic-font: "Tajawal", "Cairo", "Noto Kufi Arabic", "Noto Sans Arabic", "Segoe UI Variable", "Segoe UI", Tahoma, Arial, sans-serif;
+  font-family: var(--portal-arabic-font);
+  direction: rtl;
+  text-align: right;
   letter-spacing: 0;
   line-height: 1.75;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+body.portal-arabic * {
+  font-family: var(--portal-arabic-font);
+  direction: rtl;
+  text-align: right;
 }
 
 .portal-arabic h1,
@@ -302,7 +332,7 @@ body.portal-arabic {
 .portal-arabic strong,
 .portal-arabic .eyebrow,
 .portal-arabic .panel-kicker {
-  font-family: "Noto Kufi Arabic", "Noto Sans Arabic", "Segoe UI Variable", "Segoe UI", Tahoma, Arial, sans-serif;
+  font-family: var(--portal-arabic-font);
 }
 
 .portal-arabic h1,
@@ -310,6 +340,14 @@ body.portal-arabic {
 .portal-arabic h3 {
   font-weight: 800;
   line-height: 1.4;
+}
+
+.portal-arabic input,
+.portal-arabic textarea,
+.portal-arabic select,
+.portal-arabic option {
+  direction: rtl;
+  text-align: right;
 }
 
 .portal-arabic h2,
@@ -322,7 +360,7 @@ body.portal-arabic {
 .portal-arabic .dashboard-whatsapp-button,
 .portal-arabic .new-curriculum-entry,
 .portal-arabic .booklet-download-button {
-  font-family: "Noto Kufi Arabic", "Noto Sans Arabic", "Segoe UI Variable", "Segoe UI", Tahoma, Arial, sans-serif;
+  font-family: var(--portal-arabic-font);
   font-weight: 800;
   letter-spacing: 0;
 }
