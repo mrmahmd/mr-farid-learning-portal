@@ -34,12 +34,13 @@ window.MrFaridCourseProgress = (() => {
     if (
       event.origin !== portalOrigin ||
       event.data?.type !== "mrfarid-progress-session" ||
-      !client ||
       !event.data.accessToken ||
       !event.data.refreshToken
     ) return;
 
     try {
+      ensureClient();
+      if (!client) return;
       await client.auth.setSession({
         access_token: event.data.accessToken,
         refresh_token: event.data.refreshToken,
@@ -75,7 +76,12 @@ window.MrFaridCourseProgress = (() => {
       return null;
     }
 
-    const session = await portalSession();
+    let session = await portalSession();
+    if (!session && window.parent !== window) {
+      window.parent.postMessage({ type: "mrfarid-progress-session-request" }, portalOrigin);
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+      session = (await client.auth.getSession()).data.session;
+    }
     if (!session) {
       window.top.location.replace(loginUrl || new URL("../../login/", window.location.href).href);
       return null;
