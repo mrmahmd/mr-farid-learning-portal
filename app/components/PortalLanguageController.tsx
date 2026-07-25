@@ -47,7 +47,6 @@ const translations: Record<string, string> = {
   "Enter": "دخول",
   "English Curriculum": "منهج اللغة الإنجليزية",
   "Connect Plus Curriculum": "منهج Connect Plus",
-  "Interactive assessment workbook": "كتاب تقييمات تفاعلي",
   "Assessment resources": "مصادر التقييم",
   "Explore interactive assessment workbooks organized by primary grade. The available book opens directly in your browser and does not require a student account at this stage.": "استكشف كتب التقييمات التفاعلية المنظمة حسب المرحلة الدراسية. يفتح الكتاب المتاح مباشرة في المتصفح ولا يحتاج إلى حساب طالب في الوقت الحالي.",
   "Open Book": "فتح الكتاب",
@@ -104,8 +103,6 @@ const translations: Record<string, string> = {
   "“To make English clear, enjoyable, practical, and memorable for every learner.”": "لجعل اللغة الإنجليزية واضحة وممتعة وعملية ولا تُنسى لكل متعلم.",
   "MY MISSION": "رسالتي",
   "CONNECT WITH THE TEACHER": "تواصل مع المعلم",
-  "Student sign in required": "يلزم تسجيل دخول الطالب",
-  "Sign in to open the educational games for your primary grade.": "سجّل الدخول لفتح الألعاب التعليمية الخاصة بمرحلتك.",
   "Educational Games": "الألعاب التعليمية",
   "Learn, play, remember": "تعلّم، العب، وتذكّر",
   "Your grade appears first. All other primary grades remain visible as locked learning levels.": "تظهر مرحلتك أولًا، بينما تبقى المراحل الأخرى ظاهرة كمستويات تعليمية مغلقة.",
@@ -138,8 +135,6 @@ const translations: Record<string, string> = {
   "Welcome, Student!": "مرحبًا بك أيها الطالب!",
   "New curriculum": "منهج جديد",
   "RECENTLY ADDED": "أُضيف حديثًا",
-  "PRIMARY STAGE": "المرحلة الابتدائية",
-  "PRIMARY GRADE": "الصف الابتدائي",
   "ASSESSMENT BOOKS": "كتب التقييمات",
   "Interactive assessment workbook": "كتاب تقييمات تفاعلي",
   "Interactive activity book": "كتاب أنشطة تفاعلي",
@@ -167,7 +162,6 @@ const translations: Record<string, string> = {
   "New Account": "حساب جديد",
   "Full Name": "الاسم بالكامل",
   "English letters and numbers only. Dots, dashes and underscores are allowed.": "استخدم الحروف الإنجليزية والأرقام فقط. يُسمح بالنقاط والشرطات والشرطة السفلية.",
-  "Primary Grade": "المرحلة الدراسية",
   "Choose the student's grade": "اختر مرحلة الطالب",
   "The student will see this grade and the higher locked grades.": "سيظهر للطالب هذا الصف والصفوف الأعلى مغلقة.",
   "At least 8 characters": "8 أحرف على الأقل",
@@ -201,9 +195,7 @@ const translations: Record<string, string> = {
   "Grade needs assignment": "المرحلة تحتاج إلى تحديد",
   "Booklets on": "البوكلتس مفعّلة",
   "Booklets off": "البوكلتس متوقفة",
-  "No activity yet": "لا يوجد نشاط بعد",
   "Continue learning where you stopped": "واصل التعلم من حيث توقفت",
-  "Continue": "استمرار",
   "Ready to learn?": "هل أنت مستعد للتعلم؟",
   "Student shortcuts": "اختصارات الطالب",
   "Every primary grade from Primary 1 to Primary 6 includes two dedicated learning pathways. English and Connect Plus. This page provides an overview of the curricula available across the portal. Students access their assigned curricula from their personal accounts after signing in.": "يضم كل صف من الصف الأول إلى الصف السادس مسارين تعليميين: اللغة الإنجليزية وConnect Plus. تعرض هذه الصفحة نظرة عامة على المناهج المتاحة في البوابة، ويدخل الطلاب إلى مناهجهم من حساباتهم الشخصية بعد تسجيل الدخول.",
@@ -211,8 +203,6 @@ const translations: Record<string, string> = {
   "includes two dedicated learning pathways.": "مسارين تعليميين مخصصين.",
   "This page provides an overview of the curricula available across the portal.": "تعرض هذه الصفحة نظرة عامة على المناهج المتاحة في البوابة.",
   "Students access their assigned curricula from their personal accounts after signing in.": "يدخل الطلاب إلى مناهجهم من حساباتهم الشخصية بعد تسجيل الدخول.",
-  "Explore interactive assessment workbooks organized by primary grade. The available book opens directly in your browser and does not require a student account at this stage.": "استكشف كتب التقييمات التفاعلية المنظمة حسب المرحلة الدراسية. يفتح الكتاب المتاح مباشرة في المتصفح ولا يحتاج إلى حساب طالب في الوقت الحالي.",
-  "Your grade appears first. All other primary grades remain visible as locked learning levels.": "تظهر مرحلتك أولًا، بينما تبقى المراحل الأخرى ظاهرة كمستويات تعليمية مغلقة.",
   "Your grade appears first. All other primary grades remain visible as locked levels.": "تظهر مرحلتك أولًا، بينما تبقى المراحل الأخرى ظاهرة كمستويات مغلقة.",
   "Your account remains active until Mr.Farid assigns your grade.": "يظل حسابك نشطًا حتى يحدد لك مستر فريد مرحلتك الدراسية.",
   "Booklets and printable explanations organized by primary grade and curriculum.": "بوكلتس وشروحات قابلة للطباعة منظمة حسب المرحلة والمنهج.",
@@ -223,6 +213,11 @@ const translations: Record<string, string> = {
   "The available book opens directly in your browser.": "يفتح الكتاب المتاح مباشرة في المتصفح.",
   "English": "اللغة الإنجليزية",
   "Connect Plus": "Connect Plus",
+  "Confirm Password": "تأكيد كلمة المرور",
+  "Create My Account": "إنشاء حسابي",
+  "Creating Account...": "جارٍ إنشاء الحساب...",
+  "Signing In...": "جارٍ تسجيل الدخول...",
+  "Enter & View All Curricula": "الدخول إلى المنصة",
 };
 
 const placeholders: Record<string, string> = {
@@ -230,6 +225,10 @@ const placeholders: Record<string, string> = {
   "Enter your password": "اكتب كلمة المرور",
   "Full name": "الاسم بالكامل",
   "Confirm password": "تأكيد كلمة المرور",
+  "Enter the student's full name": "اكتب الاسم الكامل للطالب",
+  "Choose a username": "اختر اسم مستخدم",
+  "At least 8 characters": "8 أحرف على الأقل",
+  "Repeat password": "أعد كتابة كلمة المرور",
 };
 
 const originalText = new WeakMap<Text, string>();
@@ -350,7 +349,17 @@ function applyLanguage(language: PortalLanguage) {
 
 export function PortalLanguageController() {
   useEffect(() => {
-    let language = (localStorage.getItem("mrfarid-language") === "ar" ? "ar" : "en") as PortalLanguage;
+    const requestedLanguage = new URLSearchParams(window.location.search).get("lang");
+    let language = (
+      requestedLanguage === "ar" || requestedLanguage === "en"
+        ? requestedLanguage
+        : localStorage.getItem("mrfarid-language") === "ar"
+          ? "ar"
+          : "en"
+    ) as PortalLanguage;
+    if (requestedLanguage === "ar" || requestedLanguage === "en") {
+      localStorage.setItem("mrfarid-language", requestedLanguage);
+    }
     let applying = false;
     const observer = new MutationObserver(() => {
       if (applying) return;
