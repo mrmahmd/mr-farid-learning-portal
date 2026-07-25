@@ -107,6 +107,7 @@ const translations: Record<string, string> = {
   "Student sign in required": "يلزم تسجيل دخول الطالب",
   "Sign in to open the educational games for your primary grade.": "سجّل الدخول لفتح الألعاب التعليمية الخاصة بمرحلتك.",
   "Educational Games": "الألعاب التعليمية",
+  "Learn, play, remember": "تعلّم، العب، وتذكّر",
   "Your grade appears first. All other primary grades remain visible as locked learning levels.": "تظهر مرحلتك أولًا، بينما تبقى المراحل الأخرى ظاهرة كمستويات تعليمية مغلقة.",
   "Booklets & Explanations": "البوكلتس والشروحات",
   "Explanations and printable booklets": "شروحات وبوكلتس قابلة للطباعة",
@@ -246,6 +247,14 @@ const gradeOrdinals: Record<string, string> = {
 function translatedText(value: string) {
   const trimmed = value.trim();
   let translated = translations[trimmed];
+  const lockedGradeSentence = "Your grade appears first. All other primary grades remain visible as locked levels.";
+  const lockedLearningSentence = "Your grade appears first. All other primary grades remain visible as locked learning levels.";
+  if (!translated && trimmed.includes(lockedGradeSentence)) {
+    translated = trimmed.replace(lockedGradeSentence, translations[lockedGradeSentence]);
+  }
+  if (!translated && trimmed.includes(lockedLearningSentence)) {
+    translated = trimmed.replace(lockedLearningSentence, translations[lockedLearningSentence]);
+  }
   const gradeMatch = trimmed.match(/^Primary (\d+)$/);
   if (!translated && gradeMatch) translated = `الصف ${gradeOrdinals[gradeMatch[1]] ?? gradeMatch[1]}`;
   const englishGradeMatch = trimmed.match(/^English Primary (\d+)(.*)$/);

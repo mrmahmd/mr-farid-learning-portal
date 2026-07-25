@@ -1429,8 +1429,8 @@ input::placeholder { color: #9aacc0; }
   .booklets-heading .eyebrow { justify-content: flex-start; }
   .booklets-grid, .booklet-resources, .games-grid { grid-template-columns: 1fr; }
   .games-card { padding: 28px 18px; }
-  .games-heading { text-align: left; }
-  .games-heading .eyebrow { justify-content: flex-start; }
+  .games-heading { text-align: center; }
+  .games-heading .eyebrow { justify-content: center; }
   .whats-new-card { padding: 28px 18px; }
   .whats-new-heading { text-align: left; }
   .whats-new-heading .eyebrow { justify-content: flex-start; }
