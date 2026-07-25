@@ -81,6 +81,13 @@ function loadState() {
 }
 
 function saveState() {
+  const route = state.current?.route || "home";
+  const unit = Number(state.current?.moduleIndex);
+  state.portalLastActivity = {
+    courseTitle: "English Primary 5 - First Term",
+    detail: route === "home" ? "Course home" : `${Number.isFinite(unit) ? `Unit ${unit + 1} • ` : ""}${String(route).replaceAll("-", " ")}`,
+    updatedAt: new Date().toISOString()
+  };
   localStorage.setItem(storageKey(), JSON.stringify(state));
   updateChrome();
   emitProgress();
@@ -1138,7 +1145,7 @@ updateChrome();
 renderCurrent();
 
 window.MrFaridCourseProgress?.connect({
-  courseId: "english-primary-5",
+  courseId: "english-primary-5-first-term",
   getState: () => state,
   setState: (next) => {
     state = next;

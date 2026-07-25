@@ -39,6 +39,10 @@ const COURSE_DETAILS: Record<string, { title: string; slug: string }> = {
     title: "English Primary 4 – First Term",
     slug: "english-primary-4",
   },
+  "english-primary-5-first-term": {
+    title: "English Primary 5 - First Term",
+    slug: "english-primary-5",
+  },
 };
 
 function record(value: unknown): Record<string, unknown> {
