@@ -263,8 +263,29 @@ body { font-size: 16px; }
   text-align: right;
 }
 
+/* Keep the three-column hero geometry unchanged in Arabic, while the copy
+   itself remains right-to-left and moves to the left side of the artwork. */
+.portal-arabic .hero-content {
+  direction: ltr;
+}
+
+.portal-arabic .hero-copy,
+.portal-arabic .hero-login-stack {
+  direction: rtl;
+  text-align: right;
+}
+
+.portal-arabic .hero-copy h1 {
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+
+.portal-arabic .hero-copy .eyebrow {
+  justify-content: flex-start;
+}
+
 body.portal-arabic {
-  font-family: "Noto Kufi Arabic", "Segoe UI Variable", "Segoe UI", Tahoma, Arial, sans-serif;
+  font-family: "Noto Kufi Arabic", "Noto Sans Arabic", "Segoe UI Variable", "Segoe UI", Tahoma, Arial, sans-serif;
   letter-spacing: 0;
   line-height: 1.75;
   -webkit-font-smoothing: antialiased;
@@ -281,7 +302,7 @@ body.portal-arabic {
 .portal-arabic strong,
 .portal-arabic .eyebrow,
 .portal-arabic .panel-kicker {
-  font-family: "Noto Kufi Arabic", "Segoe UI Variable", "Segoe UI", Tahoma, Arial, sans-serif;
+  font-family: "Noto Kufi Arabic", "Noto Sans Arabic", "Segoe UI Variable", "Segoe UI", Tahoma, Arial, sans-serif;
 }
 
 .portal-arabic h1,
@@ -289,6 +310,30 @@ body.portal-arabic {
 .portal-arabic h3 {
   font-weight: 800;
   line-height: 1.4;
+}
+
+.portal-arabic h2,
+.portal-arabic h3,
+.portal-arabic .curriculum-term strong,
+.portal-arabic .curriculum-term a,
+.portal-arabic .primary-button,
+.portal-arabic .secondary-button,
+.portal-arabic .dashboard-primary-button,
+.portal-arabic .dashboard-whatsapp-button,
+.portal-arabic .new-curriculum-entry,
+.portal-arabic .booklet-download-button {
+  font-family: "Noto Kufi Arabic", "Noto Sans Arabic", "Segoe UI Variable", "Segoe UI", Tahoma, Arial, sans-serif;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.portal-arabic .primary-button,
+.portal-arabic .secondary-button,
+.portal-arabic .dashboard-primary-button,
+.portal-arabic .dashboard-whatsapp-button,
+.portal-arabic .new-curriculum-entry,
+.portal-arabic .booklet-download-button {
+  font-size: 1.02em;
 }
 
 .portal-arabic .desktop-nav a,
