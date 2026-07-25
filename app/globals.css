@@ -306,7 +306,8 @@ body { font-size: 16px; }
 body.portal-arabic {
   /* A polished, readable Arabic stack: use the first installed font and
      gracefully fall back on Windows/Android/iOS without a network font load. */
-  --portal-arabic-font: "Tajawal", "Cairo", "Noto Kufi Arabic", "Noto Sans Arabic", "Segoe UI Variable", "Segoe UI", Tahoma, Arial, sans-serif;
+  --portal-arabic-font: "Cairo", "Tajawal", "Noto Sans Arabic", "Segoe UI Variable", "Segoe UI", Tahoma, Arial, sans-serif;
+  --portal-arabic-display-font: "Baloo Bhaijaan 2", "Cairo", "Tajawal", "Noto Kufi Arabic", "Noto Sans Arabic", "Segoe UI Variable", "Segoe UI", Tahoma, Arial, sans-serif;
   font-family: var(--portal-arabic-font);
   direction: rtl;
   text-align: right;
@@ -332,7 +333,7 @@ body.portal-arabic * {
 .portal-arabic strong,
 .portal-arabic .eyebrow,
 .portal-arabic .panel-kicker {
-  font-family: var(--portal-arabic-font);
+  font-family: var(--portal-arabic-display-font);
 }
 
 .portal-arabic h1,
@@ -360,7 +361,7 @@ body.portal-arabic * {
 .portal-arabic .dashboard-whatsapp-button,
 .portal-arabic .new-curriculum-entry,
 .portal-arabic .booklet-download-button {
-  font-family: var(--portal-arabic-font);
+  font-family: var(--portal-arabic-display-font);
   font-weight: 800;
   letter-spacing: 0;
 }
