@@ -1,0 +1,17 @@
+{
+  "name": "English Primary 5 – First Term",
+  "short_name": "Primary 5 English",
+  "description": "Premium interactive English learning journey for Primary 5 – First Term.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#eef5ff",
+  "theme_color": "#071b3d",
+  "icons": [
+    {
+      "src": "assets/icons/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
