@@ -132,6 +132,8 @@ const translations: Record<string, string> = {
   "Full name": "الاسم بالكامل",
   "Primary grade": "المرحلة الدراسية",
   "Your grade is fixed to keep your learning organised. To change it, contact Mr.Farid on WhatsApp.": "مرحلتك مثبتة للحفاظ على تنظيم تعلمك. لتغييرها، تواصل مع مستر فريد عبر واتساب.",
+  "Need to change your primary grade? Contact Mr.Farid on WhatsApp.": "هل تحتاج إلى تغيير مرحلتك الدراسية؟ تواصل مع مستر فريد عبر واتساب.",
+  "Request Grade Change": "طلب تغيير المرحلة",
   "Save Settings": "حفظ الإعدادات",
   "Your registered learning stage": "مرحلتك التعليمية المسجلة",
   "Your latest activity will appear here as you explore a curriculum.": "سيظهر آخر نشاط لك هنا أثناء استكشافك للمناهج.",
