@@ -1301,6 +1301,13 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   navigator.serviceWorker.register("sw.js").catch(() => {});
 }
 
+// Flush the current quiz position when the tab/app is closed or backgrounded.
+// The bridge also retries online, so this does not replace normal cloud saves.
+window.addEventListener("pagehide", () => {
+  saveState();
+  void window.MrFaridCourseProgress?.saveNow();
+});
+
 updateChrome();
 renderHome();
 
