@@ -85,19 +85,23 @@ function loadState() {
 }
 
 function saveState() {
-  const module = curriculum[state.current?.moduleIndex ?? state.lastLearning?.moduleIndex ?? 0];
-  const lessonIndex = state.current?.lessonIndex ?? state.lastLearning?.lessonIndex;
-  state.portalLastActivity = {
-    courseId: "english-primary-5-first-term",
-    courseTitle: "English Primary 5 - First Term",
-    detail: module
-      ? `Unit ${module.number}: ${module.title}${Number.isInteger(lessonIndex) ? ` - Lesson ${lessonIndex + 1}` : ""}`
-      : "English Primary 5 - First Term",
-    route: state.current?.route || "home",
-    moduleIndex: state.current?.moduleIndex ?? state.lastLearning?.moduleIndex ?? 0,
-    lessonIndex: Number.isInteger(lessonIndex) ? lessonIndex : null,
-    updatedAt: new Date().toISOString()
-  };
+  // Rendering the dashboard on boot must not erase the student's last real
+  // learning activity. Only learning routes update the portal activity card.
+  if (state.current?.route && state.current.route !== "home") {
+    const module = curriculum[state.current?.moduleIndex ?? state.lastLearning?.moduleIndex ?? 0];
+    const lessonIndex = state.current?.lessonIndex ?? state.lastLearning?.lessonIndex;
+    state.portalLastActivity = {
+      courseId: "english-primary-5-first-term",
+      courseTitle: "English Primary 5 - First Term",
+      detail: module
+        ? `Unit ${module.number}: ${module.title}${Number.isInteger(lessonIndex) ? ` - Lesson ${lessonIndex + 1}` : ""}`
+        : "English Primary 5 - First Term",
+      route: state.current.route,
+      moduleIndex: state.current?.moduleIndex ?? state.lastLearning?.moduleIndex ?? 0,
+      lessonIndex: Number.isInteger(lessonIndex) ? lessonIndex : null,
+      updatedAt: new Date().toISOString()
+    };
+  }
   localStorage.setItem(storageKey(), JSON.stringify(state));
   updateChrome();
   emitProgress();

@@ -137,7 +137,7 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
   const embeddedApp = embeddedApps[curriculum.slug];
 
   if (embeddedApp) {
-    const cacheVersion = curriculum.slug === "english-primary-1" ? "&v=20260718-6" : curriculum.slug === "english-primary-2" ? "&v=20260724-1" : curriculum.slug === "english-primary-3" ? "&v=20260719-2" : curriculum.slug === "english-primary-4" ? "&v=20260717-12" : curriculum.slug === "english-primary-5" ? "&v=20260726-2" : curriculum.slug === "connect-plus-primary-4" ? "&v=20260717-10" : "";
+    const cacheVersion = curriculum.slug === "english-primary-1" ? "&v=20260718-6" : curriculum.slug === "english-primary-2" ? "&v=20260724-1" : curriculum.slug === "english-primary-3" ? "&v=20260719-2" : curriculum.slug === "english-primary-4" ? "&v=20260717-12" : curriculum.slug === "english-primary-5" ? "&v=20260726-3" : curriculum.slug === "connect-plus-primary-4" ? "&v=20260717-10" : "";
     const appUrl = `${portalAsset(embeddedApp)}?student=${encodeURIComponent(studentName)}&studentId=${encodeURIComponent(sessionBridge.userId)}${cacheVersion}${shouldResume ? "&resume=1" : ""}`;
 
     return (
