@@ -1,4 +1,5 @@
 import { curriculum, coverByUnit } from "./curriculum-data.js";
+import { lessonQuestionBanks, QUESTION_GROUP_ORDER } from "./questions-data.js";
 
 "use strict";
 
@@ -23,6 +24,7 @@ const makeDefaultState = () => ({
   moduleScores: {},
   badges: [],
   earnedQuestions: {},
+  quizSessions: {},
   sound: true,
   current: { route: "home" },
   lastLearning: { route: "unit", moduleIndex: 0 }
@@ -139,9 +141,6 @@ window.Primary5App = {
 
 window.addEventListener("message", event => {
   const message = event.data || {};
-  if (message.type === "PLATFORM_STUDENT" && message.student) {
-    window.Primary5App.setStudent(message.student);
-  }
   if (message.type === "PRIMARY5_SET_STUDENT" && message.student) {
     window.Primary5App.setStudent(message.student);
   }
@@ -614,204 +613,169 @@ function renderProgress() {
 
 function continueLearning() {
   const current = state.lastLearning || {};
-  if (current.route === "lesson" && Number.isInteger(current.moduleIndex) && Number.isInteger(current.lessonIndex)) {
-    renderLesson(current.moduleIndex, current.lessonIndex);
-  } else if (current.route === "unit" && Number.isInteger(current.moduleIndex)) {
-    renderUnit(current.moduleIndex);
-  } else {
-    const firstIncompleteModule = curriculum.findIndex((module, index) => unitUnlocked(index) && moduleLessonProgress(module).passed < module.lessons.length);
-    renderUnit(firstIncompleteModule >= 0 ? firstIncompleteModule : 0);
+
+  if (
+    current.route === "challenge" &&
+    Number.isInteger(current.moduleIndex)
+  ) {
+    startQuiz(current.moduleIndex, -1, true);
+    return;
   }
+
+  if (
+    current.route === "lesson" &&
+    Number.isInteger(current.moduleIndex) &&
+    Number.isInteger(current.lessonIndex)
+  ) {
+    if (current.station === "practice") {
+      startQuiz(current.moduleIndex, current.lessonIndex, false);
+    } else {
+      renderLesson(current.moduleIndex, current.lessonIndex);
+    }
+    return;
+  }
+
+  if (current.route === "unit" && Number.isInteger(current.moduleIndex)) {
+    renderUnit(current.moduleIndex);
+    return;
+  }
+
+  const firstIncompleteModule = curriculum.findIndex(
+    (module, index) =>
+      unitUnlocked(index) &&
+      moduleLessonProgress(module).passed < module.lessons.length
+  );
+  renderUnit(firstIncompleteModule >= 0 ? firstIncompleteModule : 0);
 }
 
 function renderCurrent() {
   const current = state.current || {};
   if (current.route === "progress") return renderProgress();
-  if (current.route === "unit" && Number.isInteger(current.moduleIndex)) return renderUnit(current.moduleIndex);
-  if (current.route === "lesson" && Number.isInteger(current.moduleIndex) && Number.isInteger(current.lessonIndex)) return renderLesson(current.moduleIndex, current.lessonIndex);
+  if (current.route === "challenge" && Number.isInteger(current.moduleIndex)) {
+    return startQuiz(current.moduleIndex, -1, true);
+  }
+  if (current.route === "unit" && Number.isInteger(current.moduleIndex)) {
+    return renderUnit(current.moduleIndex);
+  }
+  if (
+    current.route === "lesson" &&
+    Number.isInteger(current.moduleIndex) &&
+    Number.isInteger(current.lessonIndex)
+  ) {
+    if (current.station === "practice") {
+      return startQuiz(current.moduleIndex, current.lessonIndex, false);
+    }
+    return renderLesson(current.moduleIndex, current.lessonIndex);
+  }
   renderHome();
 }
 
-function blankExample(example, word) {
-  const safe = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const pattern = new RegExp(safe, "i");
-  if (pattern.test(example)) return example.replace(pattern, "________");
-  const words = example.split(" ");
-  words[Math.max(0, Math.floor(words.length / 2))] = "________";
-  return words.join(" ");
-}
-
-function cleanSentence(sentence) {
-  return sentence.replace(/[“”".,!?;:()]/g, "").replace(/\s+/g, " ").trim();
-}
-
-function contextualDistractors(module, answer, seed) {
-  return seededShuffle(module.vocab.map(item => item.word).filter(word => word !== answer), seed).slice(0, 3);
+function cloneQuestions(items = []) {
+  return items.map(question => JSON.parse(JSON.stringify(question)));
 }
 
 function buildLessonQuestions(moduleIndex, lessonIndex) {
   const module = curriculum[moduleIndex];
-  const lesson = module.lessons[lessonIndex];
-  const prefix = `${module.id}-${lessonIndex}`;
-  const lessonVocab = lesson.vocab.map(word => module.vocab.find(item => item.word === word)).filter(Boolean);
-  const questions = [];
-
-  lessonVocab.slice(0, 4).forEach((item, index) => {
-    questions.push({
-      id: `${prefix}-complete-${index}`,
-      type: "complete",
-      typeLabel: "Complete",
-      prompt: `Complete the lesson sentence with the correct word: ${blankExample(item.example, item.word)}`,
-      answer: item.word,
-      explain: item.example
-    });
-  });
-
-  lesson.facts.slice(0, 3).forEach((fact, index) => {
-    questions.push({
-      id: `${prefix}-mcq-${index}`,
-      type: "mcq",
-      typeLabel: "Multiple Choice",
-      prompt: fact.q,
-      answer: fact.a,
-      options: seededShuffle([fact.a, ...fact.wrong], `${prefix}-fact-${index}`),
-      explain: fact.explain
-    });
-  });
-
-  lesson.checks.slice(0, 2).forEach((check, index) => {
-    questions.push({
-      id: `${prefix}-tf-${index}`,
-      type: "mcq",
-      typeLabel: "True / False",
-      prompt: check.statement,
-      answer: check.value ? "True" : "False",
-      options: ["True", "False"],
-      explain: check.explain
-    });
-  });
-
-  module.grammarQuestions.slice(0, 4).forEach((question, index) => {
-    questions.push({
-      id: `${prefix}-grammar-${index}`,
-      type: "mcq",
-      typeLabel: "Grammar in Context",
-      prompt: question.q,
-      answer: question.a,
-      options: seededShuffle([question.a, ...question.wrong], `${prefix}-grammar-${index}`),
-      explain: question.explain
-    });
-  });
-
-  const matchingPairs = lessonVocab.slice(0, 4).map(item => ({
-    word: item.word,
-    context: blankExample(item.example, item.word)
-  }));
-  questions.push({
-    id: `${prefix}-matching-0`,
-    type: "matching",
-    typeLabel: "Matching",
-    prompt: "Match each lesson word to the sentence where it belongs.",
-    pairs: matchingPairs,
-    explain: "The words are matched through their real use in lesson sentences."
-  });
-
-  const orderSources = [...lesson.summary, ...module.grammarExamples].map(cleanSentence).filter(sentence => sentence.split(" ").length >= 4);
-  orderSources.slice(0, 2).forEach((sentence, index) => {
-    questions.push({
-      id: `${prefix}-ordering-${index}`,
-      type: "builder",
-      typeLabel: "Ordering",
-      prompt: "Put the words in the correct order.",
-      answer: sentence,
-      words: seededShuffle(sentence.split(" "), `${prefix}-order-${index}`),
-      explain: sentence
-    });
-  });
-
-  const corrections = correctionBank[module.id] || [];
-  [0, 1].forEach((offset, index) => {
-    const item = corrections[(lessonIndex + offset) % corrections.length];
-    questions.push({
-      id: `${prefix}-correction-${index}`,
-      type: "correction",
-      typeLabel: "Correction",
-      promptHtml: `Correct the highlighted word or phrase: ${item.sentence}`,
-      answer: item.answer,
-      explain: item.explain
-    });
-  });
-
-  const builderSources = [...module.grammarExamples, ...lesson.summary].map(cleanSentence).filter(sentence => sentence.split(" ").length >= 4);
-  builderSources.slice(-2).forEach((sentence, index) => {
-    questions.push({
-      id: `${prefix}-builder-${index}`,
-      type: "builder",
-      typeLabel: "Sentence Builder",
-      prompt: "Build a correct sentence connected to this unit.",
-      answer: sentence,
-      words: seededShuffle(sentence.split(" "), `${prefix}-builder-${index}`),
-      explain: sentence
-    });
-  });
-
-  while (questions.length < 20) {
-    const item = lessonVocab[questions.length % lessonVocab.length] || module.vocab[questions.length % module.vocab.length];
-    const index = questions.length;
-    questions.push({
-      id: `${prefix}-extra-${index}`,
-      type: "mcq",
-      typeLabel: "Vocabulary in Context",
-      prompt: `Choose the word that completes this lesson sentence: ${blankExample(item.example, item.word)}`,
-      answer: item.word,
-      options: seededShuffle([item.word, ...contextualDistractors(module, item.word, `${prefix}-extra-options-${index}`)], `${prefix}-extra-${index}`),
-      explain: item.example
-    });
-  }
-
-  return questions.slice(0, 20);
+  const key = `${module.id}-${lessonIndex}`;
+  return cloneQuestions(lessonQuestionBanks[key] || []);
 }
 
 function buildChallengeQuestions(moduleIndex) {
   const module = curriculum[moduleIndex];
-  const all = module.lessons.flatMap((_, lessonIndex) => buildLessonQuestions(moduleIndex, lessonIndex));
-  const groups = ["complete", "mcq", "matching", "builder", "correction"];
+  const allQuestions = module.lessons.flatMap((_, lessonIndex) =>
+    buildLessonQuestions(moduleIndex, lessonIndex)
+  );
+  const quotas = {
+    choose: 10,
+    complete: 8,
+    truefalse: 6,
+    matching: 5,
+    dragdrop: 5,
+    listening: 4,
+    ordering: 4,
+    correction: 4,
+    builder: 4
+  };
   const chosen = [];
-  groups.forEach(type => {
-    const typeItems = all.filter(question => question.type === type);
-    chosen.push(...typeItems.slice(0, type === "mcq" ? 24 : type === "complete" ? 10 : type === "builder" ? 8 : 4));
+
+  QUESTION_GROUP_ORDER.forEach(group => {
+    const pool = allQuestions.filter(question => question.group === group);
+    chosen.push(
+      ...seededShuffle(pool, `${module.id}-challenge-${group}`)
+        .slice(0, quotas[group] || 0)
+    );
   });
-  const unique = [];
-  const seen = new Set();
-  for (const question of chosen) {
-    if (!seen.has(question.id)) {
-      seen.add(question.id);
-      unique.push({ ...question, id: `${question.id}-challenge` });
-    }
+
+  if (chosen.length < 50) {
+    const selectedIds = new Set(chosen.map(question => question.id));
+    const remaining = allQuestions.filter(question => !selectedIds.has(question.id));
+    chosen.push(...remaining.slice(0, 50 - chosen.length));
   }
-  for (const question of all) {
-    if (unique.length >= 50) break;
-    if (!seen.has(question.id)) {
-      seen.add(question.id);
-      unique.push({ ...question, id: `${question.id}-challenge` });
-    }
-  }
-  return unique.slice(0, 50);
+
+  return chosen.slice(0, 50).map(question => ({
+    ...question,
+    id: `${question.id}-challenge`
+  }));
 }
 
-function startQuiz(moduleIndex, lessonIndex, challenge = false) {
+function quizSessionKey(moduleIndex, lessonIndex, challenge) {
+  const module = curriculum[moduleIndex];
+  return `${module.id}:${challenge ? "challenge" : `lesson:${lessonIndex}`}`;
+}
+
+function persistQuizSession() {
+  if (!activeQuiz) return;
+  state.quizSessions = state.quizSessions || {};
+  state.quizSessions[activeQuiz.sessionKey] = {
+    index: activeQuiz.index,
+    correct: activeQuiz.correct
+  };
+  state.current = activeQuiz.challenge
+    ? {
+        route: "challenge",
+        moduleIndex: activeQuiz.moduleIndex,
+        questionIndex: activeQuiz.index
+      }
+    : {
+        route: "lesson",
+        moduleIndex: activeQuiz.moduleIndex,
+        lessonIndex: activeQuiz.lessonIndex,
+        station: "practice",
+        questionIndex: activeQuiz.index
+      };
+  state.lastLearning = { ...state.current };
+  saveState();
+}
+
+function startQuiz(moduleIndex, lessonIndex, challenge = false, forceRestart = false) {
   clearQuizTimers();
   const module = curriculum[moduleIndex];
-  const questions = challenge ? buildChallengeQuestions(moduleIndex) : buildLessonQuestions(moduleIndex, lessonIndex);
-  activeQuiz = { moduleIndex, lessonIndex, challenge, questions, index: 0, correct: 0, answered: false };
-  state.current = challenge
-    ? { route: "unit", moduleIndex }
-    : { route: "lesson", moduleIndex, lessonIndex, station: "practice" };
-  saveState();
+  const questions = challenge
+    ? buildChallengeQuestions(moduleIndex)
+    : buildLessonQuestions(moduleIndex, lessonIndex);
+  const sessionKey = quizSessionKey(moduleIndex, lessonIndex, challenge);
+  const saved = forceRestart ? null : state.quizSessions?.[sessionKey];
+  const startIndex = Math.min(
+    Number(saved?.index) || 0,
+    Math.max(0, questions.length - 1)
+  );
+
+  activeQuiz = {
+    moduleIndex,
+    lessonIndex,
+    challenge,
+    questions,
+    index: startIndex,
+    correct: Number(saved?.correct) || 0,
+    answered: false,
+    sessionKey
+  };
+  persistQuizSession();
   setActiveNav(module.id);
+
   pageShell(`
     ${challenge
-      ? `<section class="lesson-banner"><img src="${coverByUnit[module.id]}" alt="Unit ${module.number} cover"><div class="lesson-banner-overlay"><div class="lesson-banner-copy"><div class="crumb">Unit ${module.number} • Master Challenge</div><h1>50-Question Unit Challenge</h1><p>Direct questions covering vocabulary in context, grammar, reading, matching, correction, ordering, and sentence building.</p><div class="lesson-meta"><span>🏆 70% to pass</span><span>🔓 Unlocks the next unit</span></div></div></div></section>`
+      ? `<section class="lesson-banner"><img src="${coverByUnit[module.id]}" alt="Unit ${module.number} cover"><div class="lesson-banner-overlay"><div class="lesson-banner-copy"><div class="crumb">Unit ${module.number} • Master Challenge</div><h1>50-Question Unit Challenge</h1><p>Direct questions grouped by type: choose, complete, true or false, matching, drag and drop, listening, ordering, correction, and sentence building.</p><div class="lesson-meta"><span>🏆 70% to pass</span><span>💾 Progress saves automatically</span><span>🔓 Unlocks the next unit</span></div></div></div></section>`
       : lessonBanner(module, module.lessons[lessonIndex], lessonIndex, state.completed[lessonKey(module.id, lessonIndex)])}
     <section class="quiz-shell" id="quizStage"></section>
   `);
@@ -823,47 +787,116 @@ function renderQuestion() {
   if (!quiz) return;
   const question = quiz.questions[quiz.index];
   const module = curriculum[quiz.moduleIndex];
+
+  if (!question) {
+    $("#quizStage").innerHTML = `<div class="quiz-card"><div class="feedback-box bad">No questions were found for this lesson.</div></div>`;
+    return;
+  }
+
+  persistQuizSession();
   const percent = Math.round((quiz.index / quiz.questions.length) * 100);
+  const group = question.group || question.type;
+  const groupNumber = quiz.questions
+    .slice(0, quiz.index + 1)
+    .filter(item => (item.group || item.type) === group).length;
+  const groupTotal = quiz.questions
+    .filter(item => (item.group || item.type) === group).length;
+
   $("#quizStage").innerHTML = `
-    <div class="quiz-topbar"><div><strong>Question ${quiz.index + 1} of ${quiz.questions.length}</strong><span> • ${esc(question.typeLabel)}</span></div><strong>Score: ${quiz.correct}</strong></div>
+    <div class="quiz-topbar">
+      <div>
+        <strong>Question ${quiz.index + 1} of ${quiz.questions.length}</strong>
+        <span> • ${esc(question.typeLabel)} ${groupNumber} of ${groupTotal}</span>
+      </div>
+      <strong>Score: ${quiz.correct}</strong>
+    </div>
     <div class="quiz-card" style="--unit-color:${module.color}">
       <div class="progress-track"><div class="progress-fill" style="width:${percent}%;--unit-color:${module.color}"></div></div>
-      <div style="margin-top:17px"><span class="question-type">${esc(question.typeLabel)}</span></div>
+      <div class="question-heading-row">
+        <span class="question-type">${esc(question.typeLabel)}</span>
+        <span class="autosave-note">💾 Saved automatically</span>
+      </div>
       <h2 class="question-title">${question.promptHtml || esc(question.prompt)}</h2>
       <div id="answerArea">${questionAnswerMarkup(question)}</div>
       <div id="feedbackArea" aria-live="polite"></div>
       <div class="check-row"><button class="btn btn-secondary" id="leaveQuiz" type="button">← Leave Practice</button></div>
     </div>`;
+
   bindQuestionControls(question);
   $("#leaveQuiz").addEventListener("click", () => {
     const { moduleIndex, lessonIndex, challenge } = quiz;
+    persistQuizSession();
     activeQuiz = null;
     challenge ? renderUnit(moduleIndex) : renderLesson(moduleIndex, lessonIndex);
   });
 }
 
 function questionAnswerMarkup(question) {
-  if (question.type === "mcq") {
-    return `<div class="options-grid">${question.options.map((option, index) => `<button class="option-button" data-option="${esc(option)}" type="button"><span class="option-letter">${String.fromCharCode(65 + index)}</span><span>${esc(option)}</span></button>`).join("")}</div>`;
+  if (question.type === "mcq" || question.type === "listening") {
+    const options = question.group === "truefalse"
+      ? question.options
+      : seededShuffle(question.options, `${question.id}-options`);
+    return `
+      ${question.type === "listening"
+        ? `<div class="listening-box"><button class="btn btn-primary" id="playListening" type="button">🔊 Play Listening Text</button><p>Listen carefully, then choose the correct answer.</p></div>`
+        : ""}
+      <div class="options-grid">
+        ${options.map((option, index) => `<button class="option-button" data-option="${esc(option)}" type="button"><span class="option-letter">${String.fromCharCode(65 + index)}</span><span>${esc(option)}</span></button>`).join("")}
+      </div>`;
   }
+
   if (question.type === "complete" || question.type === "correction") {
-    return `<label for="textAnswer" class="question-type" style="margin-bottom:8px">Type your answer</label><input class="answer-input" id="textAnswer" type="text" autocomplete="off"><div class="check-row"><button class="btn btn-primary" id="checkText" type="button">Check Answer</button></div>`;
+    const placeholder = question.type === "correction"
+      ? "Type only the correct word or phrase"
+      : "Type the missing word or phrase";
+    return `<label for="textAnswer" class="question-type" style="margin-bottom:8px">Type your answer</label><input class="answer-input" id="textAnswer" type="text" autocomplete="off" placeholder="${placeholder}"><div class="check-row"><button class="btn btn-primary" id="checkText" type="button">Check Answer</button></div>`;
   }
+
   if (question.type === "matching") {
-    const words = seededShuffle(question.pairs.map(pair => pair.word), `${question.id}-words`);
-    return `<div class="matching-list">${question.pairs.map((pair, index) => `<div class="match-row"><p>${index + 1}. ${esc(pair.context)}</p><select data-match-index="${index}"><option value="">Choose a word</option>${words.map(word => `<option value="${esc(word)}">${esc(word)}</option>`).join("")}</select></div>`).join("")}</div><div class="check-row"><button class="btn btn-primary" id="checkMatching" type="button">Check Matching</button></div>`;
+    const words = seededShuffle(
+      question.pairs.map(pair => pair.word),
+      `${question.id}-words`
+    );
+    return `<div class="matching-list">${question.pairs.map((pair, index) => `<div class="match-row"><p>${index + 1}. ${esc(pair.context)}</p><select data-match-index="${index}"><option value="">Choose a word or phrase</option>${words.map(word => `<option value="${esc(word)}">${esc(word)}</option>`).join("")}</select></div>`).join("")}</div><div class="check-row"><button class="btn btn-primary" id="checkMatching" type="button">Check Matching</button></div>`;
   }
+
+  if (question.type === "dragdrop") {
+    const options = seededShuffle(question.options, `${question.id}-drag`);
+    return `
+      <p class="question-instruction">Drag one answer into the box. On a phone, tap an answer instead.</p>
+      <div class="drag-options" id="dragOptions">
+        ${options.map(option => `<button class="drag-chip" draggable="true" data-drag-option="${esc(option)}" type="button">${esc(option)}</button>`).join("")}
+      </div>
+      <div class="drop-zone" id="dropZone" aria-live="polite">Drop the answer here</div>
+      <div class="check-row"><button class="btn btn-primary" id="checkDrag" type="button">Check Answer</button><button class="btn btn-secondary" id="resetDrag" type="button">Reset</button></div>`;
+  }
+
   if (question.type === "builder") {
-    return `<p style="color:var(--muted)">Click words to build the sentence. Click a selected word to return it.</p><div class="answer-builder" id="answerBuilder" aria-label="Your sentence"></div><div class="word-bank" id="wordBank" aria-label="Word bank"></div><div class="check-row"><button class="btn btn-primary" id="checkBuilder" type="button">Check Sentence</button><button class="btn btn-secondary" id="resetBuilder" type="button">Reset</button></div>`;
+    const ordering = question.group === "ordering";
+    return `
+      <p class="question-instruction">${ordering ? "Click the cards to put the ideas in the correct order." : "Click the words to build a correct sentence."} Click a selected card to return it.</p>
+      <div class="answer-builder ${ordering ? "sentence-order" : ""}" id="answerBuilder" aria-label="${ordering ? "Your ordered ideas" : "Your sentence"}"></div>
+      <div class="word-bank ${ordering ? "sentence-order" : ""}" id="wordBank" aria-label="Card bank"></div>
+      <div class="check-row"><button class="btn btn-primary" id="checkBuilder" type="button">${ordering ? "Check Order" : "Check Sentence"}</button><button class="btn btn-secondary" id="resetBuilder" type="button">Reset</button></div>`;
   }
+
   return "";
 }
 
 function bindQuestionControls(question) {
-  if (question.type === "mcq") {
-    $$('[data-option]').forEach(button => button.addEventListener("click", () => checkAnswer(button.dataset.option, button)));
+  if (question.type === "listening") {
+    $("#playListening")?.addEventListener("click", () => speak(question.audioText));
+  }
+
+  if (question.type === "mcq" || question.type === "listening") {
+    $$('[data-option]').forEach(button =>
+      button.addEventListener("click", () =>
+        checkAnswer(button.dataset.option, button)
+      )
+    );
     return;
   }
+
   if (question.type === "complete" || question.type === "correction") {
     const input = $("#textAnswer");
     $("#checkText").addEventListener("click", () => checkAnswer(input.value));
@@ -873,40 +906,113 @@ function bindQuestionControls(question) {
     input.focus();
     return;
   }
+
   if (question.type === "matching") {
     $("#checkMatching").addEventListener("click", () => {
       const answers = $$('[data-match-index]').map(select => select.value);
-      const correct = question.pairs.every((pair, index) => normalizeAnswer(pair.word) === normalizeAnswer(answers[index]));
-      checkAnswer(correct ? "__correct__" : answers.join(" | "), null, correct);
+      const correct = question.pairs.every(
+        (pair, index) =>
+          normalizeAnswer(pair.word) === normalizeAnswer(answers[index])
+      );
+      checkAnswer(
+        correct ? "__correct__" : answers.join(" | "),
+        null,
+        correct
+      );
     });
     return;
   }
+
+  if (question.type === "dragdrop") {
+    setupDragDrop(question);
+    return;
+  }
+
   if (question.type === "builder") setupBuilder(question);
 }
 
+function setupDragDrop(question) {
+  let selected = "";
+  const zone = $("#dropZone");
+  const chips = $$("[data-drag-option]");
+
+  function select(value) {
+    selected = value;
+    zone.textContent = value || "Drop the answer here";
+    zone.classList.toggle("filled", Boolean(value));
+    chips.forEach(chip =>
+      chip.classList.toggle(
+        "selected",
+        normalizeAnswer(chip.dataset.dragOption) === normalizeAnswer(value)
+      )
+    );
+  }
+
+  chips.forEach(chip => {
+    chip.addEventListener("click", () => select(chip.dataset.dragOption));
+    chip.addEventListener("dragstart", event => {
+      event.dataTransfer.setData("text/plain", chip.dataset.dragOption);
+      event.dataTransfer.effectAllowed = "move";
+    });
+  });
+
+  zone.addEventListener("dragover", event => {
+    event.preventDefault();
+    zone.classList.add("drag-over");
+  });
+  zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
+  zone.addEventListener("drop", event => {
+    event.preventDefault();
+    zone.classList.remove("drag-over");
+    select(event.dataTransfer.getData("text/plain"));
+  });
+
+  $("#checkDrag").addEventListener("click", () => checkAnswer(selected));
+  $("#resetDrag").addEventListener("click", () => select(""));
+}
+
 function setupBuilder(question) {
-  const bank = question.words.map((word, index) => ({ id: `${index}-${word}`, word }));
+  const original = question.words.map((word, index) => ({
+    id: `${index}-${word}`,
+    word
+  }));
+  const bank = seededShuffle(original, `${question.id}-bank`);
   const selected = [];
   const bankHost = $("#wordBank");
   const selectedHost = $("#answerBuilder");
+  const sentenceMode = question.group === "ordering";
 
   function draw() {
-    bankHost.innerHTML = bank.map(item => `<button class="word-chip" data-bank-id="${esc(item.id)}" type="button">${esc(item.word)}</button>`).join("");
-    selectedHost.innerHTML = selected.length ? selected.map(item => `<button class="word-chip" data-selected-id="${esc(item.id)}" type="button">${esc(item.word)}</button>`).join("") : `<span style="color:var(--muted)">Your sentence appears here.</span>`;
-    $$('[data-bank-id]', bankHost).forEach(button => button.addEventListener("click", () => {
-      const index = bank.findIndex(item => item.id === button.dataset.bankId);
-      if (index >= 0) selected.push(...bank.splice(index, 1));
-      draw();
-    }));
-    $$('[data-selected-id]', selectedHost).forEach(button => button.addEventListener("click", () => {
-      const index = selected.findIndex(item => item.id === button.dataset.selectedId);
-      if (index >= 0) bank.push(...selected.splice(index, 1));
-      draw();
-    }));
+    bankHost.innerHTML = bank
+      .map(item => `<button class="word-chip ${sentenceMode ? "sentence-chip" : ""}" data-bank-id="${esc(item.id)}" type="button">${esc(item.word)}</button>`)
+      .join("");
+    selectedHost.innerHTML = selected.length
+      ? selected.map(item => `<button class="word-chip ${sentenceMode ? "sentence-chip" : ""}" data-selected-id="${esc(item.id)}" type="button">${esc(item.word)}</button>`).join("")
+      : `<span style="color:var(--muted)">${sentenceMode ? "Your ordered ideas appear here." : "Your sentence appears here."}</span>`;
+
+    $$('[data-bank-id]', bankHost).forEach(button =>
+      button.addEventListener("click", () => {
+        const index = bank.findIndex(item => item.id === button.dataset.bankId);
+        if (index >= 0) selected.push(...bank.splice(index, 1));
+        draw();
+      })
+    );
+
+    $$('[data-selected-id]', selectedHost).forEach(button =>
+      button.addEventListener("click", () => {
+        const index = selected.findIndex(
+          item => item.id === button.dataset.selectedId
+        );
+        if (index >= 0) bank.push(...selected.splice(index, 1));
+        draw();
+      })
+    );
   }
 
   draw();
-  $("#checkBuilder").addEventListener("click", () => checkAnswer(selected.map(item => item.word).join(" ")));
+  $("#checkBuilder").addEventListener("click", () =>
+    checkAnswer(selected.map(item => item.word).join(" "))
+  );
   $("#resetBuilder").addEventListener("click", () => {
     bank.push(...selected.splice(0));
     const reset = seededShuffle(bank, `${question.id}-reset`);
@@ -915,20 +1021,40 @@ function setupBuilder(question) {
   });
 }
 
+function answerMatchesQuestion(value, question) {
+  const accepted = Array.isArray(question.accepted) && question.accepted.length
+    ? question.accepted
+    : [question.answer];
+  return accepted.some(
+    answer => normalizeAnswer(value) === normalizeAnswer(answer)
+  );
+}
+
 function checkAnswer(value, optionButton = null, forcedResult = null) {
   const quiz = activeQuiz;
   if (!quiz || quiz.answered) return;
   const question = quiz.questions[quiz.index];
-  if (!String(value).trim() && forcedResult === null) return toast("Write or choose an answer first.");
+
+  if (!String(value).trim() && forcedResult === null) {
+    return toast("Write, choose, or drag an answer first.");
+  }
+
   quiz.answered = true;
-  let correct;
-  if (forcedResult !== null) correct = forcedResult;
-  else correct = normalizeAnswer(value) === normalizeAnswer(question.answer);
+  const correct = forcedResult !== null
+    ? forcedResult
+    : answerMatchesQuestion(value, question);
+  const firstTime = !state.earnedQuestions[question.id];
 
   disableCurrentControls();
-  if (question.type === "mcq") {
+
+  if (question.type === "mcq" || question.type === "listening") {
     $$('[data-option]').forEach(button => {
-      if (normalizeAnswer(button.dataset.option) === normalizeAnswer(question.answer)) button.classList.add("correct");
+      if (
+        normalizeAnswer(button.dataset.option) ===
+        normalizeAnswer(question.answer)
+      ) {
+        button.classList.add("correct");
+      }
     });
     if (!correct && optionButton) optionButton.classList.add("wrong");
   }
@@ -936,8 +1062,16 @@ function checkAnswer(value, optionButton = null, forcedResult = null) {
   if (correct) {
     quiz.correct += 1;
     awardQuestion(question.id);
+    persistQuizSession();
     playTone(true);
-    $("#feedbackArea").innerHTML = `<div class="feedback-box good">✅ Correct!${state.earnedQuestions[question.id] ? "" : ""}<small>${esc(question.explain || "Well done.")}</small><span class="next-countdown"><i class="pulse-dot"></i> Next question in <strong id="countdownValue">5</strong> seconds…</span></div>`;
+
+    $("#feedbackArea").innerHTML = `
+      <div class="feedback-box good">
+        ✅ Correct! ${firstTime ? "<strong>+10 XP</strong>" : "<strong>Already completed — no extra points</strong>"}
+        <small>${esc(question.explain || "Well done.")}</small>
+        <span class="next-countdown"><i class="pulse-dot"></i> Next question in <strong id="countdownValue">5</strong> seconds…</span>
+      </div>`;
+
     let seconds = 5;
     countdownTimer = setInterval(() => {
       seconds -= 1;
@@ -945,11 +1079,27 @@ function checkAnswer(value, optionButton = null, forcedResult = null) {
     }, 1000);
     autoTimer = setTimeout(advanceQuestion, 5000);
   } else {
+    persistQuizSession();
     playTone(false);
+
     const correctDisplay = question.type === "matching"
-      ? question.pairs.map(pair => `${pair.context} → ${pair.word}`).join(" • ")
+      ? question.pairs
+          .map(pair => `${pair.context} → ${pair.word}`)
+          .join(" • ")
       : question.answer;
-    $("#feedbackArea").innerHTML = `<div class="feedback-box bad">Not correct. <small>Correct answer: <strong>${esc(correctDisplay)}</strong><br>${esc(question.explain || "Review the lesson station and try again.")}</small><div class="check-row"><button class="btn btn-primary" id="gotItButton" type="button">GOT IT →</button></div></div>`;
+
+    $("#feedbackArea").innerHTML = `
+      <div class="feedback-box bad">
+        Not correct.
+        <small>
+          Correct answer: <strong>${esc(correctDisplay)}</strong><br>
+          ${esc(question.explain || "Review the lesson station and try again.")}
+        </small>
+        <div class="check-row">
+          <button class="btn btn-primary" id="gotItButton" type="button">GOT IT →</button>
+        </div>
+      </div>`;
+
     $("#gotItButton").addEventListener("click", advanceQuestion);
   }
 }
@@ -972,8 +1122,12 @@ function advanceQuestion() {
   if (!activeQuiz) return;
   activeQuiz.index += 1;
   activeQuiz.answered = false;
-  if (activeQuiz.index >= activeQuiz.questions.length) finishQuiz();
-  else renderQuestion();
+  if (activeQuiz.index >= activeQuiz.questions.length) {
+    finishQuiz();
+  } else {
+    persistQuizSession();
+    renderQuestion();
+  }
 }
 
 function finishQuiz() {
@@ -983,6 +1137,9 @@ function finishQuiz() {
   const score = Math.round((quiz.correct / quiz.questions.length) * 100);
   const passed = score >= 70;
   let firstPass = false;
+
+  state.quizSessions = state.quizSessions || {};
+  delete state.quizSessions[quiz.sessionKey];
 
   if (quiz.challenge) {
     const previousScore = state.moduleScores[module.id] || 0;
@@ -1016,7 +1173,7 @@ function finishQuiz() {
   $("#quizStage").innerHTML = `
     <div class="quiz-card"><div class="quiz-result"><div class="result-icon">${passed ? "🏆" : "🌱"}</div><h2>${passed ? "Excellent work!" : "Review and try again"}</h2><strong>${score}% • ${quiz.correct}/${quiz.questions.length} correct</strong><p>${passed ? (quiz.challenge ? "You earned the unit badge and unlocked the next unit." : "The next lesson is now available.") : "You need 70% to pass. Return to the learning stations, review, and retry."}</p><div class="quiz-result-actions"><button class="btn btn-secondary" id="retryQuiz" type="button">Try Again</button>${nextLessonAvailable ? `<button class="btn btn-primary" id="nextLesson" type="button">Next Lesson →</button>` : `<button class="btn btn-primary" id="returnMap" type="button">Return to Unit Map</button>`}</div></div></div>`;
 
-  $("#retryQuiz").addEventListener("click", () => startQuiz(quiz.moduleIndex, quiz.lessonIndex, quiz.challenge));
+  $("#retryQuiz").addEventListener("click", () => startQuiz(quiz.moduleIndex, quiz.lessonIndex, quiz.challenge, true));
   $("#nextLesson")?.addEventListener("click", () => renderLesson(quiz.moduleIndex, quiz.lessonIndex + 1));
   $("#returnMap")?.addEventListener("click", () => renderUnit(quiz.moduleIndex));
   activeQuiz = null;

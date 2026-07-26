@@ -1,4 +1,4 @@
-const CACHE_NAME = "primary5-premium-v3";
+const CACHE_NAME = "primary5-premium-v2-questions";
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -6,6 +6,7 @@ const CORE_ASSETS = [
   "./assets/css/styles.css",
   "./assets/js/app.js",
   "./assets/js/curriculum-data.js",
+  "./assets/js/questions-data.js",
   "./assets/icons/favicon.svg",
   "./assets/images/covers/home-cover.png",
   "./assets/images/covers/unit-1.png",

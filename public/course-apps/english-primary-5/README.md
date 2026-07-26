@@ -60,6 +60,28 @@ To unlock every unit and lesson for review:
 index.html?preview=1
 ```
 
+## Question system
+
+The project contains **600 curriculum-grounded lesson questions**: 20 questions for each of the 30 lessons. Questions are stored separately in `assets/js/questions-data.js` so they can be reviewed or replaced without changing the interface code.
+
+Questions are grouped inside every lesson in this order:
+
+1. Choose
+2. Complete
+3. True / False
+4. Matching
+5. Drag & Drop
+6. Listening
+7. Ordering
+8. Correction
+9. Sentence Builder
+
+The questions use vocabulary in real sentences and situations. They assess reading details, lesson content, grammar, writing, story sequence, pronunciation topics, and projects. There are no dictionary-style prompts such as “Which word means…?”.
+
+For correction activities, only the incorrect word or phrase is highlighted. The student types only the correction.
+
+Listening activities use the browser's English text-to-speech feature. Progress, the current question, points, and completed answers are saved automatically for each student on the device.
+
 ## Project structure
 
 ```text
@@ -70,6 +92,7 @@ assets/
   css/styles.css
   js/app.js
   js/curriculum-data.js
+  js/questions-data.js
   images/covers/
   icons/favicon.svg
 ```
@@ -81,9 +104,14 @@ assets/
 - Premium main cover and six horizontal 3D unit covers.
 - Six units and thirty lessons.
 - Separate learning stations for every lesson.
-- Direct, lesson-based questions without dictionary-style assessment.
-- Complete, MCQ, True/False, matching, ordering, correction, and sentence-builder activities.
+- 600 direct lesson questions based on the Ministry textbook.
+- Choose, Complete, True/False, Matching, Drag & Drop, Listening, Ordering, Correction, and Sentence Builder.
 - Twenty questions per lesson and fifty-question unit challenges.
-- Sequential unlocking, points, stars, badges, progress saving, feedback, and certificate.
+- Questions grouped by type rather than randomized.
+- Correct-answer feedback and a required **GOT IT** button after mistakes.
+- Five-second automatic move after a correct answer.
+- Unique-answer points, stars, coins, badges, and sequential unlocking.
+- Automatic progress and current-question saving.
+- Certificate of completion.
 - Responsive mobile and desktop layout.
 - Offline caching when hosted through HTTP/HTTPS.
