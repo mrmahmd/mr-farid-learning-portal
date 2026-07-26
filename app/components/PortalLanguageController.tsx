@@ -5,6 +5,7 @@ import { useEffect } from "react";
 type PortalLanguage = "en" | "ar";
 
 const translations: Record<string, string> = {
+  "Explore interactive assessment workbooks organized by primary grade. Books open according to the learning stage and access assigned to the student account.": "استكشف كتب التقييمات التفاعلية المنظمة حسب المرحلة الدراسية. تفتح الكتب وفق المرحلة التعليمية والصلاحيات المحددة لحساب الطالب.",
   "Learning Portal": "بوابة التعلّم",
   "Home": "الرئيسية",
   "Meet the Teacher": "تعرّف على المعلم",
