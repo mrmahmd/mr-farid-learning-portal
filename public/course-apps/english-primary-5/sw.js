@@ -1,4 +1,4 @@
-const CACHE_NAME = "primary5-premium-v6-question-resume";
+const CACHE_NAME = "primary5-premium-v7-refresh-resume";
 const CORE_ASSETS = [
   "./",
   "./index.html",

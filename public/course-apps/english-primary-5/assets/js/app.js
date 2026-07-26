@@ -10,6 +10,8 @@ const main = $("#mainContent");
 
 const params = new URLSearchParams(location.search);
 const previewMode = params.get("unlockAll") === "1" || params.get("preview") === "1";
+const navigationType = performance.getEntriesByType("navigation")[0]?.type || "navigate";
+const restoreRouteOnBoot = navigationType === "reload";
 
 let student = {
   id: params.get("studentId") || params.get("id") || "guest",
@@ -139,7 +141,8 @@ window.Primary5App = {
     };
     if (storageKey() !== oldKey) state = loadState();
     updateChrome();
-    renderHome();
+    if (restoreRouteOnBoot) renderCurrent();
+    else renderHome();
   },
   getProgress() {
     return JSON.parse(JSON.stringify({ student, state }));
@@ -1572,8 +1575,9 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
 
 updateChrome();
 // Always open the course dashboard first. The Continue button can resume the
-// saved learning location without forcing students back into a previous route.
-renderHome();
+// saved learning location without forcing a fresh visit back into a previous route.
+if (restoreRouteOnBoot) renderCurrent();
+else renderHome();
 
 window.addEventListener("pagehide", () => {
   saveState();
@@ -1587,7 +1591,8 @@ window.MrFaridCourseProgress?.connect({
     state = next;
     localStorage.setItem(storageKey(), JSON.stringify(state));
     updateChrome();
-    renderHome();
+    if (restoreRouteOnBoot) renderCurrent();
+    else renderHome();
   },
   mergeState: (_local, remote) => ({ ...makeDefaultState(), ...remote }),
   onStatus: ({ online, message }) => {
