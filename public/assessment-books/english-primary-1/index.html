@@ -529,10 +529,8 @@ window.PRIMARY1_DATA={UNITS,PAGES};
       updateChrome();
       if(continueMode&&state.lastPage&&pageUnlocked(state.lastPage))renderPage(state.lastPage);else renderDashboard();
     }
-    const savedView=state.current;
-    if(savedView?.route==='page'&&savedView.page){enter(true)}
-    else if(savedView?.route==='unit'&&savedView.unit){enter(false);renderUnit(savedView.unit)}
-    else if(savedView?.route==='certificate'){enter(false);renderCertificate()}
+    // Always begin on the book welcome/dashboard screen. The saved page is
+    // available through Continue Learning rather than opening automatically.
   }
 
   function buildSidebar(){
