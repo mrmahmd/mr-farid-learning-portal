@@ -1,0 +1,9 @@
+{
+  "name":"Primary 1 Interactive Assessment Book",
+  "short_name":"Primary 1 Book",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#f7f9ff",
+  "theme_color":"#6d36e8",
+  "icons":[{"src":"assets/images/favicon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
