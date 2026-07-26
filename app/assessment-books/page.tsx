@@ -36,7 +36,7 @@ export default function AssessmentBooksPage() {
 
   const canOpen = (grade: number) => {
     if (!access.checked || !access.session || !access.allowed) return false;
-    return access.mode === "all" || access.grade === grade || access.grade == null || access.curricula.includes(`english-primary-${grade}`);
+    return access.mode === "all" || access.grade === grade || access.curricula.includes(`english-primary-${grade}`);
   };
 
   return (
