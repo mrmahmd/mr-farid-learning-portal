@@ -82,6 +82,24 @@ For correction activities, only the incorrect word or phrase is highlighted. The
 
 Listening activities use the browser's English text-to-speech feature. Progress, the current question, points, and completed answers are saved automatically for each student on the device.
 
+
+## Detailed explanation system
+
+The explanation layer was rebuilt from the beginning. The app no longer displays only a short summary. Every lesson now includes:
+
+- A teacher explanation in clear, age-appropriate English.
+- A five-step walkthrough showing how the lesson ideas develop.
+- Explicit connections between facts, causes, results, characters, and themes.
+- Success criteria and speaking sentence frames.
+- Vocabulary taught in real lesson context, not as isolated definitions.
+- A detailed grammar station connected to the unit and lesson.
+- Reading and story analysis with answers hidden under reveal controls.
+- Listening and speaking strategies.
+- Pronunciation routines and audio practice.
+- Full writing instruction wherever the textbook includes a writing or project task.
+
+The lesson-specific explanation content is stored in `assets/js/detailed-explanations.js`.
+
 ## Project structure
 
 ```text
@@ -92,6 +110,7 @@ assets/
   css/styles.css
   js/app.js
   js/curriculum-data.js
+  js/detailed-explanations.js
   js/questions-data.js
   images/covers/
   icons/favicon.svg
@@ -104,6 +123,15 @@ assets/
 - Premium main cover and six horizontal 3D unit covers.
 - Six units and thirty lessons.
 - Separate learning stations for every lesson.
+- Detailed teacher explanation written specifically for all 30 lessons.
+- Larger default reading text with A− / A+ reading controls on desktop.
+- Step-by-step lesson walkthroughs instead of short summaries.
+- Expanded vocabulary cards with meaning, context, sentence building, and audio.
+- Full grammar guides: purpose, structure, worked examples, common mistakes, and guided checks.
+- Dedicated Listening & Speaking station with before/during/after strategies.
+- Detailed reading study: main idea, key details, cause/effect, inference, and answer-reveal questions.
+- Detailed pronunciation routines for all six units.
+- Eleven complete writing workshops with planning, sentence frames, model writing, and editing checklists.
 - 600 direct lesson questions based on the Ministry textbook.
 - Choose, Complete, True/False, Matching, Drag & Drop, Listening, Ordering, Correction, and Sentence Builder.
 - Twenty questions per lesson and fifty-question unit challenges.

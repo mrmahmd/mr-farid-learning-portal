@@ -1,5 +1,6 @@
 import { curriculum, coverByUnit } from "./curriculum-data.js";
 import { lessonQuestionBanks, QUESTION_GROUP_ORDER } from "./questions-data.js";
+import { lessonInsights, grammarGuides, pronunciationGuides, writingGuides } from "./detailed-explanations.js";
 
 "use strict";
 
@@ -12,7 +13,7 @@ const previewMode = params.get("unlockAll") === "1" || params.get("preview") ===
 
 let student = {
   id: params.get("studentId") || params.get("id") || "guest",
-  name: params.get("studentName") || params.get("student") || params.get("name") || "Student",
+  name: params.get("studentName") || params.get("name") || "Student",
   className: params.get("className") || params.get("class") || "Primary 5"
 };
 
@@ -26,6 +27,7 @@ const makeDefaultState = () => ({
   earnedQuestions: {},
   quizSessions: {},
   sound: true,
+  fontScale: 1.08,
   current: { route: "home" },
   lastLearning: { route: "unit", moduleIndex: 0 }
 });
@@ -83,11 +85,17 @@ function loadState() {
 }
 
 function saveState() {
-  const route = state.current?.route || "home";
-  const unit = Number(state.current?.moduleIndex);
+  const module = curriculum[state.current?.moduleIndex ?? state.lastLearning?.moduleIndex ?? 0];
+  const lessonIndex = state.current?.lessonIndex ?? state.lastLearning?.lessonIndex;
   state.portalLastActivity = {
+    courseId: "english-primary-5-first-term",
     courseTitle: "English Primary 5 - First Term",
-    detail: route === "home" ? "Course home" : `${Number.isFinite(unit) ? `Unit ${unit + 1} • ` : ""}${String(route).replaceAll("-", " ")}`,
+    detail: module
+      ? `Unit ${module.number}: ${module.title}${Number.isInteger(lessonIndex) ? ` - Lesson ${lessonIndex + 1}` : ""}`
+      : "English Primary 5 - First Term",
+    route: state.current?.route || "home",
+    moduleIndex: state.current?.moduleIndex ?? state.lastLearning?.moduleIndex ?? 0,
+    lessonIndex: Number.isInteger(lessonIndex) ? lessonIndex : null,
     updatedAt: new Date().toISOString()
   };
   localStorage.setItem(storageKey(), JSON.stringify(state));
@@ -127,9 +135,6 @@ window.Primary5App = {
     };
     if (storageKey() !== oldKey) state = loadState();
     updateChrome();
-    // Always open the course dashboard first. The saved activity remains
-    // available through the dashboard's Continue button instead of forcing
-    // students directly into the last lesson or question.
     renderHome();
   },
   getProgress() {
@@ -244,7 +249,17 @@ function updateChrome() {
   $("#sideStars").textContent = state.stars;
   $("#sideProgress").textContent = `${overallPercent()}%`;
   $("#soundToggle").textContent = state.sound ? "🔊" : "🔇";
+  applyFontScale();
   renderUnitNav();
+}
+
+
+function applyFontScale() {
+  const value = Math.min(1.28, Math.max(1, Number(state.fontScale) || 1.08));
+  state.fontScale = Number(value.toFixed(2));
+  document.documentElement.style.setProperty("--reading-scale", state.fontScale);
+  $("#fontDecrease")?.toggleAttribute("disabled", state.fontScale <= 1);
+  $("#fontIncrease")?.toggleAttribute("disabled", state.fontScale >= 1.28);
 }
 
 function renderUnitNav() {
@@ -464,6 +479,7 @@ function stationHub(module, moduleIndex, lesson, lessonIndex) {
     { id: "overview", icon: "🧭", title: "Lesson Overview", description: "Goals, focus, and the big idea", color: module.color },
     { id: "vocabulary", icon: "🧠", title: "Vocabulary", description: "Flashcards, examples, and pronunciation", color: "#1b6de0" },
     { id: "notes", icon: "💡", title: "Language Notes", description: "Useful phrases and lesson connections", color: "#16a878" },
+    { id: "skills", icon: "🎧", title: "Listening & Speaking", description: "Listen for meaning and speak in complete sentences", color: "#138aa5" },
     { id: "grammar", icon: "⚙️", title: "Grammar", description: module.grammar, color: "#df485b" },
     { id: "reading", icon: "📖", title: "Reading / Story", description: "Detailed study summary and key details", color: "#7358c8" },
     { id: "pronunciation", icon: "🔤", title: "Pronunciation", description: module.pronunciation, color: "#ec8c22" },
@@ -500,6 +516,7 @@ function openStation(moduleIndex, lessonIndex, station) {
     overview: ["🧭", "Lesson Overview"],
     vocabulary: ["🧠", "Vocabulary Station"],
     notes: ["💡", "Language Notes"],
+    skills: ["🎧", "Listening & Speaking"],
     grammar: ["⚙️", "Grammar Made Easy"],
     reading: ["📖", "Reading / Story Study"],
     pronunciation: ["🔤", "Pronunciation Station"],
@@ -509,7 +526,7 @@ function openStation(moduleIndex, lessonIndex, station) {
   $("#lessonStage").innerHTML = `
     <section class="station-view" style="--unit-color:${module.color}">
       <div class="station-toolbar"><div><h2>${icon} ${esc(title)}</h2></div><button class="btn btn-secondary" id="backToStations" type="button">← Back to Lesson Stations</button></div>
-      <article class="station-panel">${stationContent(module, lesson, station)}</article>
+      <article class="station-panel">${stationContent(module, lesson, station, moduleIndex, lessonIndex)}</article>
     </section>`;
   $("#backToStations").addEventListener("click", () => {
     $("#lessonStage").innerHTML = stationHub(module, moduleIndex, lesson, lessonIndex);
@@ -519,64 +536,297 @@ function openStation(moduleIndex, lessonIndex, station) {
   $("#stationPractice")?.addEventListener("click", () => startQuiz(moduleIndex, lessonIndex, false));
 }
 
-function stationContent(module, lesson, station) {
+function contentKey(module, lessonIndex) {
+  return `${module.id}-${lessonIndex}`;
+}
+
+function sentenceFrameFromExample(item) {
+  const source = item.example || "";
+  const lower = source.toLowerCase();
+  const target = item.word.toLowerCase();
+  const index = lower.indexOf(target);
+  if (index < 0) return `Write a new sentence using “${esc(item.word)}”.`;
+  return `${esc(source.slice(0, index))}<span class="sentence-blank">________</span>${esc(source.slice(index + item.word.length))}`;
+}
+
+function summaryStepTitle(index) {
+  return ["Starting idea", "Important detail", "Cause or supporting detail", "Development", "Result and main message"][index] || `Key point ${index + 1}`;
+}
+
+function summaryTeachingPrompt(index) {
+  return [
+    "Identify the setting, topic, or situation introduced here. This gives you the background needed for the rest of the lesson.",
+    "Notice the exact people, animals, objects, or actions. These details often answer direct comprehension questions.",
+    "Ask what caused this action or what result it produced. Connecting causes and results makes the text easier to remember.",
+    "Follow how the idea changes, develops, or solves a problem. This point often links the beginning to the ending.",
+    "Use this final point to state the lesson's main idea, moral, result, or practical message in your own words."
+  ][index] || "Explain this point in your own words and connect it to the lesson's main idea.";
+}
+
+function grammarExampleExplanation(moduleId, example) {
+  const explanations = {
+    u1: example.includes(" is ") || example.includes(" are ") ? "The frequency word comes after the verb to be." : "The frequency word comes before the main action verb.",
+    u2: example.includes(" an ") ? "An is used before one noun beginning with a vowel sound." : example.includes(" a ") ? "A is used before one noun beginning with a consonant sound." : example.includes("some") ? "Some is used in an affirmative sentence." : "Any is commonly used in a question or negative sentence.",
+    u3: example.includes("didn't") ? "Didn't is followed by the base form of the verb." : example.includes("?") ? "The question uses did or were before the subject." : "The sentence reports a completed past event.",
+    u4: example.includes(" at ") ? "At points to an exact time." : example.includes(" on ") ? "On points to a day or date." : "In points to a longer time period.",
+    u5: example.includes("more ") ? "A long adjective uses more before it." : example.includes("better") ? "Better is the irregular comparative form of good." : "A short adjective usually adds -er and is followed by than.",
+    story: example.includes("Billie") ? "The past simple retells a completed event in Billie's journey." : "The present simple expresses a theme or truth that remains true."
+  };
+  return explanations[moduleId] || "Notice how the target grammar works inside the complete sentence.";
+}
+
+function renderTeacherExplanation(insight, lesson) {
+  const paragraphs = insight?.teacherExplanation?.length ? insight.teacherExplanation : [lesson.focus];
+  return `
+    <section class="explanation-section teacher-explanation">
+      <div class="section-title-row"><span class="section-number">1</span><div><p class="section-kicker">Teacher explanation</p><h3>Understand the lesson deeply</h3></div></div>
+      ${paragraphs.map(paragraph => `<p class="large-reading-text">${esc(paragraph)}</p>`).join("")}
+    </section>`;
+}
+
+function renderSummaryWalkthrough(lesson) {
+  return `
+    <section class="explanation-section">
+      <div class="section-title-row"><span class="section-number">2</span><div><p class="section-kicker">Step-by-step study</p><h3>How the lesson ideas develop</h3></div></div>
+      <div class="concept-list">
+        ${lesson.summary.map((point, index) => `
+          <article class="concept-card">
+            <div class="concept-card-heading"><span>${index + 1}</span><h4>${summaryStepTitle(index)}</h4></div>
+            <p class="key-statement">${esc(point)}</p>
+            <p>${summaryTeachingPrompt(index)}</p>
+          </article>`).join("")}
+      </div>
+    </section>`;
+}
+
+function stationContent(module, lesson, station, moduleIndex, lessonIndex) {
   const lessonVocab = lesson.vocab.map(word => module.vocab.find(item => item.word === word)).filter(Boolean);
+  const key = contentKey(module, lessonIndex);
+  const insight = lessonInsights[key] || {};
+  const grammarGuide = grammarGuides[module.id];
+  const pronunciationGuide = pronunciationGuides[module.id];
+  const writingGuide = writingGuides[key];
+
   if (station === "overview") {
     return `
-      <h3>${esc(lesson.title)}</h3>
-      <div class="info-callout"><strong>Teacher's simple explanation:</strong> ${esc(lesson.focus)}</div>
-      <h4>By the end of this lesson, you can:</h4>
-      <ul>${lesson.summary.slice(0, 5).map(point => `<li>${esc(point)}</li>`).join("")}</ul>
-      <div class="rule-callout"><strong>80/20 focus:</strong> Study the key words, understand the main idea, apply the unit grammar, then complete the practice.</div>
-      <button class="btn btn-primary" id="stationPractice" type="button">Go to Interactive Practice →</button>`;
+      <div class="detailed-station">
+        ${renderTeacherExplanation(insight, lesson)}
+        ${renderSummaryWalkthrough(lesson)}
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">3</span><div><p class="section-kicker">Connections</p><h3>See how the ideas work together</h3></div></div>
+          <div class="connection-grid">${(insight.connections || lesson.notes).map((item, index) => `<article class="connection-card"><span>${index + 1}</span><p>${esc(item)}</p></article>`).join("")}</div>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">4</span><div><p class="section-kicker">Success criteria</p><h3>What you should be able to do</h3></div></div>
+          <ul class="success-list">
+            <li>Explain the lesson's main idea without reading the text word for word.</li>
+            <li>Use the key vocabulary in complete sentences connected to this lesson.</li>
+            <li>Answer questions about details, causes, results, sequence, or the moral.</li>
+            <li>Apply <strong>${esc(module.grammar)}</strong> correctly when it is needed.</li>
+          </ul>
+        </section>
+        <section class="explanation-section speaking-practice">
+          <div class="section-title-row"><span class="section-number">5</span><div><p class="section-kicker">Speak and apply</p><h3>Complete these sentence frames aloud</h3></div></div>
+          ${(insight.speakingFrames || []).map(frame => `<div class="sentence-frame">💬 ${esc(frame)}</div>`).join("")}
+        </section>
+        <div class="study-action-bar"><p><strong>Study first, then practise.</strong> The questions are based on these ideas.</p><button class="btn btn-primary" id="stationPractice" type="button">Go to Interactive Practice →</button></div>
+      </div>`;
   }
+
   if (station === "vocabulary") {
-    return `<div class="vocab-grid">${lessonVocab.map(item => `
-      <section class="vocab-card"><button class="speak-button" data-speak="${esc(item.word)}" type="button" aria-label="Hear ${esc(item.word)}">🔊</button><h3>${esc(item.word)}</h3><p>${esc(item.meaning)}</p><p class="vocab-example"><strong>In context:</strong> ${esc(item.example)}</p></section>`).join("")}</div>`;
+    return `
+      <div class="detailed-station">
+        <section class="explanation-section intro-block">
+          <p class="section-kicker">Vocabulary in real use</p>
+          <h3>Learn each word through the lesson context</h3>
+          <p class="large-reading-text">Do not memorize an isolated translation. Read the meaning, listen to the word, study the model sentence, and then build a new sentence connected to <strong>${esc(lesson.title)}</strong>.</p>
+        </section>
+        <div class="vocab-grid detailed-vocab-grid">${lessonVocab.map((item, index) => `
+          <section class="vocab-card detailed-vocab-card">
+            <button class="speak-button" data-speak="${esc(item.word)}" type="button" aria-label="Hear ${esc(item.word)}">🔊</button>
+            <span class="vocab-index">Word ${index + 1}</span>
+            <h3>${esc(item.word)}</h3>
+            <div class="vocab-detail-row"><strong>Meaning:</strong><p>${esc(item.meaning)}</p></div>
+            <div class="vocab-detail-row context-row"><strong>In the lesson:</strong><p>${esc(item.example)}</p></div>
+            <div class="vocab-detail-row"><strong>Your turn:</strong><p class="sentence-frame compact">${sentenceFrameFromExample(item)}</p></div>
+            <p class="vocab-tip">Use this word to explain a real idea from the lesson, not as a word by itself.</p>
+          </section>`).join("")}</div>
+        <section class="explanation-section">
+          <h3>Quick vocabulary study routine</h3>
+          <ol class="large-steps"><li>Listen to the word twice.</li><li>Say it clearly.</li><li>Read its model sentence.</li><li>Cover the sentence and explain the word in your own words.</li><li>Create one new sentence connected to the lesson.</li></ol>
+        </section>
+      </div>`;
   }
+
   if (station === "notes") {
     return `
-      <h3>Useful Language Connections</h3>
-      <p>These notes connect the lesson vocabulary to the real text, story, dialog, or task.</p>
-      ${lesson.notes.map((note, index) => `<div class="info-callout"><strong>${index + 1}.</strong> ${esc(note)}</div>`).join("")}
-      <h4>Use the words naturally</h4>
-      ${lessonVocab.slice(0, 4).map(item => `<div class="example-callout">${esc(item.example)}</div>`).join("")}`;
+      <div class="detailed-station">
+        <section class="explanation-section intro-block">
+          <p class="section-kicker">Language notes</p>
+          <h3>Useful phrases, meanings, and lesson connections</h3>
+          <p class="large-reading-text">These notes explain expressions and ideas that can be difficult if they are read too quickly. Study what each note means, why it matters, and how it appears in a complete sentence.</p>
+        </section>
+        <div class="notes-stack">
+          ${lesson.notes.map((note, index) => {
+            const parts = note.split("=");
+            const heading = parts.length > 1 ? parts[0].trim() : `Language note ${index + 1}`;
+            const meaning = parts.length > 1 ? parts.slice(1).join("=").trim() : note;
+            const example = lessonVocab[index % Math.max(lessonVocab.length, 1)]?.example || lesson.summary[index % lesson.summary.length];
+            return `<article class="language-note-card"><div class="note-number">${index + 1}</div><div><h4>${esc(heading)}</h4><p><strong>In simple words:</strong> ${esc(meaning)}</p><p><strong>Connected example:</strong> ${esc(example)}</p><p class="why-it-matters"><strong>Why it matters:</strong> This expression helps you understand and discuss the real text, story, dialog, or task more accurately.</p></div></article>`;
+          }).join("")}
+        </div>
+        <section class="explanation-section">
+          <h3>Use the language naturally</h3>
+          ${(insight.speakingFrames || []).map(frame => `<div class="sentence-frame">${esc(frame)}</div>`).join("")}
+        </section>
+      </div>`;
   }
+
+  if (station === "skills") {
+    return `
+      <div class="detailed-station">
+        <section class="explanation-section listening-hero">
+          <p class="section-kicker">Listening and speaking</p>
+          <h3>Understand the message, then express it clearly</h3>
+          <p class="large-reading-text">This lesson is a <strong>${esc(lesson.type)}</strong> lesson. Listen or read for the main idea first, then collect the exact details you need. When you speak, answer in a complete sentence instead of giving one isolated word.</p>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">1</span><div><p class="section-kicker">Before listening</p><h3>Prepare your mind</h3></div></div>
+          <ol class="large-steps"><li>Read the lesson title and predict the topic.</li><li>Review the key vocabulary and say each word aloud.</li><li>Look for names, places, actions, and the main question.</li><li>Do not try to understand every word before you know the general idea.</li></ol>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">2</span><div><p class="section-kicker">While listening</p><h3>Listen in two rounds</h3></div></div>
+          <div class="listening-rounds"><article><strong>First listening</strong><p>Focus on the main idea: Who is speaking? What are they discussing? What is the situation?</p></article><article><strong>Second listening</strong><p>Focus on details such as reasons, examples, order, quantities, feelings, or results.</p></article></div>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">3</span><div><p class="section-kicker">Speaking</p><h3>Build complete answers</h3></div></div>
+          ${(insight.speakingFrames || []).map(frame => `<div class="sentence-frame">💬 ${esc(frame)}</div>`).join("")}
+          <div class="info-callout large-callout"><strong>Speaking rule:</strong> Repeat part of the question in your answer. For example, “Why must we protect the Nile?” → “We must protect the Nile because many living things depend on it.”</div>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">4</span><div><p class="section-kicker">Listen and repeat</p><h3>Practise the lesson words in context</h3></div></div>
+          <div class="vocab-grid pronunciation-words">${lessonVocab.slice(0, 8).map(item => `<section class="vocab-card"><button class="speak-button" data-speak="${esc(item.example)}" type="button">🔊</button><h3>${esc(item.word)}</h3><p>${esc(item.example)}</p></section>`).join("")}</div>
+        </section>
+      </div>`;
+  }
+
   if (station === "grammar") {
     return `
-      <h3>${esc(module.grammar)}</h3>
-      ${module.grammarNotes.map(note => `<div class="rule-callout">${esc(note)}</div>`).join("")}
-      <h4>Clear examples</h4>
-      ${module.grammarExamples.map(example => `<div class="example-callout">${esc(example)}</div>`).join("")}
-      <div class="info-callout"><strong>Remember:</strong> Do not memorize the rule alone. Use it inside a complete sentence connected to the unit.</div>`;
+      <div class="detailed-station">
+        <section class="explanation-section grammar-introduction">
+          <p class="section-kicker">Grammar made clear</p>
+          <h3>${esc(module.grammar)}</h3>
+          <p class="large-reading-text">${esc(grammarGuide?.purpose || module.grammarNotes[0])}</p>
+          <div class="lesson-grammar-link"><strong>Connection to this lesson:</strong> Use the grammar to speak and write accurately about <em>${esc(lesson.focus)}</em></div>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">1</span><div><p class="section-kicker">Rules and structures</p><h3>Learn the rule one part at a time</h3></div></div>
+          <div class="grammar-guide-grid">${(grammarGuide?.sections || module.grammarNotes.map((body, index) => ({ title:`Rule ${index + 1}`, body }))).map((item, index) => `<article class="grammar-guide-card"><span>Rule ${index + 1}</span><h4>${esc(item.title)}</h4><p>${esc(item.body)}</p></article>`).join("")}</div>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">2</span><div><p class="section-kicker">Worked examples</p><h3>See why each sentence is correct</h3></div></div>
+          <div class="worked-examples">${module.grammarExamples.map((example, index) => `<article class="worked-example"><div class="example-label">Example ${index + 1}</div><p class="example-sentence">${esc(example)}</p><p>${esc(grammarExampleExplanation(module.id, example))}</p></article>`).join("")}</div>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">3</span><div><p class="section-kicker">Common mistakes</p><h3>Check the form before you answer</h3></div></div>
+          <div class="warning-callout"><strong>Important:</strong> Read the whole sentence. Look at the subject, verb, time, number, and sentence type before choosing an answer. Do not choose a grammar word because it looks familiar.</div>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">4</span><div><p class="section-kicker">Guided check</p><h3>Think first, then reveal the answer</h3></div></div>
+          <div class="study-questions">${module.grammarQuestions.map((question, index) => `<details class="study-question"><summary>${index + 1}. ${esc(question.q)}</summary><div><p><strong>Correct answer:</strong> ${esc(question.a)}</p><p>${esc(question.explain)}</p></div></details>`).join("")}</div>
+        </section>
+      </div>`;
   }
+
   if (station === "reading") {
     return `
-      <h3>Study Summary</h3>
-      <ol>${lesson.summary.map(point => `<li>${esc(point)}</li>`).join("")}</ol>
-      <h4>Check the details</h4>
-      ${lesson.facts.map(fact => `<div class="info-callout"><strong>Think:</strong> ${esc(fact.q)}</div>`).join("")}
-      <div class="rule-callout"><strong>Main learning connection:</strong> ${esc(lesson.focus)}</div>`;
+      <div class="detailed-station">
+        ${renderTeacherExplanation(insight, lesson)}
+        ${renderSummaryWalkthrough(lesson)}
+        <section class="explanation-section reading-skills-block">
+          <div class="section-title-row"><span class="section-number">3</span><div><p class="section-kicker">Reading skills</p><h3>How to understand the text, not just repeat it</h3></div></div>
+          <div class="reading-skills-grid">
+            <article><h4>Main idea</h4><p>${esc(lesson.focus)}</p></article>
+            <article><h4>Key details</h4><p>Look for names, places, actions, reasons, quantities, and results. These details support the main idea.</p></article>
+            <article><h4>Cause and effect</h4><p>Ask: What happened? Why did it happen? What happened next? Use the summary points to connect the answers.</p></article>
+            <article><h4>Inference or moral</h4><p>Use actions and results to understand a message that may not be stated in one exact sentence.</p></article>
+          </div>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">4</span><div><p class="section-kicker">Comprehension</p><h3>Answer with evidence from the lesson</h3></div></div>
+          <div class="study-questions">${lesson.facts.map((fact, index) => `<details class="study-question"><summary>${index + 1}. ${esc(fact.q)}</summary><div><p><strong>Answer:</strong> ${esc(fact.a)}</p><p><strong>Why:</strong> ${esc(fact.explain)}</p></div></details>`).join("")}</div>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">5</span><div><p class="section-kicker">True or false thinking</p><h3>Correct the idea, not only the letter</h3></div></div>
+          ${lesson.checks.map((check, index) => `<article class="truth-card ${check.value ? "true-card" : "false-card"}"><span>${check.value ? "TRUE" : "FALSE"}</span><div><h4>${esc(check.statement)}</h4><p>${esc(check.explain)}</p></div></article>`).join("")}
+        </section>
+      </div>`;
   }
+
   if (station === "pronunciation") {
-    const details = lesson.pronunciation?.length ? lesson.pronunciation : [
-      `This unit practises ${module.pronunciation}.`,
-      "Listen carefully, repeat slowly, then say the complete word inside a sentence.",
-      "Use the audio button on vocabulary cards to hear key lesson words."
-    ];
+    const guide = pronunciationGuide || {
+      title: module.pronunciation,
+      explanation: `This unit practises ${module.pronunciation}.`,
+      steps: ["Listen carefully.", "Repeat slowly.", "Say the complete word.", "Use it in a sentence."],
+      examples: []
+    };
+    const details = lesson.pronunciation?.length ? lesson.pronunciation : [];
     return `
-      <h3>${esc(module.pronunciation)}</h3>
-      ${details.map(detail => `<div class="info-callout">${esc(detail)}</div>`).join("")}
-      <h4>Say these lesson words</h4>
-      <div class="vocab-grid">${lessonVocab.slice(0, 6).map(item => `<section class="vocab-card"><button class="speak-button" data-speak="${esc(item.word)}" type="button">🔊</button><h3>${esc(item.word)}</h3><p>${esc(item.example)}</p></section>`).join("")}</div>`;
+      <div class="detailed-station">
+        <section class="explanation-section pronunciation-hero">
+          <p class="section-kicker">Sound and reading</p>
+          <h3>${esc(guide.title)}</h3>
+          <p class="large-reading-text">${esc(guide.explanation)}</p>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">1</span><div><p class="section-kicker">Method</p><h3>Follow this speaking routine</h3></div></div>
+          <ol class="large-steps">${guide.steps.map(step => `<li>${esc(step)}</li>`).join("")}</ol>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">2</span><div><p class="section-kicker">Patterns</p><h3>Study the target examples</h3></div></div>
+          <div class="sound-patterns">${guide.examples.map(example => `<button class="sound-chip" data-speak="${esc(example.replace(/^.* in /, ""))}" type="button">🔊 ${esc(example)}</button>`).join("")}</div>
+          ${details.map(detail => `<div class="info-callout large-callout">${esc(detail)}</div>`).join("")}
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">3</span><div><p class="section-kicker">Lesson words</p><h3>Listen, repeat, and read the sentence</h3></div></div>
+          <div class="vocab-grid pronunciation-words">${lessonVocab.slice(0, 8).map(item => `<section class="vocab-card"><button class="speak-button" data-speak="${esc(item.word)}" type="button">🔊</button><h3>${esc(item.word)}</h3><p>${esc(item.example)}</p></section>`).join("")}</div>
+        </section>
+      </div>`;
   }
+
   if (station === "writing") {
+    const guide = writingGuide || {
+      title: "Build Your Writing",
+      plan: ["Understand the task.", "Plan the ideas.", "Write complete sentences.", "Check grammar and spelling."],
+      frames: [],
+      model: "Use the lesson task and vocabulary to build your own clear response."
+    };
     return `
-      <h3>Writing Task</h3>
-      <div class="info-callout">${esc(lesson.writing)}</div>
-      <h4>Plan before you write</h4>
-      <ol><li>Read the task and underline the topic.</li><li>Choose the important lesson words you will use.</li><li>Organize your ideas in a clear order.</li><li>Write complete sentences.</li><li>Check capitals, punctuation, spelling, and the target grammar.</li></ol>
-      <div class="rule-callout"><strong>Writing checklist:</strong> Clear title • connected ideas • lesson vocabulary • correct grammar • final check.</div>`;
+      <div class="detailed-station">
+        <section class="explanation-section writing-task-hero">
+          <p class="section-kicker">Real writing application</p>
+          <h3>${esc(guide.title)}</h3>
+          <p class="large-reading-text"><strong>Your task:</strong> ${esc(lesson.writing)}</p>
+          <p>Writing is not a vocabulary-definition exercise. You will plan, order, build, and edit a complete piece connected to the lesson.</p>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">1</span><div><p class="section-kicker">Planning</p><h3>Build the answer step by step</h3></div></div>
+          <ol class="large-steps">${guide.plan.map(step => `<li>${esc(step)}</li>`).join("")}</ol>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">2</span><div><p class="section-kicker">Sentence building</p><h3>Use these frames to begin</h3></div></div>
+          ${guide.frames.map(frame => `<div class="sentence-frame">${esc(frame)}</div>`).join("")}
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">3</span><div><p class="section-kicker">Model writing</p><h3>Study the organization and language</h3></div></div>
+          <div class="model-writing">${esc(guide.model).replaceAll("\n", "<br>")}</div>
+          <div class="info-callout large-callout"><strong>Use the model as a guide.</strong> Change the ideas and details so your writing is your own.</div>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">4</span><div><p class="section-kicker">Editing</p><h3>Check before you finish</h3></div></div>
+          <div class="editing-checklist"><label><input type="checkbox"> My writing answers the exact task.</label><label><input type="checkbox"> My ideas are in a clear order.</label><label><input type="checkbox"> I used lesson vocabulary naturally.</label><label><input type="checkbox"> My sentences have capitals and punctuation.</label><label><input type="checkbox"> I checked spelling and the target grammar.</label></div>
+        </section>
+      </div>`;
   }
   return `<p>Station content is being prepared.</p>`;
 }
@@ -1276,6 +1526,16 @@ $("#soundToggle").addEventListener("click", () => {
   saveState();
   toast(state.sound ? "Sound is on." : "Sound is off.");
 });
+$("#fontDecrease").addEventListener("click", () => {
+  state.fontScale = Math.max(1, Number((state.fontScale - 0.08).toFixed(2)));
+  saveState();
+  toast("Reading text size decreased.");
+});
+$("#fontIncrease").addEventListener("click", () => {
+  state.fontScale = Math.min(1.28, Number((state.fontScale + 0.08).toFixed(2)));
+  saveState();
+  toast("Reading text size increased.");
+});
 $("#continueButton").addEventListener("click", continueLearning);
 $("#certificateButton").addEventListener("click", renderCertificate);
 $("#confirmReset").addEventListener("click", () => {
@@ -1301,15 +1561,15 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   navigator.serviceWorker.register("sw.js").catch(() => {});
 }
 
-// Flush the current quiz position when the tab/app is closed or backgrounded.
-// The bridge also retries online, so this does not replace normal cloud saves.
+updateChrome();
+// Always open the course dashboard first. The Continue button can resume the
+// saved learning location without forcing students back into a previous route.
+renderHome();
+
 window.addEventListener("pagehide", () => {
   saveState();
   void window.MrFaridCourseProgress?.saveNow();
 });
-
-updateChrome();
-renderHome();
 
 window.MrFaridCourseProgress?.connect({
   courseId: "english-primary-5-first-term",
@@ -1322,7 +1582,7 @@ window.MrFaridCourseProgress?.connect({
   },
   mergeState: (_local, remote) => ({ ...makeDefaultState(), ...remote }),
   onStatus: ({ online, message }) => {
-    document.title = online ? "English Primary 5 • Saved" : "English Primary 5";
+    document.title = online ? "English Primary 5 - Saved" : "English Primary 5";
     if (message && !online) console.info(message);
   }
 });

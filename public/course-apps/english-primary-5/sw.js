@@ -1,4 +1,4 @@
-const CACHE_NAME = "primary5-premium-v3-progress";
+const CACHE_NAME = "primary5-premium-v4-detailed-cloud-progress";
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -6,7 +6,9 @@ const CORE_ASSETS = [
   "./assets/css/styles.css",
   "./assets/js/app.js",
   "./assets/js/curriculum-data.js",
+  "./assets/js/detailed-explanations.js",
   "./assets/js/questions-data.js",
+  "./assets/js/portal-progress.js",
   "./assets/icons/favicon.svg",
   "./assets/images/covers/home-cover.png",
   "./assets/images/covers/unit-1.png",
