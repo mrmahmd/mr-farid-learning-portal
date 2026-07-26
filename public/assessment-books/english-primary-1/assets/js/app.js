@@ -96,6 +96,17 @@
       updateChrome();
       if(continueMode&&state.lastPage&&pageUnlocked(state.lastPage))renderPage(state.lastPage);else renderDashboard();
     }
+    // Restore the exact book view after a browser refresh instead of showing the cover screen again.
+    const savedView=state.current;
+    if(savedView?.route==='page' && savedView.page){
+      enter(true);
+    }else if(savedView?.route==='unit' && savedView.unit){
+      enter(false);
+      renderUnit(savedView.unit);
+    }else if(savedView?.route==='certificate'){
+      enter(false);
+      renderCertificate();
+    }
   }
 
   function buildSidebar(){
