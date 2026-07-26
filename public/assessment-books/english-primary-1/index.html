@@ -449,7 +449,8 @@ window.PRIMARY1_DATA={UNITS,PAGES};
     try{return {...initial,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch{return {...initial}}
   }
   function save(){
-    state.portalLastActivity={detail:state.current?.route==='page'?`Primary 1 Assessment Book • ${state.current.unit||'Unit'} • Page ${state.current.page||state.lastPage||''}`:state.current?.route==='unit'?`Primary 1 Assessment Book • ${state.current.unit||'Unit'}`:'Primary 1 Assessment Book dashboard',route:state.current?.route||'dashboard',page:state.current?.page||null,unit:state.current?.unit||null};
+    if(state.current?.route==='page'||state.current?.route==='unit') state.portalLastActivity={detail:state.current.route==='page'?`Primary 1 Assessment Book • ${state.current.unit||'Unit'} • Page ${state.current.page||state.lastPage||''}`:`Primary 1 Assessment Book • ${state.current.unit||'Unit'}`,route:state.current.route,page:state.current.page||null,unit:state.current.unit||null};
+    else if(!state.portalLastActivity) state.portalLastActivity={detail:'Primary 1 Assessment Book dashboard',route:'dashboard',page:null,unit:null};
     localStorage.setItem(KEY,JSON.stringify(state));
     const payload={student:{id:parentStudent.id,name:state.name,className:state.className},progress:{points:state.points,stars:state.stars,completed:state.completed,lastPage:state.lastPage,percent:overallPercent()},portalLastActivity:state.portalLastActivity};
     window.dispatchEvent(new CustomEvent('primary1-progress',{detail:payload}));
@@ -517,7 +518,7 @@ window.PRIMARY1_DATA={UNITS,PAGES};
     $('#homeBtn').addEventListener('click',renderDashboard);
     $('#resetBtn').addEventListener('click',()=>{if(confirm('Reset all saved progress for this book?')){localStorage.removeItem(KEY);state={...initial,name:state.name,className:state.className};save();renderDashboard()}});
     $('#certificateBtn').addEventListener('click',renderCertificate);
-    window.Primary1Book={setStudent(student={}){state.name=student.name||state.name;state.className=student.className||state.className;save();updateChrome()},getProgress(){return JSON.parse(JSON.stringify(state))},replaceState(next={}){state={...state,...next};localStorage.setItem(KEY,JSON.stringify(state));updateChrome()},mergeState(current={},remote={}){return {...current,...remote}}};
+    window.Primary1Book={setStudent(student={}){state.name=student.name||state.name;state.className=student.className||state.className;save();updateChrome()},getProgress(){return JSON.parse(JSON.stringify(state))},replaceState(next={}){state={...state,...next,current:{route:'dashboard'}};localStorage.setItem(KEY,JSON.stringify(state));updateChrome();renderDashboard()},mergeState(current={},remote={}){return {...current,...remote}}};
     window.addEventListener('message',e=>{if(e.data?.type==='PRIMARY1_SET_STUDENT')window.Primary1Book.setStudent(e.data.student)});
     function enter(continueMode){
       state.name=state.name||'Star Learner';
@@ -680,6 +681,7 @@ window.PRIMARY1_DATA={UNITS,PAGES};
     $('#printCert').addEventListener('click',()=>window.print());$('#certHome').addEventListener('click',renderDashboard);
   }
 
+  window.addEventListener('pagehide',()=>{save();void window.MrFaridCourseProgress?.saveNow()});
   start();
 })();
 
