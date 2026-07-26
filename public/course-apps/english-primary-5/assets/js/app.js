@@ -127,7 +127,10 @@ window.Primary5App = {
     };
     if (storageKey() !== oldKey) state = loadState();
     updateChrome();
-    renderCurrent();
+    // Always open the course dashboard first. The saved activity remains
+    // available through the dashboard's Continue button instead of forcing
+    // students directly into the last lesson or question.
+    renderHome();
   },
   getProgress() {
     return JSON.parse(JSON.stringify({ student, state }));
@@ -1299,7 +1302,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
 }
 
 updateChrome();
-renderCurrent();
+renderHome();
 
 window.MrFaridCourseProgress?.connect({
   courseId: "english-primary-5-first-term",
@@ -1308,7 +1311,7 @@ window.MrFaridCourseProgress?.connect({
     state = next;
     localStorage.setItem(storageKey(), JSON.stringify(state));
     updateChrome();
-    renderCurrent();
+    renderHome();
   },
   mergeState: (_local, remote) => ({ ...makeDefaultState(), ...remote }),
   onStatus: ({ online, message }) => {
