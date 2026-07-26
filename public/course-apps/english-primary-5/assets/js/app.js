@@ -10,8 +10,11 @@ const main = $("#mainContent");
 
 const params = new URLSearchParams(location.search);
 const previewMode = params.get("unlockAll") === "1" || params.get("preview") === "1";
-const navigationType = performance.getEntriesByType("navigation")[0]?.type || "navigate";
-const restoreRouteOnBoot = navigationType === "reload";
+const navigationEntry = performance.getEntriesByType("navigation")[0];
+const navigationType = navigationEntry?.type || "navigate";
+// Safari/WebViews sometimes report an iframe refresh as a normal navigation.
+// Keep the legacy Navigation Timing fallback as well.
+const restoreRouteOnBoot = navigationType === "reload" || window.performance?.navigation?.type === 1;
 
 let student = {
   id: params.get("studentId") || params.get("id") || "guest",
