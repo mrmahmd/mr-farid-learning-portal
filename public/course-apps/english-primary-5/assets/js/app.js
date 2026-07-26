@@ -980,25 +980,26 @@ function quizSessionKey(moduleIndex, lessonIndex, challenge) {
   return `${module.id}:${challenge ? "challenge" : `lesson:${lessonIndex}`}`;
 }
 
-function persistQuizSession() {
+function persistQuizSession(indexOverride = null) {
   if (!activeQuiz) return;
+  const savedIndex = Number.isInteger(indexOverride) ? indexOverride : activeQuiz.index;
   state.quizSessions = state.quizSessions || {};
   state.quizSessions[activeQuiz.sessionKey] = {
-    index: activeQuiz.index,
+    index: savedIndex,
     correct: activeQuiz.correct
   };
   state.current = activeQuiz.challenge
     ? {
         route: "challenge",
         moduleIndex: activeQuiz.moduleIndex,
-        questionIndex: activeQuiz.index
+        questionIndex: savedIndex
       }
     : {
         route: "lesson",
         moduleIndex: activeQuiz.moduleIndex,
         lessonIndex: activeQuiz.lessonIndex,
         station: "practice",
-        questionIndex: activeQuiz.index
+        questionIndex: savedIndex
       };
   state.lastLearning = { ...state.current };
   saveState();
@@ -1082,7 +1083,9 @@ function renderQuestion() {
   bindQuestionControls(question);
   $("#leaveQuiz").addEventListener("click", () => {
     const { moduleIndex, lessonIndex, challenge } = quiz;
-    persistQuizSession();
+    // Save the next question immediately. If the student closes the app
+    // during the feedback/countdown, Continue resumes after this answer.
+    persistQuizSession(activeQuiz.index + 1);
     activeQuiz = null;
     challenge ? renderUnit(moduleIndex) : renderLesson(moduleIndex, lessonIndex);
   });
@@ -1319,7 +1322,8 @@ function checkAnswer(value, optionButton = null, forcedResult = null) {
   if (correct) {
     quiz.correct += 1;
     awardQuestion(question.id);
-    persistQuizSession();
+    // The answer was submitted, so the next open should not repeat it.
+    persistQuizSession(activeQuiz.index + 1);
     playTone(true);
 
     $("#feedbackArea").innerHTML = `
@@ -1336,7 +1340,8 @@ function checkAnswer(value, optionButton = null, forcedResult = null) {
     }, 1000);
     autoTimer = setTimeout(advanceQuestion, 5000);
   } else {
-    persistQuizSession();
+    // The answer was submitted, so the next open should not repeat it.
+    persistQuizSession(activeQuiz.index + 1);
     playTone(false);
 
     const correctDisplay = question.type === "matching"

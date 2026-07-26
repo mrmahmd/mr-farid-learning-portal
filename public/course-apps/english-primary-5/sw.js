@@ -1,4 +1,4 @@
-const CACHE_NAME = "primary5-premium-v5-dashboard-first";
+const CACHE_NAME = "primary5-premium-v6-question-resume";
 const CORE_ASSETS = [
   "./",
   "./index.html",
