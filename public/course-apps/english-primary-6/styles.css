@@ -217,3 +217,98 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 .bank-hero-cover-img{z-index:0}
 .bank-hero:before{z-index:1}
 .bank-hero>div{z-index:2}
+
+/* =============================================================
+   Detailed lesson teaching system
+   ============================================================= */
+.detailed-lesson-layout{grid-template-columns:minmax(0,1fr) 320px}
+.detailed-lesson-layout .content-card{padding:30px}
+.detailed-lesson-layout .content-card h2{font-size:clamp(1.55rem,2.4vw,2.15rem);line-height:1.16;margin:0 0 5px;color:var(--navy)}
+.detailed-lesson-layout .content-card h3{font-size:1.13rem;line-height:1.35;color:var(--navy)}
+.detailed-lesson-layout .content-card p,.detailed-lesson-layout li{font-size:1.04rem;line-height:1.86}
+.detailed-lesson-layout .card-heading{align-items:flex-start;margin-bottom:22px}
+.detailed-lesson-layout .card-heading>div>p{margin:4px 0 0;line-height:1.55}
+.detailed-lesson-layout .heading-icon{width:52px;height:52px;border-radius:16px;font-size:1.35rem;flex:0 0 auto}
+
+.lesson-goals-card{background:linear-gradient(145deg,#ffffff,#f7faff);border-top:5px solid #3d67f5}
+.objective-list,.remember-list,.detail-list{margin:0;padding:0;list-style:none;display:grid;gap:12px}
+.objective-list li,.remember-list li,.detail-list li{position:relative;padding:13px 15px 13px 48px;border-radius:16px;background:#f7f9ff;color:#35415f;border:1px solid #e5eafa}
+.objective-list li:before,.remember-list li:before,.detail-list li:before{position:absolute;left:14px;top:13px;width:25px;height:25px;border-radius:8px;display:grid;place-items:center;font-size:.82rem;font-weight:1000}
+.objective-list li:before{content:'✓';background:#dff6ee;color:#087c59}
+.remember-list li:before{content:'★';background:#fff1c9;color:#a36a00}
+.detail-list li:before{content:'•';background:#e8edff;color:#3556c8}
+
+.detailed-vocab-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.detailed-vocab-card{min-height:260px;padding:20px;background:linear-gradient(145deg,#ffffff,#f4f7ff);box-shadow:0 10px 24px rgba(31,49,103,.08)}
+.vocab-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.vocab-title-row strong{font-size:1.25rem;line-height:1.3;color:var(--navy)}
+.vocab-meaning{margin:15px 0;color:#4d5871!important;line-height:1.68!important}
+.vocab-example{margin-top:auto;padding:13px;border-radius:15px;background:white;border:1px solid #e1e8f8}
+.vocab-example span{display:inline-block;padding:4px 8px;border-radius:999px;background:#eaf0ff;color:#3456c5;font-size:.72rem;font-weight:1000;text-transform:uppercase;letter-spacing:.07em}
+.vocab-example p{margin:7px 0 0!important;color:#27324d!important;font-size:.96rem!important;line-height:1.55!important;font-style:italic}
+.speak-example-btn{margin-top:12px;border:0;background:#edf2ff;color:#2446af;padding:9px 12px;border-radius:11px;font-weight:900;align-self:stretch;text-align:left}
+
+.detailed-explanation-card{border-top:5px solid #8c5ae8}
+.explanation-paragraphs{display:grid;gap:16px}
+.explanation-block{position:relative;padding:21px 22px 21px 68px;border:1px solid #e7e1f6;border-radius:20px;background:linear-gradient(145deg,#fff,#fbf8ff)}
+.explanation-block p{margin:0;color:#3f4860!important}
+.explanation-number{position:absolute;left:19px;top:21px;width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#7048d8,#9a6af0);color:white;display:grid;place-items:center;font-weight:1000;box-shadow:0 7px 16px rgba(112,72,216,.25)}
+
+.grammar-workshop-card{border-top:5px solid #26a8c8}
+.detailed-grammar-box{padding:24px;margin-bottom:18px}
+.detailed-grammar-box strong{font-size:1.25rem}
+.detailed-grammar-box span{font-size:1.02rem;line-height:1.75;color:#3d4964}
+.detail-two-column{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.mini-detail-panel{padding:20px;border-radius:18px;background:#f8fbff;border:1px solid #e3ebf8}
+.mini-detail-panel h3{margin:0 0 13px}
+.language-strip{margin-top:16px;padding:20px;border-radius:18px;background:#f7f4ff;border:1px solid #e8e0fa}
+.language-strip h3{margin:0 0 12px}
+.example-chips{display:flex;flex-wrap:wrap;gap:9px}
+.example-chips span{padding:9px 12px;border-radius:999px;background:white;border:1px solid #dfe6f5;color:#273a70;font-weight:850;line-height:1.35}
+.mistake-panel{margin-top:16px;padding:20px;border-radius:18px;background:#fff8f5;border:1px solid #f3d9ce;border-left:5px solid #ef7e52}
+.mistake-panel h3{margin:0 0 13px;color:#9b3c1c}
+.mistake-panel .detail-list li{background:#fff;border-color:#f1ded7}
+.mistake-panel .detail-list li:before{content:'!';background:#ffe1d5;color:#b64118}
+
+.reading-guide-card{border-top:5px solid #f3a93b}
+.numbered-steps{display:grid;gap:13px}
+.numbered-step{display:grid;grid-template-columns:42px 1fr;gap:14px;align-items:start;padding:15px;border:1px solid #e6ebf6;border-radius:17px;background:#fcfdff}
+.numbered-step>span{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,#204aaf,#3e75e5);color:white;font-weight:1000;box-shadow:0 7px 15px rgba(32,74,175,.2)}
+.numbered-step p{margin:1px 0 0!important;color:#37425d!important;line-height:1.67!important}
+
+.pronunciation-card{border-top:5px solid #f06fa2}
+.pronunciation-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.pronunciation-actions button{border:0;padding:10px 13px;border-radius:12px;background:#edf2ff;color:#2949ad;font-weight:900}
+.remember-card{border-top:5px solid #f2c14e;background:linear-gradient(145deg,#fff,#fffcf2)}
+.ready-card{border-top:5px solid #1fb483}
+.large-action-btn{font-size:1.05rem;padding:14px 20px;min-width:240px}
+
+.writing-workshop-card{border-top:5px solid #8a5bd7}
+.writing-task-banner{padding:20px;border-radius:19px;background:linear-gradient(135deg,#172b65,#405fb7);color:white;margin-bottom:22px}
+.writing-task-banner strong{font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;color:#dce6ff}
+.writing-task-banner p{color:white!important;margin:7px 0 0!important;font-size:1.12rem!important;line-height:1.65!important}
+.writing-language{margin:20px 0}
+.model-answer-box{margin-top:20px;padding:22px;border-radius:20px;background:#fffaf0;border:1px solid #f0dfb5;border-left:6px solid #e8aa29}
+.model-answer-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.model-answer-heading h3{margin:0}
+.model-answer-heading button{border:0;background:#fff0c8;color:#755000;border-radius:11px;padding:9px 12px;font-weight:900}
+.model-answer-box>p{margin:0!important;color:#3d4557!important;white-space:normal}
+.model-answer-box small{display:block;margin-top:15px;color:#846d39;line-height:1.55;font-weight:700}
+.detailed-writing-area{min-height:310px;font-size:1.05rem;line-height:1.8;padding:20px}
+.detailed-checklist .tip-item{padding:12px;border-radius:14px;background:#f8faff;border:1px solid #e8edf8}
+.detailed-checklist .tip-item>div{font-size:1rem;line-height:1.55;color:#3d4862}
+
+@media (max-width:1050px){
+  .detailed-lesson-layout{grid-template-columns:1fr}
+  .detailed-lesson-layout .lesson-side{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:760px){
+  .detailed-lesson-layout .content-card{padding:21px}
+  .detailed-vocab-grid,.detail-two-column{grid-template-columns:1fr}
+  .detailed-lesson-layout .lesson-side{grid-template-columns:1fr}
+  .explanation-block{padding:18px 17px 18px 59px}
+  .explanation-number{left:15px;top:18px}
+  .numbered-step{grid-template-columns:36px 1fr;padding:13px;gap:11px}
+  .numbered-step>span{width:34px;height:34px}
+  .detailed-lesson-layout .content-card p,.detailed-lesson-layout li{font-size:1rem;line-height:1.76}
+}

@@ -3,11 +3,7 @@
 
   const COURSE = window.COURSE_DATA;
   const params = new URLSearchParams(location.search);
-  const student = {
-    id: params.get('studentId') || 'guest',
-    name: params.get('studentName') || 'Student',
-    className: 'Primary 6'
-  };
+  const student = { id: params.get('studentId') || 'guest', name: params.get('studentName') || 'Student', className: 'Primary 6' };
   const STORAGE_KEY = `mrfarid-primary6-term1:${student.id}`;
   const TYPE_ORDER = ['fill', 'mcq', 'correction', 'reorder', 'order-sentences', 'match', 'truefalse', 'listening-mcq'];
   const TYPE_LABELS = {
@@ -64,12 +60,9 @@
       const unit = activity.unitId ? findUnit(activity.unitId) : null;
       const lesson = activity.lessonId ? findLesson(activity.lessonId)?.lesson : null;
       state.portalLastActivity = {
-        courseId: 'english-primary-6-first-term',
-        courseTitle: 'English Primary 6 - First Term',
+        courseId: 'english-primary-6-first-term', courseTitle: 'English Primary 6 - First Term',
         detail: `${unit ? `Unit ${unit.number}: ${unit.title}` : 'English Primary 6'}${lesson ? ` - ${lesson.title}` : ''}${Number.isInteger(activity.questionIndex) ? ` - Question ${activity.questionIndex + 1}` : ''}`,
-        route: activity.name,
-        ...activity,
-        updatedAt: new Date().toISOString()
+        route: activity.name, ...activity, updatedAt: new Date().toISOString()
       };
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -399,17 +392,85 @@
     `;
   }
 
+  function detailList(items, className = 'detail-list') {
+    return `<ul class="${className}">${(items || []).map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
+  }
+
+  function numberedSteps(items) {
+    return `<div class="numbered-steps">${(items || []).map((item, index) => `<div class="numbered-step"><span>${index + 1}</span><p>${escapeHtml(item)}</p></div>`).join('')}</div>`;
+  }
+
+  function exampleChips(items) {
+    return `<div class="example-chips">${(items || []).map((item) => `<span>${escapeHtml(item)}</span>`).join('')}</div>`;
+  }
+
+  function modelHtml(text) {
+    return escapeHtml(text || '').replace(/\n/g, '<br>');
+  }
+
   function renderLearnTab(unit, lesson, percent) {
+    const details = lesson.details || {};
+    const grammar = details.grammar || {};
+    const pronunciation = details.pronunciation || {};
+    const vocabDetails = details.vocabularyDetails || lesson.vocab.map((term) => ({ term, meaning: '', example: '' }));
+
     el('lessonTabContent').innerHTML = `
-      <div class="lesson-layout">
+      <div class="lesson-layout detailed-lesson-layout">
         <section class="content-stack">
-          <article class="content-card">
-            <div class="card-heading"><span class="heading-icon">✦</span><div><h2>Key Vocabulary</h2><p>Tap the sound button to hear each word or phrase.</p></div></div>
-            <div class="vocab-grid">${lesson.vocab.map((word) => `<div class="vocab-card"><strong>${escapeHtml(word)}</strong><button data-speak="${escapeHtml(word)}" type="button" aria-label="Listen to ${escapeHtml(word)}">🔊</button></div>`).join('')}</div>
+          <article class="content-card lesson-goals-card">
+            <div class="card-heading"><span class="heading-icon">🎯</span><div><h2>What You Will Learn</h2><p>Read these goals first. They show every skill covered in this lesson.</p></div></div>
+            ${detailList(details.objectives || [lesson.summary], 'objective-list')}
           </article>
-          <article class="content-card"><div class="card-heading"><span class="heading-icon">A+</span><div><h2>Language Focus</h2></div></div><div class="grammar-box"><strong>${escapeHtml(unit.grammar)}</strong><span>${escapeHtml(lesson.grammarNote)}</span></div></article>
-          <article class="content-card"><div class="card-heading"><span class="heading-icon">▤</span><div><h2>Study Summary</h2></div></div><p>${escapeHtml(lesson.reading)}</p></article>
-          <article class="content-card"><div class="card-heading"><span class="heading-icon">✓</span><div><h2>Ready to Practise?</h2><p>Questions are grouped by type, not shown randomly.</p></div></div><button id="startPracticeBtn" class="primary-btn" type="button">Start Lesson Practice</button></article>
+
+          <article class="content-card">
+            <div class="card-heading"><span class="heading-icon">✦</span><div><h2>Vocabulary Workshop</h2><p>Learn the meaning, read the example, and listen to each word or phrase.</p></div></div>
+            <div class="vocab-grid detailed-vocab-grid">${vocabDetails.map((item) => `
+              <div class="vocab-card detailed-vocab-card">
+                <div class="vocab-title-row"><strong>${escapeHtml(item.term)}</strong><button data-speak="${escapeHtml(item.term)}" type="button" aria-label="Listen to ${escapeHtml(item.term)}">🔊</button></div>
+                <p class="vocab-meaning">${escapeHtml(item.meaning)}</p>
+                <div class="vocab-example"><span>Example</span><p>${escapeHtml(item.example)}</p></div>
+                <button class="speak-example-btn" data-speak="${escapeHtml(item.example)}" type="button">▶ Hear the sentence</button>
+              </div>`).join('')}</div>
+          </article>
+
+          <article class="content-card detailed-explanation-card">
+            <div class="card-heading"><span class="heading-icon">📘</span><div><h2>Detailed Lesson Explanation</h2><p>Study the lesson idea carefully before moving to grammar and practice.</p></div></div>
+            <div class="explanation-paragraphs">${(details.overview || [lesson.reading]).map((paragraph, index) => `
+              <section class="explanation-block">
+                <span class="explanation-number">${index + 1}</span>
+                <p>${escapeHtml(paragraph)}</p>
+              </section>`).join('')}</div>
+          </article>
+
+          <article class="content-card grammar-workshop-card">
+            <div class="card-heading"><span class="heading-icon">A+</span><div><h2>Grammar & Language Workshop</h2><p>${escapeHtml(grammar.title || unit.grammar)}</p></div></div>
+            <div class="grammar-box detailed-grammar-box"><strong>${escapeHtml(unit.grammar)}</strong><span>${escapeHtml(lesson.grammarNote)}</span></div>
+            <div class="detail-two-column">
+              <section class="mini-detail-panel"><h3>When We Use It</h3>${detailList(grammar.uses || [])}</section>
+              <section class="mini-detail-panel"><h3>Sentence Forms & Examples</h3>${detailList(grammar.forms || [])}</section>
+            </div>
+            ${(grammar.signals || []).length ? `<section class="language-strip"><h3>Helpful Words and Signals</h3>${exampleChips(grammar.signals)}</section>` : ''}
+            ${(grammar.mistakes || []).length ? `<section class="mistake-panel"><h3>Common Mistakes to Avoid</h3>${detailList(grammar.mistakes)}</section>` : ''}
+          </article>
+
+          <article class="content-card reading-guide-card">
+            <div class="card-heading"><span class="heading-icon">▤</span><div><h2>Reading / Listening Guide</h2><p>Follow the lesson content point by point.</p></div></div>
+            ${numberedSteps(details.reading || [lesson.reading])}
+          </article>
+
+          ${(pronunciation.focus || (pronunciation.tips || []).length) ? `<article class="content-card pronunciation-card">
+            <div class="card-heading"><span class="heading-icon">🔊</span><div><h2>Pronunciation & Speaking</h2><p>${escapeHtml(pronunciation.focus || 'Speak clearly and naturally.')}</p></div></div>
+            ${detailList(pronunciation.tips || [])}
+            ${exampleChips(pronunciation.examples || [])}
+            <div class="pronunciation-actions">${(pronunciation.examples || []).map((example) => `<button data-speak="${escapeHtml(example)}" type="button">🔊 ${escapeHtml(example)}</button>`).join('')}</div>
+          </article>` : ''}
+
+          <article class="content-card remember-card">
+            <div class="card-heading"><span class="heading-icon">⭐</span><div><h2>Remember These Key Points</h2><p>Use this section for a quick review before practice.</p></div></div>
+            ${detailList(details.remember || [lesson.summary], 'remember-list')}
+          </article>
+
+          <article class="content-card ready-card"><div class="card-heading"><span class="heading-icon">✓</span><div><h2>Ready to Practise?</h2><p>The exercises now test the vocabulary, content, grammar, reading, listening, ordering, correction, and writing points explained above.</p></div></div><button id="startPracticeBtn" class="primary-btn large-action-btn" type="button">Start Lesson Practice</button></article>
         </section>
         ${lessonSideHtml(lesson, percent)}
       </div>
@@ -420,24 +481,37 @@
 
   function renderWritingTab(unit, lesson, percent) {
     const saved = state.writings[lesson.id] || '';
+    const writing = lesson.details?.writing || {};
     el('lessonTabContent').innerHTML = `
-      <div class="lesson-layout">
+      <div class="lesson-layout detailed-lesson-layout">
         <section class="content-stack">
+          <article class="content-card writing-workshop-card">
+            <div class="card-heading"><span class="heading-icon">✎</span><div><h2>Detailed Writing Workshop</h2><p>${escapeHtml(writing.purpose || lesson.writing)}</p></div></div>
+            <div class="writing-task-banner"><strong>Your Task</strong><p>${escapeHtml(lesson.writing)}</p></div>
+            <h3>How to Write It</h3>
+            ${numberedSteps(writing.steps || ['Plan your ideas.','Write complete sentences.','Check your work.'])}
+            ${(writing.useful || []).length ? `<section class="language-strip writing-language"><h3>Useful Language</h3>${exampleChips(writing.useful)}</section>` : ''}
+            ${writing.model ? `<section class="model-answer-box"><div class="model-answer-heading"><h3>Model Structure</h3><button id="speakModelBtn" type="button">🔊 Listen</button></div><p>${modelHtml(writing.model)}</p><small>Use the structure and language as a guide. Write your own ideas instead of copying every sentence.</small></section>` : ''}
+          </article>
+
           <article class="content-card">
-            <div class="card-heading"><span class="heading-icon">✎</span><div><h2>Writing Task</h2><p>${escapeHtml(lesson.writing)}</p></div></div>
-            <textarea id="writingArea" class="writing-area" placeholder="Write your answer here...">${escapeHtml(saved)}</textarea>
+            <div class="card-heading"><span class="heading-icon">📝</span><div><h2>Your Writing Area</h2><p>Plan, write, check, and save your work.</p></div></div>
+            <textarea id="writingArea" class="writing-area detailed-writing-area" placeholder="Write your answer here...">${escapeHtml(saved)}</textarea>
             <div class="writing-footer"><span id="wordCount" class="word-count">0 words</span><button id="saveWritingBtn" class="primary-btn" type="button">Save Writing</button></div>
           </article>
-          <article class="content-card"><h3>Writing Checklist</h3><div class="tip-list">
-            <div class="tip-item"><span>✓</span><div>Use clear, complete sentences.</div></div>
-            <div class="tip-item"><span>✓</span><div>Use the lesson vocabulary naturally.</div></div>
-            <div class="tip-item"><span>✓</span><div>Check capitals, punctuation, and spelling.</div></div>
-            <div class="tip-item"><span>✓</span><div>Read your answer once before saving.</div></div>
+          <article class="content-card"><h3>Writing Checklist</h3><div class="tip-list detailed-checklist">
+            <div class="tip-item"><span>✓</span><div>Answer every part of the task.</div></div>
+            <div class="tip-item"><span>✓</span><div>Use the lesson vocabulary naturally and accurately.</div></div>
+            <div class="tip-item"><span>✓</span><div>Use the correct grammar and keep the tense consistent.</div></div>
+            <div class="tip-item"><span>✓</span><div>Organize ideas in a clear, logical order.</div></div>
+            <div class="tip-item"><span>✓</span><div>Check capitals, punctuation, spelling, and word count.</div></div>
+            <div class="tip-item"><span>✓</span><div>Read your answer aloud once before saving.</div></div>
           </div></article>
         </section>
         ${lessonSideHtml(lesson, percent)}
       </div>
     `;
+    if (writing.model && el('speakModelBtn')) el('speakModelBtn').addEventListener('click', () => speak(writing.model));
     const writingArea = el('writingArea');
     const updateWordCount = () => {
       const words = writingArea.value.trim() ? writingArea.value.trim().split(/\s+/).length : 0;
@@ -922,8 +996,6 @@
     state.started = true;
     state.visits += 1;
     saveState();
-    // A fresh entry always opens the course dashboard; the dashboard's
-    // Continue button is the explicit way to resume the saved activity.
     navigate({ name: 'dashboard' }, { preserveScroll: true });
   }
 
@@ -937,17 +1009,9 @@
   el('feedbackActionBtn').addEventListener('click', () => pendingFeedbackAction?.());
 
   const restoreRouteOnReload = performance.getEntriesByType('navigation')[0]?.type === 'reload' || window.performance?.navigation?.type === 1;
-  window.addEventListener('pagehide', () => {
-    saveState();
-    void window.MrFaridCourseProgress?.saveNow();
-  });
-
+  window.addEventListener('pagehide', () => { saveState(); void window.MrFaridCourseProgress?.saveNow(); });
   window.Primary6App = {
-    setStudent(next = {}) {
-      if (next.studentId) student.id = String(next.studentId);
-      if (next.studentName) student.name = String(next.studentName);
-      updateChrome();
-    },
+    setStudent(next = {}) { if (next.studentId) student.id = String(next.studentId); if (next.studentName) student.name = String(next.studentName); updateChrome(); },
     getProgress() { return JSON.parse(JSON.stringify({ student, state })); }
   };
   window.addEventListener('message', (event) => {

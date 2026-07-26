@@ -43,3 +43,18 @@ Then open `http://localhost:8000`.
 - `app.js` – navigation, scoring, matching, correction, ordering, saving, and feedback
 - `assets/covers/` – high-resolution cover artwork
 - `manifest.json` and `sw.js` – install/offline support
+
+## Detailed lesson explanations update
+
+Every one of the 30 lessons now contains a full teaching sequence rather than a short summary:
+
+- Four clear learning objectives.
+- Vocabulary meanings, natural lesson-based examples, and text-to-speech buttons.
+- Multiple detailed explanation paragraphs.
+- A full grammar and language workshop with use, forms, examples, signal words, and common mistakes.
+- A point-by-point reading/listening guide.
+- Pronunciation and speaking guidance.
+- A detailed writing workshop with ordered steps, useful language, a model structure, a writing area, and a checklist.
+- A final key-points review before practice.
+
+All lesson content remains English-only and suitable for Primary 6 learners.

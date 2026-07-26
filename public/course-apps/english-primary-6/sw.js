@@ -1,4 +1,4 @@
-const CACHE = 'english-primary-6-v3-cloud-progress';
+const CACHE = 'english-primary-6-v4-detailed-cloud';
 const ASSETS = [
   './', './index.html', './styles.css', './data.js', './banks.js', './app.js', './manifest.json',
   './assets/favicon.svg', './portal-progress.js', './assets/covers/main-cover.png',
