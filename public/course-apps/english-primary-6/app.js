@@ -1035,7 +1035,16 @@
       updateChrome();
       if (state.started) render();
     },
-    mergeState: (_local, remote) => Object.assign(defaultState(), remote || {}),
+    mergeState: (local, remote) => {
+      const merged = Object.assign(defaultState(), remote || {});
+      merged.completed = Object.assign({}, remote?.completed || {}, local?.completed || {});
+      merged.writings = Object.assign({}, remote?.writings || {}, local?.writings || {});
+      merged.mistakes = Object.assign({}, remote?.mistakes || {}, local?.mistakes || {});
+      merged.performance = Object.assign({}, remote?.performance || {}, local?.performance || {});
+      merged.points = Math.max(Number(remote?.points || 0), Number(local?.points || 0));
+      if (local?.lastRoute?.name && local.lastRoute.name !== 'dashboard') merged.lastRoute = local.lastRoute;
+      return merged;
+    },
     onStatus: ({ online }) => { document.title = online ? 'English Primary 6 · Saved' : 'English Primary 6 · Term 1'; }
   });
 })();

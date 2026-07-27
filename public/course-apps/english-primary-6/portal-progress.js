@@ -95,6 +95,7 @@ window.MrFaridCourseProgress = (() => {
     mergeStates = mergeState;
     readState = getState;
     appId = courseId;
+    const handshakeVersion = changeVersion;
     status(false, "Connecting your saved progress...");
 
     if (!window.supabase) {
@@ -123,7 +124,7 @@ window.MrFaridCourseProgress = (() => {
       return { connected: false, error: error.message };
     }
 
-    if (data?.state) {
+    if (data?.state && changeVersion === handshakeVersion) {
       // Applying remote state updates the host app asynchronously (React apps
       // need a render cycle). Do not save immediately here: readState() still
       // points at the old local defaults and would overwrite the student's
@@ -131,6 +132,14 @@ window.MrFaridCourseProgress = (() => {
       applyState(mergeStates(readState(), data.state));
       dirty = false;
       writeAgain = false;
+    } else if (data?.state) {
+      // The learner changed something while the account/session was being
+      // resolved. Keep the local change and upload it instead of overwriting
+      // it with an older cloud snapshot.
+      applyState(mergeStates(readState(), data.state));
+      dirty = true;
+      changeVersion += 1;
+      void saveNow();
     } else {
       // New course record: persist the initial state once the account is
       // connected. Existing records are saved by the host app's state-change
