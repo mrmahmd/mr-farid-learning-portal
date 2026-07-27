@@ -1,0 +1,17 @@
+FINAL STATIC QA REPORT
+
+PASS:
+- Complete project contains the original images, teacher dashboard files, cloud.js, teacher.js, teacher.css, and all supplied assets.
+- New V6 question bank loads before app.js.
+- JavaScript syntax checks passed for app.js, questions-v6-word-correction.js, cloud.js, and teacher.js.
+- 44 lessons/reader sections in the application are covered by the question bank.
+- 6 unit challenges are included, each containing 50 questions.
+- Total question/activity records: 1,828.
+- Group order validated: Choose → Complete → Correct → Reorder → Match → Sort → Write.
+- 232 Correct questions use one highlighted wrong word and require a one-word replacement.
+- No banned definition-style prompts were found in the active V6 bank.
+- Local index.html file references are present.
+- Cache-busting references were updated to V6 final.
+
+LIMITATION:
+- Full browser and live Supabase testing was not performed in this local container. Codex should run the project in a browser against the latest repository before publishing.
