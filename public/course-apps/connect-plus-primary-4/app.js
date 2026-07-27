@@ -980,7 +980,16 @@ function portalUrl(){try{return localStorage.getItem(PORTAL_URL_KEY)||PORTAL_FAL
       const restored=await window.ConnectCloud.init();
       cloudUI.signedIn=!!restored.signedIn;
       updateCloudStatus();
-      if(restored.signedIn){rememberAppOpen(true);$('#app').classList.remove('hidden');render();return}
+      if(restored.signedIn){
+        // Always enter through the course dashboard. The saved page/question remains
+        // available through the explicit Continue buttons on the dashboard.
+        state.view='dashboard';
+        rememberAppOpen(true);
+        save();
+        $('#app').classList.remove('hidden');
+        render();
+        return;
+      }
     }
     returnToPortal('signin');
   }
