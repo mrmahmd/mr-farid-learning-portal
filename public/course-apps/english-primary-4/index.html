@@ -97,6 +97,7 @@ body{background:radial-gradient(circle at 7% 7%,#dcf8ff 0 10%,transparent 29%),r
 <style>
 .course-header-actions{display:flex;align-items:center;gap:9px;margin-left:auto}.course-resume{border:0;border-radius:12px;padding:10px 12px;color:#fff;background:linear-gradient(135deg,#315efb,#7c5cff);box-shadow:0 8px 18px rgba(71,83,210,.24);font-weight:1000;white-space:nowrap}.course-picker{max-width:178px;border:1px solid #d9d4ff;border-radius:12px;padding:10px 30px 10px 11px;background:#fff;color:#465275;font:900 12px Arial,sans-serif;box-shadow:0 7px 16px rgba(50,70,120,.13);cursor:pointer}.course-picker:focus{outline:3px solid rgba(49,94,251,.2);outline-offset:2px}@media(max-width:700px){.course-header{display:flex!important;align-items:center!important;gap:6px!important}.course-header .teacher-info{max-width:76px!important;flex:0 1 76px}.course-header-actions{gap:5px;margin-left:auto;min-width:0}.course-resume{padding:8px 7px;font-size:.64rem}.course-picker{width:106px;max-width:106px;padding:8px 20px 8px 6px;font-size:.58rem}#mrFaridSupport{grid-column:auto!important;grid-row:auto!important;flex:0 0 36px!important;width:36px!important;height:36px!important;padding:0!important;justify-content:center!important}#mrFaridSupport span{display:none!important}}
 </style>
+<link rel="stylesheet" href="question-system-v2.css?v=20260727" />
 </head>
 <body>
 <style>#mrFaridSupport{display:none!important}</style>
@@ -628,7 +629,9 @@ function openEnglishDashboardOnEntry(destination='dashboard'){
 }
 window.addEventListener('message',event=>{if(event.origin===window.location.origin&&event.data?.type==='mrfarid-course-entry')openEnglishDashboardOnEntry(event.data.destination)});
 window.addEventListener('pageshow',event=>{if(event.persisted)openEnglishDashboardOnEntry('dashboard')});
-validate();void launchFromMrFaridPortal();
 </script>
+<script src="question-bank-v2.js?v=20260727"></script>
+<script src="question-system-v2.js?v=20260727"></script>
+<script>validate();void launchFromMrFaridPortal();</script>
 </body>
 </html>
