@@ -4,7 +4,7 @@
   const COURSE = window.COURSE_DATA;
   const params = new URLSearchParams(location.search);
   const student = { id: params.get('studentId') || 'guest', name: params.get('studentName') || 'Student', className: 'Primary 6' };
-  const STORAGE_KEY = `mrfarid-primary6-term1:${student.id}`;
+  let storageKey = `mrfarid-primary6-term1:${student.id}`;
   const TYPE_ORDER = ['fill', 'mcq', 'correction', 'reorder', 'order-sentences', 'match', 'truefalse', 'listening-mcq'];
   const TYPE_LABELS = {
     fill: 'Complete',
@@ -47,7 +47,7 @@
 
   function loadState() {
     try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    const saved = JSON.parse(localStorage.getItem(storageKey));
       return Object.assign(defaultState(), saved || {});
     } catch {
       return defaultState();
@@ -65,7 +65,7 @@
         route: activity.name, ...activity, updatedAt: new Date().toISOString()
       };
     }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(storageKey, JSON.stringify(state));
     updateChrome();
     window.MrFaridCourseProgress?.queueSave();
   }
@@ -1011,7 +1011,18 @@
   const restoreRouteOnReload = performance.getEntriesByType('navigation')[0]?.type === 'reload' || window.performance?.navigation?.type === 1;
   window.addEventListener('pagehide', () => { saveState(); void window.MrFaridCourseProgress?.saveNow(); });
   window.Primary6App = {
-    setStudent(next = {}) { if (next.studentId) student.id = String(next.studentId); if (next.studentName) student.name = String(next.studentName); updateChrome(); },
+    setStudent(next = {}) {
+      const nextId = next.studentId ? String(next.studentId) : student.id;
+      if (nextId !== student.id) {
+        student.id = nextId;
+        storageKey = `mrfarid-primary6-term1:${student.id}`;
+        state = loadState();
+        route = { name: 'dashboard' };
+      }
+      if (next.studentName) student.name = String(next.studentName);
+      updateChrome();
+      if (state.started) render();
+    },
     getProgress() { return JSON.parse(JSON.stringify({ student, state })); }
   };
   window.addEventListener('message', (event) => {
@@ -1031,6 +1042,7 @@
     getState: () => state,
     setState: (next) => {
       state = Object.assign(defaultState(), next || {});
+      try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch {}
       route = restoreRouteOnReload ? (state.lastRoute || { name: 'dashboard' }) : { name: 'dashboard' };
       updateChrome();
       if (state.started) render();

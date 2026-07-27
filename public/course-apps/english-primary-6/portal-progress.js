@@ -129,14 +129,18 @@ window.MrFaridCourseProgress = (() => {
       // need a render cycle). Do not save immediately here: readState() still
       // points at the old local defaults and would overwrite the student's
       // cloud progress during the handshake.
-      applyState(mergeStates(readState(), data.state));
+      const merged = mergeStates(readState(), data.state);
+      applyState(merged);
+      try { localStorage.setItem(`mrfarid-primary6-term1:${userId}`, JSON.stringify(merged)); } catch {}
       dirty = false;
       writeAgain = false;
     } else if (data?.state) {
       // The learner changed something while the account/session was being
       // resolved. Keep the local change and upload it instead of overwriting
       // it with an older cloud snapshot.
-      applyState(mergeStates(readState(), data.state));
+      const merged = mergeStates(readState(), data.state);
+      applyState(merged);
+      try { localStorage.setItem(`mrfarid-primary6-term1:${userId}`, JSON.stringify(merged)); } catch {}
       dirty = true;
       changeVersion += 1;
       void saveNow();
