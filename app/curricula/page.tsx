@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { InnerPageShell } from "../components/InnerPageShell";
 import { CurriculumCover } from "../components/CurriculumCover";
-import { portalAsset } from "../asset-path";
 
 const grades = [1, 2, 3, 4, 5, 6];
 
@@ -36,11 +35,6 @@ export default function CurriculaPage() {
         <div className="grade-grid">
           {grades.map((grade) => (
             <article className="grade-card" key={grade}>
-              <div className="grade-card-hero">
-                <img src={portalAsset("/curriculum-covers/english-cover.png")} alt={`Primary ${grade} learning`} />
-                <div className="grade-card-hero-overlay" />
-                <div className="grade-card-hero-label"><span>PRIMARY STAGE</span><strong>Primary {grade}</strong></div>
-              </div>
               <header>
                 <span className="grade-number">P{grade}</span>
                 <div>
@@ -56,21 +50,21 @@ export default function CurriculaPage() {
                     {grade === 3 && <span className="new-curriculum-badge">NEW · RECENTLY ADDED</span>}
                     <strong>English Primary {grade}</strong>
                     <small>English Curriculum</small>
-                    <div className="curriculum-terms" aria-label="Available terms">
-                      <div className="curriculum-term"><strong>First Term</strong>{grade === 1 && <Link className="new-curriculum-entry" href="/courses/english-primary-1">Enter</Link>}{grade === 3 && <Link className="new-curriculum-entry" href="/courses/english-primary-3">Enter</Link>}{grade === 4 && <Link className="new-curriculum-entry" href="/courses/english-primary-4">Enter</Link>}{grade === 5 && <Link className="new-curriculum-entry" href="/courses/english-primary-5">Enter</Link>}</div>
-                      <div className="curriculum-term unavailable"><strong>Second Term</strong><span>Coming soon</span></div>
+                    <div className="term-badges" aria-label="Available terms">
+                      <span>First Term</span><span>Second Term</span>
                     </div>
+                    {grade === 1 && <Link className="new-curriculum-entry" href="/courses/english-primary-1">Enter English Primary 1</Link>}
+                    {grade === 2 && <Link className="new-curriculum-entry" href="/courses/english-primary-2">Enter English Primary 2</Link>}
+                    {grade === 3 && <Link className="new-curriculum-entry" href="/courses/english-primary-3">Enter English Primary 3</Link>}
                   </div>
                 </div>
                 <div className="curriculum-option connect-option">
                   <CurriculumCover type="connect" grade={grade} />
                   <div className="curriculum-option-content">
-                    {grade === 1 && <span className="new-curriculum-badge">NEW · RECENTLY ADDED</span>}
                     <strong>Connect Plus Primary {grade}</strong>
                     <small>Connect Plus Curriculum</small>
-                    <div className="curriculum-terms" aria-label="Available terms">
-                      <div className="curriculum-term"><strong>First Term</strong>{grade === 1 && <Link className="new-curriculum-entry" href="/courses/connect-plus-primary-1">Enter</Link>}{grade === 4 && <Link className="new-curriculum-entry" href="/courses/connect-plus-primary-4">Enter</Link>}</div>
-                      <div className="curriculum-term unavailable"><strong>Second Term</strong><span>Coming soon</span></div>
+                    <div className="term-badges connect-term-badges" aria-label="Available terms">
+                      <span>First Term</span><span>Second Term</span>
                     </div>
                   </div>
                 </div>
