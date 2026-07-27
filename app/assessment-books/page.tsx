@@ -16,7 +16,7 @@ export default function AssessmentBooksPage() {
         </div>
         <div className="grade-grid">
           {grades.map((grade) => {
-            const available = grade === 4;
+            const available = grade === 2 || grade === 4;
             const connectAvailable = false;
             return (
               <article className={`grade-card${available ? " grade-accessible" : " grade-locked"}`} key={grade}>
@@ -28,7 +28,7 @@ export default function AssessmentBooksPage() {
                     <div className="curriculum-option-content">
                       <strong>English Primary {grade}</strong><small>Interactive assessment workbook</small>
                       <div className="curriculum-terms">
-                        <div className="curriculum-term"><strong>First Term</strong>{available ? <Link className="new-curriculum-entry" href={portalAsset("/assessment-books/english-primary-4/")}>Open Book</Link> : <span>Coming soon</span>}</div>
+                        <div className="curriculum-term"><strong>First Term</strong>{available ? <Link className="new-curriculum-entry" href={grade === 2 ? "/courses/english-primary-2" : portalAsset("/assessment-books/english-primary-4/")}>Open Book</Link> : <span>Coming soon</span>}</div>
                         <div className="curriculum-term unavailable"><strong>Second Term</strong><span>Coming soon</span></div>
                       </div>
                     </div>
