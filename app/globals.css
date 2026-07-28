@@ -1097,7 +1097,7 @@ input::placeholder { color: #9aacc0; }
 .subscription-notice-actions { display: flex; gap: 8px; align-items: center; }
 .subscription-notice-actions a { min-height: 40px; padding: 10px 14px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; white-space: nowrap; font-size: 12px; font-weight: 900; }
 .subscription-whatsapp { color: #fff; background: #16b968; box-shadow: 0 8px 18px rgba(22,185,104,.24); }
-.subscription-whatsapp span { font-size: 19px; line-height: 1; }
+.subscription-whatsapp svg { width: 19px; height: 19px; fill: currentColor; }
 .subscription-signin { color: #315ed6; background: #fff; border: 1px solid rgba(65,111,240,.22); }
 .curriculum-locked-entry { border: 0; border-radius: 10px; padding: 8px 11px; color: #7d8daa; background: #e7edf8; font: inherit; font-size: 11px; font-weight: 900; cursor: not-allowed; }
 .curricula-access-actions { display: flex; align-items: center; gap: 8px; }
