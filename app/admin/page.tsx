@@ -283,10 +283,10 @@ export default function AdminDashboardPage() {
                   </select>
                 </label>
                 <div className="access-presets">
-                  <button className={accessMode === "grade" ? "active" : ""} type="button" onClick={() => setAccessMode("grade")}><b>Activate This Stage</b><small>Open only Primary {editingGrade}: curricula, games, booklets and assessment books.</small></button>
-                  <button className={accessMode === "all" ? "active all" : "all"} type="button" onClick={() => setAccessMode("all")}><b>Open Full Portal</b><small>Allow every available grade and learning resource.</small></button>
+                  <button className={accessMode === "grade" ? "active" : ""} type="button" onClick={() => { setAccessMode("grade"); setBookletAccess(true); }}><b>Activate This Stage</b><small>Open only Primary {editingGrade}: curricula, games, booklets and assessment books.</small></button>
+                  <button className={accessMode === "all" ? "active all" : "all"} type="button" onClick={() => { setAccessMode("all"); setBookletAccess(true); }}><b>Open Full Portal</b><small>Allow every available grade and learning resource.</small></button>
                   <button className={accessMode === "custom" ? "active custom" : "custom"} type="button" onClick={() => setAccessMode("custom")}><b>Choose Specific Courses</b><small>Open only the courses selected below.</small></button>
-                  <button className={accessMode === "none" ? "active danger" : "danger"} type="button" onClick={() => setAccessMode("none")}><b>Close Content</b><small>Keep every learning page locked until the student subscribes.</small></button>
+                  <button className={accessMode === "none" ? "active danger" : "danger"} type="button" onClick={() => { setAccessMode("none"); setBookletAccess(false); }}><b>Close Content</b><small>Keep every learning page locked until the student subscribes.</small></button>
                 </div>
                 {accessMode === "custom" && <div className="curriculum-access-grid">
                   {curricula.map((curriculum) => <label key={curriculum.slug}><input type="checkbox" checked={selectedCurricula.includes(curriculum.slug)} onChange={() => toggleCurriculum(curriculum.slug)} /><span><b>{curriculum.title}</b><small>Primary {curriculum.grade}</small></span></label>)}

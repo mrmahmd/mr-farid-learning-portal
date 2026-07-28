@@ -7,7 +7,7 @@ const validCurricula = new Set(Array.from({ length: 6 }, (_, index) => {
   const grade = index + 1;
   return [`english-primary-${grade}`, `connect-plus-primary-${grade}`];
 }).flat());
-const validAccessModes = new Set(["grade", "none"]);
+const validAccessModes = new Set(["grade", "custom", "all", "none"]);
 
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") return new Response("ok", { headers: cors });
@@ -55,8 +55,8 @@ Deno.serve(async (request) => {
     const saved = await saveAccess({
       grade,
       access_mode: accessMode,
-      allowed_curricula: [],
-      booklet_access: accessMode === "grade",
+      allowed_curricula: accessMode === "custom" ? allowed : [],
+      booklet_access: Boolean(body.bookletAccess),
     });
     return saved.ok ? json({ success: true }) : json({ error: await saved.text() }, saved.status);
   }
