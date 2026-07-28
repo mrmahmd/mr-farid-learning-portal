@@ -204,7 +204,7 @@ export default function AdminDashboardPage() {
 
   if (authState !== "allowed") {
     return (
-      <main className="admin-page" dir="rtl">
+      <main className="admin-page" dir="ltr">
         <section className="admin-content admin-auth-card">
           <div className="admin-brand"><span>MF</span><div><b>Mr.Farid</b><small>Admin Control Center</small></div></div>
           {authState === "checking" && <p>Checking administrator session...</p>}
@@ -225,7 +225,7 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <main className="admin-page" dir="rtl">
+    <main className="admin-page" dir="ltr">
       <aside className="admin-sidebar">
         <Link href="/" className="admin-brand"><span>MF</span><div><b>Mr.Farid</b><small>Admin Control Center</small></div></Link>
         <div className="admin-nav-label">CONTROL CENTER</div>

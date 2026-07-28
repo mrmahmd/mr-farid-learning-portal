@@ -1778,45 +1778,30 @@ body { font-size: 17px; }
 @media (max-width: 900px) { .access-presets { grid-template-columns:repeat(2,1fr); }.curriculum-access-grid { grid-template-columns:repeat(2,1fr); } }
 @media (max-width: 560px) { .admin-content { padding: 25px 14px; }.admin-topbar { display:block; }.admin-account { width:max-content; margin-top:16px; }.admin-alert { align-items:flex-start; flex-wrap:wrap; }.admin-alert button { margin-left:38px; }.admin-stats strong { font-size:25px; }.student-access-editor { padding:15px; }.access-presets,.curriculum-access-grid { grid-template-columns:1fr; } }
 
-/* English administration UI arranged for an RTL portal layout. */
-.admin-page[dir="rtl"] { flex-direction: row-reverse; font-family: "Cairo", Arial, sans-serif; }
-.admin-page[dir="rtl"] .admin-sidebar { border-right: 0; border-left: 1px solid rgba(65,110,180,.14); text-align: right; }
-.admin-page[dir="rtl"] .admin-content { text-align: right; }
-.admin-page[dir="rtl"] .admin-topbar,
-.admin-page[dir="rtl"] .admin-panel-heading,
-.admin-page[dir="rtl"] .admin-alert,
-.admin-page[dir="rtl"] .access-editor-heading { flex-direction: row-reverse; }
-.admin-page[dir="rtl"] .admin-nav-item { text-align: right; justify-content: flex-start; }
-.admin-page[dir="rtl"] .admin-brand,
-.admin-page[dir="rtl"] .student-cell,
-.admin-page[dir="rtl"] .activity-list > div,
-.admin-page[dir="rtl"] .row-actions,
-.admin-page[dir="rtl"] .booklet-access-control { flex-direction: row-reverse; }
-.admin-page[dir="rtl"] .admin-nav-item,
-.admin-page[dir="rtl"] .admin-topbar,
-.admin-page[dir="rtl"] .student-table,
-.admin-page[dir="rtl"] .student-settings-form,
-.admin-page[dir="rtl"] .access-presets,
-.admin-page[dir="rtl"] .student-access-drawer { direction: ltr; }
-.admin-page[dir="rtl"] input,
-.admin-page[dir="rtl"] select { direction: ltr; text-align: left; }
-.admin-page[dir="rtl"] .admin-brand b { font-size: 23px; }
-.admin-page[dir="rtl"] .admin-brand small,
-.admin-page[dir="rtl"] .admin-nav-label { font-size: 12px; }
-.admin-page[dir="rtl"] .admin-nav-item { font-size: 16px; }
-.admin-page[dir="rtl"] .admin-topbar p,
-.admin-page[dir="rtl"] .admin-account { font-size: 15px; }
-.admin-page[dir="rtl"] .admin-alert b { font-size: 17px; }
-.admin-page[dir="rtl"] .admin-alert p { font-size: 14px; }
-.admin-page[dir="rtl"] .admin-panel h2 { font-size: 26px; }
-.admin-page[dir="rtl"] .student-table-head { font-size: 14px; }
-.admin-page[dir="rtl"] .student-table-row { min-height: 82px; font-size: 16px; }
-.admin-page[dir="rtl"] .student-table-row.selected { background: linear-gradient(90deg, rgba(84,99,235,.13), rgba(65,131,237,.05)); box-shadow: inset -4px 0 0 #5a61e6; }
-.admin-page[dir="rtl"] .student-cell b { font-size: 17px; }
-.admin-page[dir="rtl"] .student-cell small { font-size: 13px; }
-.admin-page[dir="rtl"] .status-pill,
-.admin-page[dir="rtl"] .row-actions button { font-size: 13px; }
-.admin-page[dir="rtl"] .row-actions .access-action { color: #fff; border-color: transparent; background: linear-gradient(135deg, #3379ec, #655ae7); box-shadow: 0 8px 16px rgba(62,99,220,.2); }
+/* English-only administration interface, arranged left to right. */
+.admin-page[dir="ltr"] { flex-direction: row; font-family: Arial, sans-serif; }
+.admin-page[dir="ltr"] .admin-sidebar { border-left: 0; border-right: 1px solid rgba(65,110,180,.14); text-align: left; }
+.admin-page[dir="ltr"] .admin-content { text-align: left; }
+.admin-page[dir="ltr"] .admin-nav-item { text-align: left; justify-content: flex-start; }
+.admin-page[dir="ltr"] input,
+.admin-page[dir="ltr"] select { direction: ltr; text-align: left; }
+.admin-page[dir="ltr"] .admin-brand b { font-size: 23px; }
+.admin-page[dir="ltr"] .admin-brand small,
+.admin-page[dir="ltr"] .admin-nav-label { font-size: 12px; }
+.admin-page[dir="ltr"] .admin-nav-item { font-size: 16px; }
+.admin-page[dir="ltr"] .admin-topbar p,
+.admin-page[dir="ltr"] .admin-account { font-size: 15px; }
+.admin-page[dir="ltr"] .admin-alert b { font-size: 17px; }
+.admin-page[dir="ltr"] .admin-alert p { font-size: 14px; }
+.admin-page[dir="ltr"] .admin-panel h2 { font-size: 26px; }
+.admin-page[dir="ltr"] .student-table-head { font-size: 14px; }
+.admin-page[dir="ltr"] .student-table-row { min-height: 82px; font-size: 16px; }
+.admin-page[dir="ltr"] .student-table-row.selected { background: linear-gradient(90deg, rgba(84,99,235,.13), rgba(65,131,237,.05)); box-shadow: inset 4px 0 0 #5a61e6; }
+.admin-page[dir="ltr"] .student-cell b { font-size: 17px; }
+.admin-page[dir="ltr"] .student-cell small { font-size: 13px; }
+.admin-page[dir="ltr"] .status-pill,
+.admin-page[dir="ltr"] .row-actions button { font-size: 13px; }
+.admin-page[dir="ltr"] .row-actions .access-action { color: #fff; border-color: transparent; background: linear-gradient(135deg, #3379ec, #655ae7); box-shadow: 0 8px 16px rgba(62,99,220,.2); }
 .access-drawer-backdrop { position: fixed; inset: 0; z-index: 200; background: rgba(18,35,69,.22); backdrop-filter: blur(3px); }
 .student-access-drawer { position: absolute; top: 18px; right: calc(252px + 18px); bottom: 18px; width: min(520px, calc(100vw - 310px)); overflow-y: auto; padding: 28px; border: 1px solid rgba(91,110,229,.22); border-radius: 24px; color: #203a68; background: linear-gradient(145deg, #f6f9ff, #fff 58%, #f2fffb); box-shadow: 0 24px 65px rgba(25,50,99,.25); }
 .student-access-drawer .access-editor-heading h3 { font-size: 28px; }
@@ -1842,8 +1827,8 @@ body { font-size: 17px; }
 .booklet-access-control b { color: #285285; font-size: 15px; font-weight: 950; }
 .booklet-access-control small { margin-top: 4px; color: #8296b1; font-size: 11px; font-weight: 750; line-height: 1.45; }
 .student-access-drawer .access-editor-actions button { padding: 13px 18px; font-size: 13px; }
-@media (max-width: 850px) { .student-access-drawer { right: 14px; left: 14px; top: 14px; bottom: 14px; width: auto; }.admin-page[dir="rtl"] .admin-sidebar { border-left: 1px solid rgba(65,110,180,.14); } }
-@media (max-width: 560px) { .student-access-drawer { padding: 20px 16px; border-radius: 20px; }.student-access-drawer .access-presets,.student-access-drawer .curriculum-access-grid { grid-template-columns: 1fr; }.admin-page[dir="rtl"] .admin-sidebar { order: 2; } }
+@media (max-width: 850px) { .student-access-drawer { right: 14px; left: 14px; top: 14px; bottom: 14px; width: auto; } }
+@media (max-width: 560px) { .student-access-drawer { padding: 20px 16px; border-radius: 20px; }.student-access-drawer .access-presets,.student-access-drawer .curriculum-access-grid { grid-template-columns: 1fr; } }
 .password-setup-page { min-height:100vh; display:grid; place-items:center; padding:36px 18px 70px; }
 .password-setup-card { width:min(100%,620px); padding:clamp(28px,5vw,48px); border:1px solid rgba(255,255,255,.88); border-radius:30px; background:rgba(255,255,255,.82); box-shadow:0 24px 60px rgba(45,85,140,.16); backdrop-filter:blur(22px) saturate(145%); }
 .password-setup-card > .mini-logo { margin-bottom:18px; }.password-setup-card h1 { margin:12px 0 10px; color:var(--blue-deep); font-size:clamp(32px,6vw,50px); line-height:1.08; font-weight:950; }.password-setup-lead { color:var(--ink-soft); font-size:17px; font-weight:700; line-height:1.65; }
