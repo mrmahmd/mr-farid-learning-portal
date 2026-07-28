@@ -6,6 +6,7 @@ import { InnerPageShell } from "../components/InnerPageShell";
 import { CurriculumCover } from "../components/CurriculumCover";
 import { portalAsset } from "../asset-path";
 import { getSupabaseBrowserClient } from "../lib/supabase";
+import { SubscriptionNotice } from "../components/SubscriptionNotice";
 
 const grades = [1, 2, 3, 4, 5, 6];
 
@@ -27,7 +28,7 @@ export default function AssessmentBooksPage() {
         .eq("user_id", sessionData.session.user.id)
         .maybeSingle();
       const curricula = Array.isArray(row?.allowed_curricula) ? row.allowed_curricula.filter((value: unknown): value is string => typeof value === "string") : [];
-      const allowed = Boolean(row && !row.is_suspended && row.booklet_access !== false && row.access_mode !== "none");
+      const allowed = Boolean(row && !row.is_suspended && row.booklet_access === true && row.access_mode === "all");
       if (active) setAccess({ checked: true, session: true, allowed, grade: row?.grade ?? null, mode: row?.access_mode ?? "grade", curricula, userId: sessionData.session.user.id, studentName: sessionData.session.user.user_metadata?.full_name ?? "Star Learner" });
     }
     void loadAccess();
@@ -36,7 +37,7 @@ export default function AssessmentBooksPage() {
 
   const canOpen = (grade: number) => {
     if (!access.checked || !access.session || !access.allowed) return false;
-    return access.mode === "all" || access.grade === grade || access.curricula.includes(`english-primary-${grade}`);
+    return access.mode === "all";
   };
 
   const bookHref = (grade: number) => {
@@ -53,6 +54,7 @@ export default function AssessmentBooksPage() {
           <p className="eyebrow"><span /> Assessment resources</p>
           <h1>Assessment Books</h1>
             <p>Explore interactive assessment workbooks organized by primary grade. Books open according to the learning stage and access assigned to the student account.</p>
+            <SubscriptionNotice showSignIn={!access.session} />
             {!access.session && <p className="assessment-access-note">Sign in to open the assessment book assigned to your stage.</p>}
         </div>
         <div className="grade-grid">

@@ -61,7 +61,7 @@ export default function GamesPage() {
   return (
     <InnerPageShell className="content-page games-page">
       <section className="games-card">
-        {!access.loading && <SubscriptionNotice showSignIn={!access.signedIn} />}
+        <SubscriptionNotice showSignIn={!access.signedIn} />
         <div className="games-heading">
           <p className="eyebrow"><span /> Learn, play, remember</p>
           <h1>Educational Games</h1>

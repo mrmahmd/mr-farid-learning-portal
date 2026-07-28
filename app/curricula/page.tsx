@@ -36,7 +36,7 @@ export default function CurriculaPage() {
             <Link className="curricula-create-link" href="/register">Create Account</Link>
           </div>
         </aside>
-        {!access.loading && <SubscriptionNotice showSignIn={!access.signedIn} />}
+        <SubscriptionNotice showSignIn={!access.signedIn} />
 
         <div className="grade-grid">
           {grades.map((grade) => (
