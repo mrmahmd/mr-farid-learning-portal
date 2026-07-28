@@ -1,10 +1,15 @@
+"use client";
+
 import Link from "next/link";
 import { InnerPageShell } from "../components/InnerPageShell";
 import { CurriculumCover } from "../components/CurriculumCover";
+import { SubscriptionNotice } from "../components/SubscriptionNotice";
+import { canOpenCurriculum, useStudentAccess } from "../lib/useStudentAccess";
 
 const grades = [1, 2, 3, 4, 5, 6];
 
 export default function CurriculaPage() {
+  const access = useStudentAccess();
   return (
     <InnerPageShell className="content-page curricula-page">
       <section className="curricula-card">
@@ -31,6 +36,7 @@ export default function CurriculaPage() {
             <Link className="curricula-create-link" href="/register">Create Account</Link>
           </div>
         </aside>
+        {!access.loading && <SubscriptionNotice showSignIn={!access.signedIn} />}
 
         <div className="grade-grid">
           {grades.map((grade) => (
@@ -51,7 +57,7 @@ export default function CurriculaPage() {
                     <strong>English Primary {grade}</strong>
                     <small>English Curriculum</small>
                     <div className="curriculum-terms" aria-label="Available terms">
-                      <div className="curriculum-term"><strong>First Term</strong>{[1, 2, 3, 4, 5, 6].includes(grade) && <Link className="new-curriculum-entry" href={`/courses/english-primary-${grade}`}>Enter</Link>}</div>
+                      <div className="curriculum-term"><strong>First Term</strong>{[1, 2, 3, 4, 5, 6].includes(grade) && (canOpenCurriculum(`english-primary-${grade}`, grade, access) ? <Link className="new-curriculum-entry" href={`/courses/english-primary-${grade}`}>Enter</Link> : <button className="curriculum-locked-entry" type="button" disabled>🔒 Locked</button>)}</div>
                       <div className="curriculum-term unavailable"><strong>Second Term</strong><span>Coming soon</span></div>
                     </div>
                   </div>

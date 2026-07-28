@@ -4,6 +4,7 @@ import Link from "next/link";
 import { InnerPageShell } from "../components/InnerPageShell";
 import { portalAsset } from "../asset-path";
 import { canOpenCurriculum, canOpenGrade, useStudentAccess } from "../lib/useStudentAccess";
+import { SubscriptionNotice } from "../components/SubscriptionNotice";
 
 const grades = [1, 2, 3, 4, 5, 6];
 const englishGameWorlds: Record<number, string> = {
@@ -21,8 +22,8 @@ export default function GamesPage() {
         <section className="glass-card standalone-form">
           <span className="mini-logo">MF</span>
           <h1>Student sign in required</h1>
-          <p>Sign in to open the educational games for your primary grade.</p>
-          <Link className="primary-button" href="/login">Sign In</Link>
+          <p>Educational games are available to subscribers only.</p>
+          <SubscriptionNotice />
         </section>
       </InnerPageShell>
     );
@@ -60,6 +61,7 @@ export default function GamesPage() {
   return (
     <InnerPageShell className="content-page games-page">
       <section className="games-card">
+        {!access.loading && <SubscriptionNotice showSignIn={!access.signedIn} />}
         <div className="games-heading">
           <p className="eyebrow"><span /> Learn, play, remember</p>
           <h1>Educational Games</h1>

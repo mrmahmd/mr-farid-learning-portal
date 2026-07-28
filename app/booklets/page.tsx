@@ -4,6 +4,7 @@ import Link from "next/link";
 import { InnerPageShell } from "../components/InnerPageShell";
 import { CurriculumCover } from "../components/CurriculumCover";
 import { BookletAccessGate } from "../components/BookletAccessGate";
+import { SubscriptionNotice } from "../components/SubscriptionNotice";
 import { canOpenCurriculum, canOpenGrade, useStudentAccess } from "../lib/useStudentAccess";
 
 const grades = [1, 2, 3, 4, 5, 6];
@@ -26,6 +27,7 @@ export default function BookletsPage() {
 
   return <InnerPageShell className="booklets-page"><BookletAccessGate><section className="booklets-card">
     <header className="booklets-heading"><p className="eyebrow"><span /> Study resources</p><h1>Booklets &amp; Explanations</h1><p>Choose a primary grade, then find the English and Connect Plus explanations and booklets prepared for that level.</p></header>
+    <SubscriptionNotice showSignIn={false} />
     <div className="booklets-grid">{visibleGrades.map((grade) => {
       const gradeAvailable = canOpenGrade(grade, access);
       const englishAvailable = canOpenCurriculum(`english-primary-${grade}`, grade, access);
