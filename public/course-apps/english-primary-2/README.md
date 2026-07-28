@@ -1,77 +1,43 @@
-# Grade 2 English — Interactive Performance Tasks and Assessments
+# English Primary 2 – Professional Interactive Website
 
-مشروع كتاب تفاعلي كامل للصفحات التعليمية من الصفحة المطبوعة 4 إلى الصفحة 69.
+A complete interactive website for the 2025/2026 Ministry English Primary 2 – Term 1 textbook.
 
-## النسخة الجديدة
+## Professional lesson experience
+Each of the 24 lessons is presented as an independent learning journey with six separate stations:
 
-تمت إعادة تصميم التطبيق بواجهة أكثر احترافية وجمالًا، مع الحفاظ على المحتوى التعليمي كاملًا:
+1. **Vocabulary Lab** – all lesson vocabulary on one page in large colorful flashcards, with context sentences and pronunciation.
+2. **Explanation Station** – lesson points and language patterns in separate large cards, simple child-friendly explanations, examples, and audio.
+3. **Phonics Studio** – sound focus, listen-and-repeat word cards, and a clear practice routine.
+4. **Reading & Listening** – a large readable text, full audio, and sentence-by-sentence listening.
+5. **Writing Workshop** – a clear writing mission, useful language, a large writing area, labels, and local saving.
+6. **Mission Challenge** – 25 fixed lesson-specific questions with game-style presentation.
 
-- شاشة رئيسية جديدة بصور احترافية وحركات هادئة.
-- بطاقات وحدات ملونة، شريط تقدم، نقاط ونجوم.
-- تأثيرات اختيار وتصحيح واضحة.
-- احتفال بصري عند إكمال النشاط أو الصفحة.
-- مؤثرات صوتية اختيارية يمكن تشغيلها أو إيقافها.
-- تصميم متجاوب للجوال والتابلت والكمبيوتر.
-- حفظ تلقائي للتقدم والإجابات داخل المتصفح.
+## Gamification
+- XP and level system.
+- Stars and collectible badges.
+- Answer streaks and combo rewards.
+- Hearts during question missions.
+- Confetti, success sounds, animated feedback, and encouragement after correct answers.
+- Best scores are saved locally.
+- Questions do not give repeated XP after they have already been rewarded.
+- Sequential unit and lesson unlocking.
 
-## أهم تصحيح في أسئلة الصور
+## Curriculum coverage
+- 6 units and 24 lessons.
+- 600 fixed lesson questions.
+- 180 fixed unit challenge questions.
+- 100 cumulative review questions.
+- Vocabulary, language in use, phonics, listening, reading, writing, and book-based activities.
 
-في نشاط **Read the sentence and choose the correct picture**:
+## Visual design
+- Fully responsive desktop and mobile layout.
+- Large readable typography.
+- Horizontal unit cards.
+- High-resolution unit artwork displayed uncropped using a blurred stage background and `object-fit: contain`.
+- Professional learning maps and separate lesson stations.
 
-- تظهر الصور فقط بدون كتابة أسماء الصور.
-- الطالب يضغط على الصورة الصحيحة.
-- الاختيار يظهر بإطار واضح.
-- بعد التصحيح تظهر الإجابة الصحيحة باللون الأخضر والخاطئة باللون الأحمر.
-- أسماء الصور موجودة فقط لبرامج قراءة الشاشة، ولا تظهر بصريًا للطالب.
+## Run
+Open `index.html`, or upload the entire folder to GitHub Pages, Netlify, Cloudflare Pages, or any static web host.
 
-## محتوى المشروع
-
-- 66 صفحة تفاعلية.
-- 147 نشاطًا رقميًا.
-- 9 وحدات ومراجعات وتقييمات.
-- تبويب مستقل للصفحة المطبوعة الأصلية.
-- لا توجد صور من صفحات الكتاب داخل الأنشطة التفاعلية.
-
-## أنواع الأنشطة
-
-- Look and Write
-- Listen and Choose
-- Listen and Write the Missing Letter
-- Complete from a Word Bank
-- Choose the Correct Answer
-- Choose the Correct Picture
-- Reorder Words
-- Unscramble and Write
-- Match
-- Count and Write
-- Write a Sentence
-- True / False
-- Punctuation
-- Classification
-- Drawing and Free Writing
-
-## التشغيل
-
-يمكن فتح `index.html` مباشرة، والأفضل تشغيل المشروع من خادم محلي:
-
-```bash
-python -m http.server 8000
-```
-
-ثم افتح:
-
-```text
-http://localhost:8000
-```
-
-## الرفع على GitHub Pages
-
-ارفع كل الملفات والمجلدات كما هي إلى المستودع، ثم فعّل GitHub Pages من إعدادات المستودع واختر الفرع الرئيسي والمجلد الجذري.
-
-## الصوت
-
-- أزرار الاستماع تستخدم خاصية النطق الإنجليزية الموجودة في المتصفح.
-- تعمل بصورة أفضل على Chrome وEdge.
-- زر الصوت أعلى التطبيق يتحكم في مؤثرات النجاح والخطأ فقط، ولا يمنع أزرار الاستماع التعليمية.
-
-Prepared and Designed by: **Mr.Mohamed Farid**
+## Data note
+Student progress is stored locally in the browser. This version does not include a database, accounts, or a teacher dashboard.

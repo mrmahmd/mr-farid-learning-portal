@@ -1,180 +1,40 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0758d4">
-  <meta name="description" content="Grade 2 English interactive performance tasks and assessments.">
-  <title>Grade 2 English Interactive Book</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#1769e0" />
+  <meta name="description" content="Interactive English Primary 2 - Term 1 learning platform." />
+  <title>English Primary 2 - Term 1 | Mr.Mohamed Farid</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-  <div class="ambient-bg" aria-hidden="true">
-    <span class="ambient-shape shape-one"></span>
-    <span class="ambient-shape shape-two"></span>
-    <span class="ambient-shape shape-three"></span>
-    <span class="ambient-star star-one">★</span>
-    <span class="ambient-star star-two">★</span>
-    <span class="ambient-star star-three">★</span>
-  </div>
-
-  <div id="app" class="app-shell">
-    <section id="dashboard" class="screen active" aria-label="Book dashboard">
-      <header class="topbar dashboard-topbar">
-        <div class="brand-lockup">
-          <div class="brand-mark" aria-hidden="true"><span>ABC</span></div>
-          <div class="brand-copy">
-            <strong>English Language</strong>
-            <small>Performance Tasks and Assessments · Primary Stage Year 2</small>
-          </div>
-        </div>
-        <div class="top-actions">
-          <span data-progress-status class="progress-sync-status" aria-live="polite">Connecting your saved progress...</span>
-          <button class="sound-toggle" type="button" data-sound-toggle aria-label="Turn sound effects off" title="Sound effects">🔊</button>
-          <div class="top-stats">
-            <span class="stat-pill stat-stars">⭐ <b id="dashStars">0</b></span>
-            <span class="stat-pill stat-points"><b id="dashPoints">0</b> pts</span>
-          </div>
-        </div>
-      </header>
-
-      <main class="dashboard-main">
-        <section class="hero-panel">
-          <div class="hero-copy">
-            <span class="eyebrow"><span>✨</span> First Term · 66 Interactive Pages</span>
-            <h1>Turn every workbook page into a learning adventure.</h1>
-            <p>Listen, choose, write, reorder, match, and complete each activity in a clear, child-friendly digital experience.</p>
-            <div class="hero-actions">
-              <button id="resumeBtn" class="btn btn-primary btn-large">Continue from Page <span id="resumePage">1</span><span aria-hidden="true">→</span></button>
-              <button id="startFirstBtn" class="btn btn-secondary btn-large">Start from Unit One</button>
-            </div>
-            <div class="hero-metrics" aria-label="Book features">
-              <div><strong>66</strong><span>Interactive pages</span></div>
-              <div><strong>147</strong><span>Digital activities</span></div>
-              <div><strong>Auto</strong><span>Progress saving</span></div>
-            </div>
-          </div>
-          <div class="hero-visual">
-            <img src="assets/ui/dashboard-hero.png" alt="Two children enjoying an English learning app">
-            <span class="floating-badge badge-listen">🎧 Listen</span>
-            <span class="floating-badge badge-write">✍️ Write</span>
-            <span class="floating-badge badge-stars">⭐ Earn stars</span>
-          </div>
-        </section>
-
-        <section class="progress-panel" aria-label="Book progress">
-          <div class="progress-icon" aria-hidden="true">🏆</div>
-          <div class="progress-content">
-            <div class="progress-head">
-              <strong>Your Learning Journey</strong>
-              <span id="progressLabel">0 / 66 pages</span>
-            </div>
-            <div class="progress-track"><span id="progressFill"></span></div>
-          </div>
-        </section>
-
-        <section class="section-heading">
-          <div>
-            <span class="section-kicker">Choose a station</span>
-            <h2>Units, revisions, and assessments</h2>
-          </div>
-          <span class="section-decoration" aria-hidden="true">ABC · 123 · ⭐</span>
-        </section>
-
-        <section id="chapterGrid" class="chapter-grid" aria-label="Units and revisions"></section>
-      </main>
-
-      <footer>
-        <span>Prepared and Designed by:</span> <strong>Mr.Mohamed Farid</strong>
-      </footer>
-    </section>
-
-    <section id="reader" class="screen" aria-label="Interactive book reader">
-      <header class="topbar reader-topbar">
-        <button id="backDashboard" class="icon-btn" type="button" aria-label="Back to dashboard" title="Dashboard">⌂</button>
-        <button id="openSidebar" class="icon-btn" type="button" aria-label="Open page navigation" title="Book pages">☰</button>
-        <div class="reader-title">
-          <strong id="readerChapter">Unit One</strong>
-          <small id="readerPageTitle">Lesson 1</small>
-        </div>
-        <div class="top-actions">
-          <button class="sound-toggle" type="button" data-sound-toggle aria-label="Turn sound effects off" title="Sound effects">🔊</button>
-          <div class="top-stats">
-            <span class="stat-pill stat-stars">⭐ <b id="readerStars">0</b></span>
-            <span class="stat-pill stat-points"><b id="readerPoints">0</b> pts</span>
-          </div>
-        </div>
-      </header>
-
-      <div class="reader-layout">
-        <aside id="sidebar" class="sidebar" aria-label="Page navigation">
-          <div class="sidebar-head">
-            <div>
-              <small>Learning map</small>
-              <strong>Book Pages</strong>
-            </div>
-            <button id="closeSidebar" class="close-btn" type="button" aria-label="Close navigation">×</button>
-          </div>
-          <div id="pageList" class="page-list"></div>
-        </aside>
-
-        <main class="reader-main">
-          <section class="lesson-head">
-            <div class="lesson-copy">
-              <span id="unitBadge" class="unit-badge">Unit One</span>
-              <h1 id="pageHeading">Classroom Greetings</h1>
-              <p>Complete every activity, check your answers, and collect your star.</p>
-            </div>
-            <div class="page-meta">
-              <span class="meta-chip">Interactive <b id="pageNumber">1</b> / <b id="pageTotal">66</b></span>
-              <span class="meta-chip">Printed page <b id="printedPage">4</b></span>
-              <span id="completeBadge" class="status-badge">Not finished</span>
-            </div>
-          </section>
-
-          <nav class="view-tabs" aria-label="Page view">
-            <button class="tab active" type="button" data-view="interactive"><span aria-hidden="true">🎮</span> Interactive Activities</button>
-            <button class="tab" type="button" data-view="source"><span aria-hidden="true">📄</span> Original Printed Page</button>
-          </nav>
-
-          <section id="interactiveView" class="view-panel active">
-            <div class="interaction-note">
-              <span class="note-icon" aria-hidden="true">💡</span>
-              <div><strong>Digital activity mode</strong><p>Every exercise below has been rebuilt as a real interactive task. The printed page is kept separately for reference.</p></div>
-            </div>
-            <div id="activityHost"></div>
-          </section>
-
-          <section id="sourceView" class="view-panel source-view" aria-label="Original printed page reference">
-            <div class="source-note"><strong>Reference only:</strong> this page is separate from the interactive activities.</div>
-            <img id="sourceImage" alt="Original printed workbook page">
-          </section>
-
-          <section class="reader-bottom">
-            <button id="prevBtn" class="btn btn-secondary" type="button">← Previous</button>
-            <div class="page-progress">
-              <div class="progress-track"><span id="pageProgressFill"></span></div>
-              <small id="pageProgressText">Page 1 of 66</small>
-            </div>
-            <button id="finishBtn" class="btn btn-success" type="button">✓ Finish Page</button>
-            <button id="nextBtn" class="btn btn-primary" type="button">Next →</button>
-          </section>
-
-          <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
-        </main>
-      </div>
-
-      <footer>
-        <span>Prepared and Designed by:</span> <strong>Mr.Mohamed Farid</strong>
-      </footer>
-    </section>
-  </div>
-
-  <div id="celebrationLayer" class="celebration-layer" aria-hidden="true"></div>
-
+  <div id="app"></div>
+  <noscript>This website needs JavaScript to run.</noscript>
+  <script src="js/data.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/portal-progress.js"></script>
-  <script src="data/book-data.js"></script>
-  <script src="app.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      window.MrFaridCourseProgress?.connect({
+        courseId: 'english-primary-2-first-term',
+        getState: () => window.Primary2Store?.getState?.() || {},
+        setState: (next) => window.Primary2Store?.replaceState?.(next),
+        mergeState: (current, remote) => ({
+          ...current,
+          ...remote,
+          lessons: { ...(current.lessons || {}), ...(remote.lessons || {}) },
+          reviews: { ...(current.reviews || {}), ...(remote.reviews || {}) },
+          stations: { ...(current.stations || {}), ...(remote.stations || {}) },
+          rewardedQuestions: { ...(current.rewardedQuestions || {}), ...(remote.rewardedQuestions || {}) },
+          badges: remote.badges || current.badges || [],
+        }),
+        onStatus: ({ online, message }) => window.Primary2Store?.setSyncStatus?.(online, message),
+      });
+    });
+  </script>
 </body>
 </html>
