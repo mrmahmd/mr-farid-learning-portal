@@ -805,6 +805,16 @@ input::placeholder { color: #9aacc0; }
   box-shadow: 0 13px 28px rgba(53, 105, 232, 0.24);
 }
 
+/* Keep the action label optically centered while the directional arrow stays at the edge. */
+.standalone-form .primary-button {
+  position: relative;
+}
+
+.standalone-form .primary-button > span {
+  position: absolute;
+  inset-inline-end: 22px;
+}
+
 .primary-button:hover { transform: translateY(-2px); box-shadow: 0 17px 34px rgba(53, 105, 232, 0.3); }
 .primary-button:disabled { opacity: 0.68; cursor: wait; transform: none; box-shadow: none; }
 

@@ -1,22 +1,57 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { InnerPageShell } from "../components/InnerPageShell";
 import { CurriculumCover } from "../components/CurriculumCover";
 import { portalAsset } from "../asset-path";
+import { getSupabaseBrowserClient } from "../lib/supabase";
 
 const grades = [1, 2, 3, 4, 5, 6];
 
 export default function AssessmentBooksPage() {
+  const [access, setAccess] = useState<{ checked: boolean; session: boolean; allowed: boolean; grade?: number | null; mode?: string; curricula: string[] }>({ checked: false, session: false, allowed: false, curricula: [] });
+
+  useEffect(() => {
+    let active = true;
+    async function loadAccess() {
+      const supabase = getSupabaseBrowserClient();
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        if (active) setAccess({ checked: true, session: false, allowed: false, curricula: [] });
+        return;
+      }
+      const { data: row } = await supabase
+        .from("student_access")
+        .select("is_suspended, grade, access_mode, allowed_curricula, booklet_access")
+        .eq("user_id", sessionData.session.user.id)
+        .maybeSingle();
+      const curricula = Array.isArray(row?.allowed_curricula) ? row.allowed_curricula.filter((value: unknown): value is string => typeof value === "string") : [];
+      const allowed = Boolean(row && !row.is_suspended && row.booklet_access !== false && row.access_mode !== "none");
+      if (active) setAccess({ checked: true, session: true, allowed, grade: row?.grade ?? null, mode: row?.access_mode ?? "grade", curricula });
+    }
+    void loadAccess();
+    return () => { active = false; };
+  }, []);
+
+  const canOpen = (grade: number) => {
+    if (!access.checked || !access.session || !access.allowed) return false;
+    return access.mode === "all" || access.grade === grade || access.curricula.includes(`english-primary-${grade}`);
+  };
+
   return (
     <InnerPageShell className="content-page curricula-page assessment-books-page">
       <section className="curricula-card">
         <div className="curricula-heading">
           <p className="eyebrow"><span /> Assessment resources</p>
           <h1>Assessment Books</h1>
-          <p>Explore interactive assessment workbooks organized by primary grade. The available book opens directly in your browser and does not require a student account at this stage.</p>
+            <p>Explore interactive assessment workbooks organized by primary grade. Books open according to the learning stage and access assigned to the student account.</p>
+            {!access.session && <p className="assessment-access-note">Sign in to open the assessment book assigned to your stage.</p>}
         </div>
         <div className="grade-grid">
           {grades.map((grade) => {
-            const available = grade === 2 || grade === 4;
+            const available = grade === 1 || grade === 2 || grade === 4;
+            const open = available && canOpen(grade);
             const connectAvailable = false;
             return (
               <article className={`grade-card${available ? " grade-accessible" : " grade-locked"}`} key={grade}>
@@ -28,7 +63,7 @@ export default function AssessmentBooksPage() {
                     <div className="curriculum-option-content">
                       <strong>English Primary {grade}</strong><small>Interactive assessment workbook</small>
                       <div className="curriculum-terms">
-                        <div className="curriculum-term"><strong>First Term</strong>{available ? <Link className="new-curriculum-entry" href={portalAsset(grade === 2 ? "/assessment-books/english-primary-2/" : "/assessment-books/english-primary-4/")}>Open Book</Link> : <span>Coming soon</span>}</div>
+                        <div className="curriculum-term"><strong>First Term</strong>{open ? <Link className="new-curriculum-entry" href={portalAsset(`/assessment-books/english-primary-${grade}/`)}>Open Book</Link> : available ? <span className="locked-entry">Locked</span> : <span>Coming soon</span>}</div>
                         <div className="curriculum-term unavailable"><strong>Second Term</strong><span>Coming soon</span></div>
                       </div>
                     </div>

@@ -50,12 +50,10 @@ export default function CurriculaPage() {
                     {grade === 3 && <span className="new-curriculum-badge">NEW · RECENTLY ADDED</span>}
                     <strong>English Primary {grade}</strong>
                     <small>English Curriculum</small>
-                    <div className="term-badges" aria-label="Available terms">
-                      <span>First Term</span><span>Second Term</span>
+                    <div className="curriculum-terms" aria-label="Available terms">
+                      <div className="curriculum-term"><strong>First Term</strong>{[1, 2, 3, 4, 5, 6].includes(grade) && <Link className="new-curriculum-entry" href={`/courses/english-primary-${grade}`}>Enter</Link>}</div>
+                      <div className="curriculum-term unavailable"><strong>Second Term</strong><span>Coming soon</span></div>
                     </div>
-                    {grade === 1 && <Link className="new-curriculum-entry" href="/courses/english-primary-1">Enter English Primary 1</Link>}
-                    {grade === 2 && <Link className="new-curriculum-entry" href="/courses/english-primary-2">Enter English Primary 2</Link>}
-                    {grade === 3 && <Link className="new-curriculum-entry" href="/courses/english-primary-3">Enter English Primary 3</Link>}
                   </div>
                 </div>
                 <div className="curriculum-option connect-option">

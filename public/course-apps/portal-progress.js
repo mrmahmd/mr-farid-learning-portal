@@ -212,5 +212,17 @@ window.MrFaridCourseProgress = (() => {
   });
   setInterval(() => { if (dirty) void saveNow(); }, 15000);
 
-  return { connect, queueSave, saveNow, requireAccount };
+  // Expose the already-created platform client/session to same-origin course
+  // adapters. This avoids a second Supabase client and keeps auth ownership in
+  // the portal while still allowing the course to read its profile.
+  async function getSession() {
+    if (!ensureClient()) return null;
+    return portalSession();
+  }
+
+  function getClient() {
+    return ensureClient();
+  }
+
+  return { connect, queueSave, saveNow, requireAccount, getSession, getClient };
 })();

@@ -1,4 +1,6 @@
 import { curriculum, coverByUnit } from "./curriculum-data.js";
+import { lessonQuestionBanks, QUESTION_GROUP_ORDER } from "./questions-data.js";
+import { lessonInsights, grammarGuides, pronunciationGuides, writingGuides } from "./detailed-explanations.js";
 
 "use strict";
 
@@ -8,10 +10,15 @@ const main = $("#mainContent");
 
 const params = new URLSearchParams(location.search);
 const previewMode = params.get("unlockAll") === "1" || params.get("preview") === "1";
+const navigationEntry = performance.getEntriesByType("navigation")[0];
+const navigationType = navigationEntry?.type || "navigate";
+// Safari/WebViews sometimes report an iframe refresh as a normal navigation.
+// Keep the legacy Navigation Timing fallback as well.
+const restoreRouteOnBoot = navigationType === "reload" || window.performance?.navigation?.type === 1;
 
 let student = {
   id: params.get("studentId") || params.get("id") || "guest",
-  name: params.get("studentName") || params.get("student") || params.get("name") || "Student",
+  name: params.get("studentName") || params.get("name") || "Student",
   className: params.get("className") || params.get("class") || "Primary 5"
 };
 
@@ -23,7 +30,9 @@ const makeDefaultState = () => ({
   moduleScores: {},
   badges: [],
   earnedQuestions: {},
+  quizSessions: {},
   sound: true,
+  fontScale: 1.08,
   current: { route: "home" },
   lastLearning: { route: "unit", moduleIndex: 0 }
 });
@@ -81,13 +90,23 @@ function loadState() {
 }
 
 function saveState() {
-  const route = state.current?.route || "home";
-  const unit = Number(state.current?.moduleIndex);
-  state.portalLastActivity = {
-    courseTitle: "English Primary 5 - First Term",
-    detail: route === "home" ? "Course home" : `${Number.isFinite(unit) ? `Unit ${unit + 1} • ` : ""}${String(route).replaceAll("-", " ")}`,
-    updatedAt: new Date().toISOString()
-  };
+  // Rendering the dashboard on boot must not erase the student's last real
+  // learning activity. Only learning routes update the portal activity card.
+  if (state.current?.route && state.current.route !== "home") {
+    const module = curriculum[state.current?.moduleIndex ?? state.lastLearning?.moduleIndex ?? 0];
+    const lessonIndex = state.current?.lessonIndex ?? state.lastLearning?.lessonIndex;
+    state.portalLastActivity = {
+      courseId: "english-primary-5-first-term",
+      courseTitle: "English Primary 5 - First Term",
+      detail: module
+        ? `Unit ${module.number}: ${module.title}${Number.isInteger(lessonIndex) ? ` - Lesson ${lessonIndex + 1}` : ""}`
+        : "English Primary 5 - First Term",
+      route: state.current.route,
+      moduleIndex: state.current?.moduleIndex ?? state.lastLearning?.moduleIndex ?? 0,
+      lessonIndex: Number.isInteger(lessonIndex) ? lessonIndex : null,
+      updatedAt: new Date().toISOString()
+    };
+  }
   localStorage.setItem(storageKey(), JSON.stringify(state));
   updateChrome();
   emitProgress();
@@ -125,7 +144,8 @@ window.Primary5App = {
     };
     if (storageKey() !== oldKey) state = loadState();
     updateChrome();
-    renderCurrent();
+    if (restoreRouteOnBoot) renderCurrent();
+    else renderHome();
   },
   getProgress() {
     return JSON.parse(JSON.stringify({ student, state }));
@@ -139,9 +159,6 @@ window.Primary5App = {
 
 window.addEventListener("message", event => {
   const message = event.data || {};
-  if (message.type === "PLATFORM_STUDENT" && message.student) {
-    window.Primary5App.setStudent(message.student);
-  }
   if (message.type === "PRIMARY5_SET_STUDENT" && message.student) {
     window.Primary5App.setStudent(message.student);
   }
@@ -242,7 +259,17 @@ function updateChrome() {
   $("#sideStars").textContent = state.stars;
   $("#sideProgress").textContent = `${overallPercent()}%`;
   $("#soundToggle").textContent = state.sound ? "🔊" : "🔇";
+  applyFontScale();
   renderUnitNav();
+}
+
+
+function applyFontScale() {
+  const value = Math.min(1.28, Math.max(1, Number(state.fontScale) || 1.08));
+  state.fontScale = Number(value.toFixed(2));
+  document.documentElement.style.setProperty("--reading-scale", state.fontScale);
+  $("#fontDecrease")?.toggleAttribute("disabled", state.fontScale <= 1);
+  $("#fontIncrease")?.toggleAttribute("disabled", state.fontScale >= 1.28);
 }
 
 function renderUnitNav() {
@@ -462,6 +489,7 @@ function stationHub(module, moduleIndex, lesson, lessonIndex) {
     { id: "overview", icon: "🧭", title: "Lesson Overview", description: "Goals, focus, and the big idea", color: module.color },
     { id: "vocabulary", icon: "🧠", title: "Vocabulary", description: "Flashcards, examples, and pronunciation", color: "#1b6de0" },
     { id: "notes", icon: "💡", title: "Language Notes", description: "Useful phrases and lesson connections", color: "#16a878" },
+    { id: "skills", icon: "🎧", title: "Listening & Speaking", description: "Listen for meaning and speak in complete sentences", color: "#138aa5" },
     { id: "grammar", icon: "⚙️", title: "Grammar", description: module.grammar, color: "#df485b" },
     { id: "reading", icon: "📖", title: "Reading / Story", description: "Detailed study summary and key details", color: "#7358c8" },
     { id: "pronunciation", icon: "🔤", title: "Pronunciation", description: module.pronunciation, color: "#ec8c22" },
@@ -498,6 +526,7 @@ function openStation(moduleIndex, lessonIndex, station) {
     overview: ["🧭", "Lesson Overview"],
     vocabulary: ["🧠", "Vocabulary Station"],
     notes: ["💡", "Language Notes"],
+    skills: ["🎧", "Listening & Speaking"],
     grammar: ["⚙️", "Grammar Made Easy"],
     reading: ["📖", "Reading / Story Study"],
     pronunciation: ["🔤", "Pronunciation Station"],
@@ -507,7 +536,7 @@ function openStation(moduleIndex, lessonIndex, station) {
   $("#lessonStage").innerHTML = `
     <section class="station-view" style="--unit-color:${module.color}">
       <div class="station-toolbar"><div><h2>${icon} ${esc(title)}</h2></div><button class="btn btn-secondary" id="backToStations" type="button">← Back to Lesson Stations</button></div>
-      <article class="station-panel">${stationContent(module, lesson, station)}</article>
+      <article class="station-panel">${stationContent(module, lesson, station, moduleIndex, lessonIndex)}</article>
     </section>`;
   $("#backToStations").addEventListener("click", () => {
     $("#lessonStage").innerHTML = stationHub(module, moduleIndex, lesson, lessonIndex);
@@ -517,64 +546,297 @@ function openStation(moduleIndex, lessonIndex, station) {
   $("#stationPractice")?.addEventListener("click", () => startQuiz(moduleIndex, lessonIndex, false));
 }
 
-function stationContent(module, lesson, station) {
+function contentKey(module, lessonIndex) {
+  return `${module.id}-${lessonIndex}`;
+}
+
+function sentenceFrameFromExample(item) {
+  const source = item.example || "";
+  const lower = source.toLowerCase();
+  const target = item.word.toLowerCase();
+  const index = lower.indexOf(target);
+  if (index < 0) return `Write a new sentence using “${esc(item.word)}”.`;
+  return `${esc(source.slice(0, index))}<span class="sentence-blank">________</span>${esc(source.slice(index + item.word.length))}`;
+}
+
+function summaryStepTitle(index) {
+  return ["Starting idea", "Important detail", "Cause or supporting detail", "Development", "Result and main message"][index] || `Key point ${index + 1}`;
+}
+
+function summaryTeachingPrompt(index) {
+  return [
+    "Identify the setting, topic, or situation introduced here. This gives you the background needed for the rest of the lesson.",
+    "Notice the exact people, animals, objects, or actions. These details often answer direct comprehension questions.",
+    "Ask what caused this action or what result it produced. Connecting causes and results makes the text easier to remember.",
+    "Follow how the idea changes, develops, or solves a problem. This point often links the beginning to the ending.",
+    "Use this final point to state the lesson's main idea, moral, result, or practical message in your own words."
+  ][index] || "Explain this point in your own words and connect it to the lesson's main idea.";
+}
+
+function grammarExampleExplanation(moduleId, example) {
+  const explanations = {
+    u1: example.includes(" is ") || example.includes(" are ") ? "The frequency word comes after the verb to be." : "The frequency word comes before the main action verb.",
+    u2: example.includes(" an ") ? "An is used before one noun beginning with a vowel sound." : example.includes(" a ") ? "A is used before one noun beginning with a consonant sound." : example.includes("some") ? "Some is used in an affirmative sentence." : "Any is commonly used in a question or negative sentence.",
+    u3: example.includes("didn't") ? "Didn't is followed by the base form of the verb." : example.includes("?") ? "The question uses did or were before the subject." : "The sentence reports a completed past event.",
+    u4: example.includes(" at ") ? "At points to an exact time." : example.includes(" on ") ? "On points to a day or date." : "In points to a longer time period.",
+    u5: example.includes("more ") ? "A long adjective uses more before it." : example.includes("better") ? "Better is the irregular comparative form of good." : "A short adjective usually adds -er and is followed by than.",
+    story: example.includes("Billie") ? "The past simple retells a completed event in Billie's journey." : "The present simple expresses a theme or truth that remains true."
+  };
+  return explanations[moduleId] || "Notice how the target grammar works inside the complete sentence.";
+}
+
+function renderTeacherExplanation(insight, lesson) {
+  const paragraphs = insight?.teacherExplanation?.length ? insight.teacherExplanation : [lesson.focus];
+  return `
+    <section class="explanation-section teacher-explanation">
+      <div class="section-title-row"><span class="section-number">1</span><div><p class="section-kicker">Teacher explanation</p><h3>Understand the lesson deeply</h3></div></div>
+      ${paragraphs.map(paragraph => `<p class="large-reading-text">${esc(paragraph)}</p>`).join("")}
+    </section>`;
+}
+
+function renderSummaryWalkthrough(lesson) {
+  return `
+    <section class="explanation-section">
+      <div class="section-title-row"><span class="section-number">2</span><div><p class="section-kicker">Step-by-step study</p><h3>How the lesson ideas develop</h3></div></div>
+      <div class="concept-list">
+        ${lesson.summary.map((point, index) => `
+          <article class="concept-card">
+            <div class="concept-card-heading"><span>${index + 1}</span><h4>${summaryStepTitle(index)}</h4></div>
+            <p class="key-statement">${esc(point)}</p>
+            <p>${summaryTeachingPrompt(index)}</p>
+          </article>`).join("")}
+      </div>
+    </section>`;
+}
+
+function stationContent(module, lesson, station, moduleIndex, lessonIndex) {
   const lessonVocab = lesson.vocab.map(word => module.vocab.find(item => item.word === word)).filter(Boolean);
+  const key = contentKey(module, lessonIndex);
+  const insight = lessonInsights[key] || {};
+  const grammarGuide = grammarGuides[module.id];
+  const pronunciationGuide = pronunciationGuides[module.id];
+  const writingGuide = writingGuides[key];
+
   if (station === "overview") {
     return `
-      <h3>${esc(lesson.title)}</h3>
-      <div class="info-callout"><strong>Teacher's simple explanation:</strong> ${esc(lesson.focus)}</div>
-      <h4>By the end of this lesson, you can:</h4>
-      <ul>${lesson.summary.slice(0, 5).map(point => `<li>${esc(point)}</li>`).join("")}</ul>
-      <div class="rule-callout"><strong>80/20 focus:</strong> Study the key words, understand the main idea, apply the unit grammar, then complete the practice.</div>
-      <button class="btn btn-primary" id="stationPractice" type="button">Go to Interactive Practice →</button>`;
+      <div class="detailed-station">
+        ${renderTeacherExplanation(insight, lesson)}
+        ${renderSummaryWalkthrough(lesson)}
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">3</span><div><p class="section-kicker">Connections</p><h3>See how the ideas work together</h3></div></div>
+          <div class="connection-grid">${(insight.connections || lesson.notes).map((item, index) => `<article class="connection-card"><span>${index + 1}</span><p>${esc(item)}</p></article>`).join("")}</div>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">4</span><div><p class="section-kicker">Success criteria</p><h3>What you should be able to do</h3></div></div>
+          <ul class="success-list">
+            <li>Explain the lesson's main idea without reading the text word for word.</li>
+            <li>Use the key vocabulary in complete sentences connected to this lesson.</li>
+            <li>Answer questions about details, causes, results, sequence, or the moral.</li>
+            <li>Apply <strong>${esc(module.grammar)}</strong> correctly when it is needed.</li>
+          </ul>
+        </section>
+        <section class="explanation-section speaking-practice">
+          <div class="section-title-row"><span class="section-number">5</span><div><p class="section-kicker">Speak and apply</p><h3>Complete these sentence frames aloud</h3></div></div>
+          ${(insight.speakingFrames || []).map(frame => `<div class="sentence-frame">💬 ${esc(frame)}</div>`).join("")}
+        </section>
+        <div class="study-action-bar"><p><strong>Study first, then practise.</strong> The questions are based on these ideas.</p><button class="btn btn-primary" id="stationPractice" type="button">Go to Interactive Practice →</button></div>
+      </div>`;
   }
+
   if (station === "vocabulary") {
-    return `<div class="vocab-grid">${lessonVocab.map(item => `
-      <section class="vocab-card"><button class="speak-button" data-speak="${esc(item.word)}" type="button" aria-label="Hear ${esc(item.word)}">🔊</button><h3>${esc(item.word)}</h3><p>${esc(item.meaning)}</p><p class="vocab-example"><strong>In context:</strong> ${esc(item.example)}</p></section>`).join("")}</div>`;
+    return `
+      <div class="detailed-station">
+        <section class="explanation-section intro-block">
+          <p class="section-kicker">Vocabulary in real use</p>
+          <h3>Learn each word through the lesson context</h3>
+          <p class="large-reading-text">Do not memorize an isolated translation. Read the meaning, listen to the word, study the model sentence, and then build a new sentence connected to <strong>${esc(lesson.title)}</strong>.</p>
+        </section>
+        <div class="vocab-grid detailed-vocab-grid">${lessonVocab.map((item, index) => `
+          <section class="vocab-card detailed-vocab-card">
+            <button class="speak-button" data-speak="${esc(item.word)}" type="button" aria-label="Hear ${esc(item.word)}">🔊</button>
+            <span class="vocab-index">Word ${index + 1}</span>
+            <h3>${esc(item.word)}</h3>
+            <div class="vocab-detail-row"><strong>Meaning:</strong><p>${esc(item.meaning)}</p></div>
+            <div class="vocab-detail-row context-row"><strong>In the lesson:</strong><p>${esc(item.example)}</p></div>
+            <div class="vocab-detail-row"><strong>Your turn:</strong><p class="sentence-frame compact">${sentenceFrameFromExample(item)}</p></div>
+            <p class="vocab-tip">Use this word to explain a real idea from the lesson, not as a word by itself.</p>
+          </section>`).join("")}</div>
+        <section class="explanation-section">
+          <h3>Quick vocabulary study routine</h3>
+          <ol class="large-steps"><li>Listen to the word twice.</li><li>Say it clearly.</li><li>Read its model sentence.</li><li>Cover the sentence and explain the word in your own words.</li><li>Create one new sentence connected to the lesson.</li></ol>
+        </section>
+      </div>`;
   }
+
   if (station === "notes") {
     return `
-      <h3>Useful Language Connections</h3>
-      <p>These notes connect the lesson vocabulary to the real text, story, dialog, or task.</p>
-      ${lesson.notes.map((note, index) => `<div class="info-callout"><strong>${index + 1}.</strong> ${esc(note)}</div>`).join("")}
-      <h4>Use the words naturally</h4>
-      ${lessonVocab.slice(0, 4).map(item => `<div class="example-callout">${esc(item.example)}</div>`).join("")}`;
+      <div class="detailed-station">
+        <section class="explanation-section intro-block">
+          <p class="section-kicker">Language notes</p>
+          <h3>Useful phrases, meanings, and lesson connections</h3>
+          <p class="large-reading-text">These notes explain expressions and ideas that can be difficult if they are read too quickly. Study what each note means, why it matters, and how it appears in a complete sentence.</p>
+        </section>
+        <div class="notes-stack">
+          ${lesson.notes.map((note, index) => {
+            const parts = note.split("=");
+            const heading = parts.length > 1 ? parts[0].trim() : `Language note ${index + 1}`;
+            const meaning = parts.length > 1 ? parts.slice(1).join("=").trim() : note;
+            const example = lessonVocab[index % Math.max(lessonVocab.length, 1)]?.example || lesson.summary[index % lesson.summary.length];
+            return `<article class="language-note-card"><div class="note-number">${index + 1}</div><div><h4>${esc(heading)}</h4><p><strong>In simple words:</strong> ${esc(meaning)}</p><p><strong>Connected example:</strong> ${esc(example)}</p><p class="why-it-matters"><strong>Why it matters:</strong> This expression helps you understand and discuss the real text, story, dialog, or task more accurately.</p></div></article>`;
+          }).join("")}
+        </div>
+        <section class="explanation-section">
+          <h3>Use the language naturally</h3>
+          ${(insight.speakingFrames || []).map(frame => `<div class="sentence-frame">${esc(frame)}</div>`).join("")}
+        </section>
+      </div>`;
   }
+
+  if (station === "skills") {
+    return `
+      <div class="detailed-station">
+        <section class="explanation-section listening-hero">
+          <p class="section-kicker">Listening and speaking</p>
+          <h3>Understand the message, then express it clearly</h3>
+          <p class="large-reading-text">This lesson is a <strong>${esc(lesson.type)}</strong> lesson. Listen or read for the main idea first, then collect the exact details you need. When you speak, answer in a complete sentence instead of giving one isolated word.</p>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">1</span><div><p class="section-kicker">Before listening</p><h3>Prepare your mind</h3></div></div>
+          <ol class="large-steps"><li>Read the lesson title and predict the topic.</li><li>Review the key vocabulary and say each word aloud.</li><li>Look for names, places, actions, and the main question.</li><li>Do not try to understand every word before you know the general idea.</li></ol>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">2</span><div><p class="section-kicker">While listening</p><h3>Listen in two rounds</h3></div></div>
+          <div class="listening-rounds"><article><strong>First listening</strong><p>Focus on the main idea: Who is speaking? What are they discussing? What is the situation?</p></article><article><strong>Second listening</strong><p>Focus on details such as reasons, examples, order, quantities, feelings, or results.</p></article></div>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">3</span><div><p class="section-kicker">Speaking</p><h3>Build complete answers</h3></div></div>
+          ${(insight.speakingFrames || []).map(frame => `<div class="sentence-frame">💬 ${esc(frame)}</div>`).join("")}
+          <div class="info-callout large-callout"><strong>Speaking rule:</strong> Repeat part of the question in your answer. For example, “Why must we protect the Nile?” → “We must protect the Nile because many living things depend on it.”</div>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">4</span><div><p class="section-kicker">Listen and repeat</p><h3>Practise the lesson words in context</h3></div></div>
+          <div class="vocab-grid pronunciation-words">${lessonVocab.slice(0, 8).map(item => `<section class="vocab-card"><button class="speak-button" data-speak="${esc(item.example)}" type="button">🔊</button><h3>${esc(item.word)}</h3><p>${esc(item.example)}</p></section>`).join("")}</div>
+        </section>
+      </div>`;
+  }
+
   if (station === "grammar") {
     return `
-      <h3>${esc(module.grammar)}</h3>
-      ${module.grammarNotes.map(note => `<div class="rule-callout">${esc(note)}</div>`).join("")}
-      <h4>Clear examples</h4>
-      ${module.grammarExamples.map(example => `<div class="example-callout">${esc(example)}</div>`).join("")}
-      <div class="info-callout"><strong>Remember:</strong> Do not memorize the rule alone. Use it inside a complete sentence connected to the unit.</div>`;
+      <div class="detailed-station">
+        <section class="explanation-section grammar-introduction">
+          <p class="section-kicker">Grammar made clear</p>
+          <h3>${esc(module.grammar)}</h3>
+          <p class="large-reading-text">${esc(grammarGuide?.purpose || module.grammarNotes[0])}</p>
+          <div class="lesson-grammar-link"><strong>Connection to this lesson:</strong> Use the grammar to speak and write accurately about <em>${esc(lesson.focus)}</em></div>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">1</span><div><p class="section-kicker">Rules and structures</p><h3>Learn the rule one part at a time</h3></div></div>
+          <div class="grammar-guide-grid">${(grammarGuide?.sections || module.grammarNotes.map((body, index) => ({ title:`Rule ${index + 1}`, body }))).map((item, index) => `<article class="grammar-guide-card"><span>Rule ${index + 1}</span><h4>${esc(item.title)}</h4><p>${esc(item.body)}</p></article>`).join("")}</div>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">2</span><div><p class="section-kicker">Worked examples</p><h3>See why each sentence is correct</h3></div></div>
+          <div class="worked-examples">${module.grammarExamples.map((example, index) => `<article class="worked-example"><div class="example-label">Example ${index + 1}</div><p class="example-sentence">${esc(example)}</p><p>${esc(grammarExampleExplanation(module.id, example))}</p></article>`).join("")}</div>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">3</span><div><p class="section-kicker">Common mistakes</p><h3>Check the form before you answer</h3></div></div>
+          <div class="warning-callout"><strong>Important:</strong> Read the whole sentence. Look at the subject, verb, time, number, and sentence type before choosing an answer. Do not choose a grammar word because it looks familiar.</div>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">4</span><div><p class="section-kicker">Guided check</p><h3>Think first, then reveal the answer</h3></div></div>
+          <div class="study-questions">${module.grammarQuestions.map((question, index) => `<details class="study-question"><summary>${index + 1}. ${esc(question.q)}</summary><div><p><strong>Correct answer:</strong> ${esc(question.a)}</p><p>${esc(question.explain)}</p></div></details>`).join("")}</div>
+        </section>
+      </div>`;
   }
+
   if (station === "reading") {
     return `
-      <h3>Study Summary</h3>
-      <ol>${lesson.summary.map(point => `<li>${esc(point)}</li>`).join("")}</ol>
-      <h4>Check the details</h4>
-      ${lesson.facts.map(fact => `<div class="info-callout"><strong>Think:</strong> ${esc(fact.q)}</div>`).join("")}
-      <div class="rule-callout"><strong>Main learning connection:</strong> ${esc(lesson.focus)}</div>`;
+      <div class="detailed-station">
+        ${renderTeacherExplanation(insight, lesson)}
+        ${renderSummaryWalkthrough(lesson)}
+        <section class="explanation-section reading-skills-block">
+          <div class="section-title-row"><span class="section-number">3</span><div><p class="section-kicker">Reading skills</p><h3>How to understand the text, not just repeat it</h3></div></div>
+          <div class="reading-skills-grid">
+            <article><h4>Main idea</h4><p>${esc(lesson.focus)}</p></article>
+            <article><h4>Key details</h4><p>Look for names, places, actions, reasons, quantities, and results. These details support the main idea.</p></article>
+            <article><h4>Cause and effect</h4><p>Ask: What happened? Why did it happen? What happened next? Use the summary points to connect the answers.</p></article>
+            <article><h4>Inference or moral</h4><p>Use actions and results to understand a message that may not be stated in one exact sentence.</p></article>
+          </div>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">4</span><div><p class="section-kicker">Comprehension</p><h3>Answer with evidence from the lesson</h3></div></div>
+          <div class="study-questions">${lesson.facts.map((fact, index) => `<details class="study-question"><summary>${index + 1}. ${esc(fact.q)}</summary><div><p><strong>Answer:</strong> ${esc(fact.a)}</p><p><strong>Why:</strong> ${esc(fact.explain)}</p></div></details>`).join("")}</div>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">5</span><div><p class="section-kicker">True or false thinking</p><h3>Correct the idea, not only the letter</h3></div></div>
+          ${lesson.checks.map((check, index) => `<article class="truth-card ${check.value ? "true-card" : "false-card"}"><span>${check.value ? "TRUE" : "FALSE"}</span><div><h4>${esc(check.statement)}</h4><p>${esc(check.explain)}</p></div></article>`).join("")}
+        </section>
+      </div>`;
   }
+
   if (station === "pronunciation") {
-    const details = lesson.pronunciation?.length ? lesson.pronunciation : [
-      `This unit practises ${module.pronunciation}.`,
-      "Listen carefully, repeat slowly, then say the complete word inside a sentence.",
-      "Use the audio button on vocabulary cards to hear key lesson words."
-    ];
+    const guide = pronunciationGuide || {
+      title: module.pronunciation,
+      explanation: `This unit practises ${module.pronunciation}.`,
+      steps: ["Listen carefully.", "Repeat slowly.", "Say the complete word.", "Use it in a sentence."],
+      examples: []
+    };
+    const details = lesson.pronunciation?.length ? lesson.pronunciation : [];
     return `
-      <h3>${esc(module.pronunciation)}</h3>
-      ${details.map(detail => `<div class="info-callout">${esc(detail)}</div>`).join("")}
-      <h4>Say these lesson words</h4>
-      <div class="vocab-grid">${lessonVocab.slice(0, 6).map(item => `<section class="vocab-card"><button class="speak-button" data-speak="${esc(item.word)}" type="button">🔊</button><h3>${esc(item.word)}</h3><p>${esc(item.example)}</p></section>`).join("")}</div>`;
+      <div class="detailed-station">
+        <section class="explanation-section pronunciation-hero">
+          <p class="section-kicker">Sound and reading</p>
+          <h3>${esc(guide.title)}</h3>
+          <p class="large-reading-text">${esc(guide.explanation)}</p>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">1</span><div><p class="section-kicker">Method</p><h3>Follow this speaking routine</h3></div></div>
+          <ol class="large-steps">${guide.steps.map(step => `<li>${esc(step)}</li>`).join("")}</ol>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">2</span><div><p class="section-kicker">Patterns</p><h3>Study the target examples</h3></div></div>
+          <div class="sound-patterns">${guide.examples.map(example => `<button class="sound-chip" data-speak="${esc(example.replace(/^.* in /, ""))}" type="button">🔊 ${esc(example)}</button>`).join("")}</div>
+          ${details.map(detail => `<div class="info-callout large-callout">${esc(detail)}</div>`).join("")}
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">3</span><div><p class="section-kicker">Lesson words</p><h3>Listen, repeat, and read the sentence</h3></div></div>
+          <div class="vocab-grid pronunciation-words">${lessonVocab.slice(0, 8).map(item => `<section class="vocab-card"><button class="speak-button" data-speak="${esc(item.word)}" type="button">🔊</button><h3>${esc(item.word)}</h3><p>${esc(item.example)}</p></section>`).join("")}</div>
+        </section>
+      </div>`;
   }
+
   if (station === "writing") {
+    const guide = writingGuide || {
+      title: "Build Your Writing",
+      plan: ["Understand the task.", "Plan the ideas.", "Write complete sentences.", "Check grammar and spelling."],
+      frames: [],
+      model: "Use the lesson task and vocabulary to build your own clear response."
+    };
     return `
-      <h3>Writing Task</h3>
-      <div class="info-callout">${esc(lesson.writing)}</div>
-      <h4>Plan before you write</h4>
-      <ol><li>Read the task and underline the topic.</li><li>Choose the important lesson words you will use.</li><li>Organize your ideas in a clear order.</li><li>Write complete sentences.</li><li>Check capitals, punctuation, spelling, and the target grammar.</li></ol>
-      <div class="rule-callout"><strong>Writing checklist:</strong> Clear title • connected ideas • lesson vocabulary • correct grammar • final check.</div>`;
+      <div class="detailed-station">
+        <section class="explanation-section writing-task-hero">
+          <p class="section-kicker">Real writing application</p>
+          <h3>${esc(guide.title)}</h3>
+          <p class="large-reading-text"><strong>Your task:</strong> ${esc(lesson.writing)}</p>
+          <p>Writing is not a vocabulary-definition exercise. You will plan, order, build, and edit a complete piece connected to the lesson.</p>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">1</span><div><p class="section-kicker">Planning</p><h3>Build the answer step by step</h3></div></div>
+          <ol class="large-steps">${guide.plan.map(step => `<li>${esc(step)}</li>`).join("")}</ol>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">2</span><div><p class="section-kicker">Sentence building</p><h3>Use these frames to begin</h3></div></div>
+          ${guide.frames.map(frame => `<div class="sentence-frame">${esc(frame)}</div>`).join("")}
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">3</span><div><p class="section-kicker">Model writing</p><h3>Study the organization and language</h3></div></div>
+          <div class="model-writing">${esc(guide.model).replaceAll("\n", "<br>")}</div>
+          <div class="info-callout large-callout"><strong>Use the model as a guide.</strong> Change the ideas and details so your writing is your own.</div>
+        </section>
+        <section class="explanation-section">
+          <div class="section-title-row"><span class="section-number">4</span><div><p class="section-kicker">Editing</p><h3>Check before you finish</h3></div></div>
+          <div class="editing-checklist"><label><input type="checkbox"> My writing answers the exact task.</label><label><input type="checkbox"> My ideas are in a clear order.</label><label><input type="checkbox"> I used lesson vocabulary naturally.</label><label><input type="checkbox"> My sentences have capitals and punctuation.</label><label><input type="checkbox"> I checked spelling and the target grammar.</label></div>
+        </section>
+      </div>`;
   }
   return `<p>Station content is being prepared.</p>`;
 }
@@ -614,204 +876,170 @@ function renderProgress() {
 
 function continueLearning() {
   const current = state.lastLearning || {};
-  if (current.route === "lesson" && Number.isInteger(current.moduleIndex) && Number.isInteger(current.lessonIndex)) {
-    renderLesson(current.moduleIndex, current.lessonIndex);
-  } else if (current.route === "unit" && Number.isInteger(current.moduleIndex)) {
-    renderUnit(current.moduleIndex);
-  } else {
-    const firstIncompleteModule = curriculum.findIndex((module, index) => unitUnlocked(index) && moduleLessonProgress(module).passed < module.lessons.length);
-    renderUnit(firstIncompleteModule >= 0 ? firstIncompleteModule : 0);
+
+  if (
+    current.route === "challenge" &&
+    Number.isInteger(current.moduleIndex)
+  ) {
+    startQuiz(current.moduleIndex, -1, true);
+    return;
   }
+
+  if (
+    current.route === "lesson" &&
+    Number.isInteger(current.moduleIndex) &&
+    Number.isInteger(current.lessonIndex)
+  ) {
+    if (current.station === "practice") {
+      startQuiz(current.moduleIndex, current.lessonIndex, false);
+    } else {
+      renderLesson(current.moduleIndex, current.lessonIndex);
+    }
+    return;
+  }
+
+  if (current.route === "unit" && Number.isInteger(current.moduleIndex)) {
+    renderUnit(current.moduleIndex);
+    return;
+  }
+
+  const firstIncompleteModule = curriculum.findIndex(
+    (module, index) =>
+      unitUnlocked(index) &&
+      moduleLessonProgress(module).passed < module.lessons.length
+  );
+  renderUnit(firstIncompleteModule >= 0 ? firstIncompleteModule : 0);
 }
 
 function renderCurrent() {
   const current = state.current || {};
   if (current.route === "progress") return renderProgress();
-  if (current.route === "unit" && Number.isInteger(current.moduleIndex)) return renderUnit(current.moduleIndex);
-  if (current.route === "lesson" && Number.isInteger(current.moduleIndex) && Number.isInteger(current.lessonIndex)) return renderLesson(current.moduleIndex, current.lessonIndex);
+  if (current.route === "challenge" && Number.isInteger(current.moduleIndex)) {
+    return startQuiz(current.moduleIndex, -1, true);
+  }
+  if (current.route === "unit" && Number.isInteger(current.moduleIndex)) {
+    return renderUnit(current.moduleIndex);
+  }
+  if (
+    current.route === "lesson" &&
+    Number.isInteger(current.moduleIndex) &&
+    Number.isInteger(current.lessonIndex)
+  ) {
+    if (current.station === "practice") {
+      return startQuiz(current.moduleIndex, current.lessonIndex, false);
+    }
+    return renderLesson(current.moduleIndex, current.lessonIndex);
+  }
   renderHome();
 }
 
-function blankExample(example, word) {
-  const safe = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const pattern = new RegExp(safe, "i");
-  if (pattern.test(example)) return example.replace(pattern, "________");
-  const words = example.split(" ");
-  words[Math.max(0, Math.floor(words.length / 2))] = "________";
-  return words.join(" ");
-}
-
-function cleanSentence(sentence) {
-  return sentence.replace(/[“”".,!?;:()]/g, "").replace(/\s+/g, " ").trim();
-}
-
-function contextualDistractors(module, answer, seed) {
-  return seededShuffle(module.vocab.map(item => item.word).filter(word => word !== answer), seed).slice(0, 3);
+function cloneQuestions(items = []) {
+  return items.map(question => JSON.parse(JSON.stringify(question)));
 }
 
 function buildLessonQuestions(moduleIndex, lessonIndex) {
   const module = curriculum[moduleIndex];
-  const lesson = module.lessons[lessonIndex];
-  const prefix = `${module.id}-${lessonIndex}`;
-  const lessonVocab = lesson.vocab.map(word => module.vocab.find(item => item.word === word)).filter(Boolean);
-  const questions = [];
-
-  lessonVocab.slice(0, 4).forEach((item, index) => {
-    questions.push({
-      id: `${prefix}-complete-${index}`,
-      type: "complete",
-      typeLabel: "Complete",
-      prompt: `Complete the lesson sentence with the correct word: ${blankExample(item.example, item.word)}`,
-      answer: item.word,
-      explain: item.example
-    });
-  });
-
-  lesson.facts.slice(0, 3).forEach((fact, index) => {
-    questions.push({
-      id: `${prefix}-mcq-${index}`,
-      type: "mcq",
-      typeLabel: "Multiple Choice",
-      prompt: fact.q,
-      answer: fact.a,
-      options: seededShuffle([fact.a, ...fact.wrong], `${prefix}-fact-${index}`),
-      explain: fact.explain
-    });
-  });
-
-  lesson.checks.slice(0, 2).forEach((check, index) => {
-    questions.push({
-      id: `${prefix}-tf-${index}`,
-      type: "mcq",
-      typeLabel: "True / False",
-      prompt: check.statement,
-      answer: check.value ? "True" : "False",
-      options: ["True", "False"],
-      explain: check.explain
-    });
-  });
-
-  module.grammarQuestions.slice(0, 4).forEach((question, index) => {
-    questions.push({
-      id: `${prefix}-grammar-${index}`,
-      type: "mcq",
-      typeLabel: "Grammar in Context",
-      prompt: question.q,
-      answer: question.a,
-      options: seededShuffle([question.a, ...question.wrong], `${prefix}-grammar-${index}`),
-      explain: question.explain
-    });
-  });
-
-  const matchingPairs = lessonVocab.slice(0, 4).map(item => ({
-    word: item.word,
-    context: blankExample(item.example, item.word)
-  }));
-  questions.push({
-    id: `${prefix}-matching-0`,
-    type: "matching",
-    typeLabel: "Matching",
-    prompt: "Match each lesson word to the sentence where it belongs.",
-    pairs: matchingPairs,
-    explain: "The words are matched through their real use in lesson sentences."
-  });
-
-  const orderSources = [...lesson.summary, ...module.grammarExamples].map(cleanSentence).filter(sentence => sentence.split(" ").length >= 4);
-  orderSources.slice(0, 2).forEach((sentence, index) => {
-    questions.push({
-      id: `${prefix}-ordering-${index}`,
-      type: "builder",
-      typeLabel: "Ordering",
-      prompt: "Put the words in the correct order.",
-      answer: sentence,
-      words: seededShuffle(sentence.split(" "), `${prefix}-order-${index}`),
-      explain: sentence
-    });
-  });
-
-  const corrections = correctionBank[module.id] || [];
-  [0, 1].forEach((offset, index) => {
-    const item = corrections[(lessonIndex + offset) % corrections.length];
-    questions.push({
-      id: `${prefix}-correction-${index}`,
-      type: "correction",
-      typeLabel: "Correction",
-      promptHtml: `Correct the highlighted word or phrase: ${item.sentence}`,
-      answer: item.answer,
-      explain: item.explain
-    });
-  });
-
-  const builderSources = [...module.grammarExamples, ...lesson.summary].map(cleanSentence).filter(sentence => sentence.split(" ").length >= 4);
-  builderSources.slice(-2).forEach((sentence, index) => {
-    questions.push({
-      id: `${prefix}-builder-${index}`,
-      type: "builder",
-      typeLabel: "Sentence Builder",
-      prompt: "Build a correct sentence connected to this unit.",
-      answer: sentence,
-      words: seededShuffle(sentence.split(" "), `${prefix}-builder-${index}`),
-      explain: sentence
-    });
-  });
-
-  while (questions.length < 20) {
-    const item = lessonVocab[questions.length % lessonVocab.length] || module.vocab[questions.length % module.vocab.length];
-    const index = questions.length;
-    questions.push({
-      id: `${prefix}-extra-${index}`,
-      type: "mcq",
-      typeLabel: "Vocabulary in Context",
-      prompt: `Choose the word that completes this lesson sentence: ${blankExample(item.example, item.word)}`,
-      answer: item.word,
-      options: seededShuffle([item.word, ...contextualDistractors(module, item.word, `${prefix}-extra-options-${index}`)], `${prefix}-extra-${index}`),
-      explain: item.example
-    });
-  }
-
-  return questions.slice(0, 20);
+  const key = `${module.id}-${lessonIndex}`;
+  return cloneQuestions(lessonQuestionBanks[key] || []);
 }
 
 function buildChallengeQuestions(moduleIndex) {
   const module = curriculum[moduleIndex];
-  const all = module.lessons.flatMap((_, lessonIndex) => buildLessonQuestions(moduleIndex, lessonIndex));
-  const groups = ["complete", "mcq", "matching", "builder", "correction"];
+  const allQuestions = module.lessons.flatMap((_, lessonIndex) =>
+    buildLessonQuestions(moduleIndex, lessonIndex)
+  );
+  const quotas = {
+    choose: 10,
+    complete: 8,
+    truefalse: 6,
+    matching: 5,
+    dragdrop: 5,
+    listening: 4,
+    ordering: 4,
+    correction: 4,
+    builder: 4
+  };
   const chosen = [];
-  groups.forEach(type => {
-    const typeItems = all.filter(question => question.type === type);
-    chosen.push(...typeItems.slice(0, type === "mcq" ? 24 : type === "complete" ? 10 : type === "builder" ? 8 : 4));
+
+  QUESTION_GROUP_ORDER.forEach(group => {
+    const pool = allQuestions.filter(question => question.group === group);
+    chosen.push(
+      ...seededShuffle(pool, `${module.id}-challenge-${group}`)
+        .slice(0, quotas[group] || 0)
+    );
   });
-  const unique = [];
-  const seen = new Set();
-  for (const question of chosen) {
-    if (!seen.has(question.id)) {
-      seen.add(question.id);
-      unique.push({ ...question, id: `${question.id}-challenge` });
-    }
+
+  if (chosen.length < 50) {
+    const selectedIds = new Set(chosen.map(question => question.id));
+    const remaining = allQuestions.filter(question => !selectedIds.has(question.id));
+    chosen.push(...remaining.slice(0, 50 - chosen.length));
   }
-  for (const question of all) {
-    if (unique.length >= 50) break;
-    if (!seen.has(question.id)) {
-      seen.add(question.id);
-      unique.push({ ...question, id: `${question.id}-challenge` });
-    }
-  }
-  return unique.slice(0, 50);
+
+  return chosen.slice(0, 50).map(question => ({
+    ...question,
+    id: `${question.id}-challenge`
+  }));
 }
 
-function startQuiz(moduleIndex, lessonIndex, challenge = false) {
+function quizSessionKey(moduleIndex, lessonIndex, challenge) {
+  const module = curriculum[moduleIndex];
+  return `${module.id}:${challenge ? "challenge" : `lesson:${lessonIndex}`}`;
+}
+
+function persistQuizSession(indexOverride = null) {
+  if (!activeQuiz) return;
+  const savedIndex = Number.isInteger(indexOverride) ? indexOverride : activeQuiz.index;
+  state.quizSessions = state.quizSessions || {};
+  state.quizSessions[activeQuiz.sessionKey] = {
+    index: savedIndex,
+    correct: activeQuiz.correct
+  };
+  state.current = activeQuiz.challenge
+    ? {
+        route: "challenge",
+        moduleIndex: activeQuiz.moduleIndex,
+        questionIndex: savedIndex
+      }
+    : {
+        route: "lesson",
+        moduleIndex: activeQuiz.moduleIndex,
+        lessonIndex: activeQuiz.lessonIndex,
+        station: "practice",
+        questionIndex: savedIndex
+      };
+  state.lastLearning = { ...state.current };
+  saveState();
+}
+
+function startQuiz(moduleIndex, lessonIndex, challenge = false, forceRestart = false) {
   clearQuizTimers();
   const module = curriculum[moduleIndex];
-  const questions = challenge ? buildChallengeQuestions(moduleIndex) : buildLessonQuestions(moduleIndex, lessonIndex);
-  activeQuiz = { moduleIndex, lessonIndex, challenge, questions, index: 0, correct: 0, answered: false };
-  state.current = challenge
-    ? { route: "unit", moduleIndex }
-    : { route: "lesson", moduleIndex, lessonIndex, station: "practice" };
-  saveState();
+  const questions = challenge
+    ? buildChallengeQuestions(moduleIndex)
+    : buildLessonQuestions(moduleIndex, lessonIndex);
+  const sessionKey = quizSessionKey(moduleIndex, lessonIndex, challenge);
+  const saved = forceRestart ? null : state.quizSessions?.[sessionKey];
+  const startIndex = Math.min(
+    Number(saved?.index) || 0,
+    Math.max(0, questions.length - 1)
+  );
+
+  activeQuiz = {
+    moduleIndex,
+    lessonIndex,
+    challenge,
+    questions,
+    index: startIndex,
+    correct: Number(saved?.correct) || 0,
+    answered: false,
+    sessionKey
+  };
+  persistQuizSession();
   setActiveNav(module.id);
+
   pageShell(`
     ${challenge
-      ? `<section class="lesson-banner"><img src="${coverByUnit[module.id]}" alt="Unit ${module.number} cover"><div class="lesson-banner-overlay"><div class="lesson-banner-copy"><div class="crumb">Unit ${module.number} • Master Challenge</div><h1>50-Question Unit Challenge</h1><p>Direct questions covering vocabulary in context, grammar, reading, matching, correction, ordering, and sentence building.</p><div class="lesson-meta"><span>🏆 70% to pass</span><span>🔓 Unlocks the next unit</span></div></div></div></section>`
+      ? `<section class="lesson-banner"><img src="${coverByUnit[module.id]}" alt="Unit ${module.number} cover"><div class="lesson-banner-overlay"><div class="lesson-banner-copy"><div class="crumb">Unit ${module.number} • Master Challenge</div><h1>50-Question Unit Challenge</h1><p>Direct questions grouped by type: choose, complete, true or false, matching, drag and drop, listening, ordering, correction, and sentence building.</p><div class="lesson-meta"><span>🏆 70% to pass</span><span>💾 Progress saves automatically</span><span>🔓 Unlocks the next unit</span></div></div></div></section>`
       : lessonBanner(module, module.lessons[lessonIndex], lessonIndex, state.completed[lessonKey(module.id, lessonIndex)])}
     <section class="quiz-shell" id="quizStage"></section>
   `);
@@ -823,47 +1051,118 @@ function renderQuestion() {
   if (!quiz) return;
   const question = quiz.questions[quiz.index];
   const module = curriculum[quiz.moduleIndex];
+
+  if (!question) {
+    $("#quizStage").innerHTML = `<div class="quiz-card"><div class="feedback-box bad">No questions were found for this lesson.</div></div>`;
+    return;
+  }
+
+  persistQuizSession();
   const percent = Math.round((quiz.index / quiz.questions.length) * 100);
+  const group = question.group || question.type;
+  const groupNumber = quiz.questions
+    .slice(0, quiz.index + 1)
+    .filter(item => (item.group || item.type) === group).length;
+  const groupTotal = quiz.questions
+    .filter(item => (item.group || item.type) === group).length;
+
   $("#quizStage").innerHTML = `
-    <div class="quiz-topbar"><div><strong>Question ${quiz.index + 1} of ${quiz.questions.length}</strong><span> • ${esc(question.typeLabel)}</span></div><strong>Score: ${quiz.correct}</strong></div>
+    <div class="quiz-topbar">
+      <div>
+        <strong>Question ${quiz.index + 1} of ${quiz.questions.length}</strong>
+        <span> • ${esc(question.typeLabel)} ${groupNumber} of ${groupTotal}</span>
+      </div>
+      <strong>Score: ${quiz.correct}</strong>
+    </div>
     <div class="quiz-card" style="--unit-color:${module.color}">
       <div class="progress-track"><div class="progress-fill" style="width:${percent}%;--unit-color:${module.color}"></div></div>
-      <div style="margin-top:17px"><span class="question-type">${esc(question.typeLabel)}</span></div>
+      <div class="question-heading-row">
+        <span class="question-type">${esc(question.typeLabel)}</span>
+        <span class="autosave-note">💾 Saved automatically</span>
+      </div>
       <h2 class="question-title">${question.promptHtml || esc(question.prompt)}</h2>
       <div id="answerArea">${questionAnswerMarkup(question)}</div>
       <div id="feedbackArea" aria-live="polite"></div>
       <div class="check-row"><button class="btn btn-secondary" id="leaveQuiz" type="button">← Leave Practice</button></div>
     </div>`;
+
   bindQuestionControls(question);
   $("#leaveQuiz").addEventListener("click", () => {
     const { moduleIndex, lessonIndex, challenge } = quiz;
+    // Save the next question immediately. If the student closes the app
+    // during the feedback/countdown, Continue resumes after this answer.
+    persistQuizSession(activeQuiz.index + 1);
     activeQuiz = null;
     challenge ? renderUnit(moduleIndex) : renderLesson(moduleIndex, lessonIndex);
   });
 }
 
 function questionAnswerMarkup(question) {
-  if (question.type === "mcq") {
-    return `<div class="options-grid">${question.options.map((option, index) => `<button class="option-button" data-option="${esc(option)}" type="button"><span class="option-letter">${String.fromCharCode(65 + index)}</span><span>${esc(option)}</span></button>`).join("")}</div>`;
+  if (question.type === "mcq" || question.type === "listening") {
+    const options = question.group === "truefalse"
+      ? question.options
+      : seededShuffle(question.options, `${question.id}-options`);
+    return `
+      ${question.type === "listening"
+        ? `<div class="listening-box"><button class="btn btn-primary" id="playListening" type="button">🔊 Play Listening Text</button><p>Listen carefully, then choose the correct answer.</p></div>`
+        : ""}
+      <div class="options-grid">
+        ${options.map((option, index) => `<button class="option-button" data-option="${esc(option)}" type="button"><span class="option-letter">${String.fromCharCode(65 + index)}</span><span>${esc(option)}</span></button>`).join("")}
+      </div>`;
   }
+
   if (question.type === "complete" || question.type === "correction") {
-    return `<label for="textAnswer" class="question-type" style="margin-bottom:8px">Type your answer</label><input class="answer-input" id="textAnswer" type="text" autocomplete="off"><div class="check-row"><button class="btn btn-primary" id="checkText" type="button">Check Answer</button></div>`;
+    const placeholder = question.type === "correction"
+      ? "Type only the correct word or phrase"
+      : "Type the missing word or phrase";
+    return `<label for="textAnswer" class="question-type" style="margin-bottom:8px">Type your answer</label><input class="answer-input" id="textAnswer" type="text" autocomplete="off" placeholder="${placeholder}"><div class="check-row"><button class="btn btn-primary" id="checkText" type="button">Check Answer</button></div>`;
   }
+
   if (question.type === "matching") {
-    const words = seededShuffle(question.pairs.map(pair => pair.word), `${question.id}-words`);
-    return `<div class="matching-list">${question.pairs.map((pair, index) => `<div class="match-row"><p>${index + 1}. ${esc(pair.context)}</p><select data-match-index="${index}"><option value="">Choose a word</option>${words.map(word => `<option value="${esc(word)}">${esc(word)}</option>`).join("")}</select></div>`).join("")}</div><div class="check-row"><button class="btn btn-primary" id="checkMatching" type="button">Check Matching</button></div>`;
+    const words = seededShuffle(
+      question.pairs.map(pair => pair.word),
+      `${question.id}-words`
+    );
+    return `<div class="matching-list">${question.pairs.map((pair, index) => `<div class="match-row"><p>${index + 1}. ${esc(pair.context)}</p><select data-match-index="${index}"><option value="">Choose a word or phrase</option>${words.map(word => `<option value="${esc(word)}">${esc(word)}</option>`).join("")}</select></div>`).join("")}</div><div class="check-row"><button class="btn btn-primary" id="checkMatching" type="button">Check Matching</button></div>`;
   }
+
+  if (question.type === "dragdrop") {
+    const options = seededShuffle(question.options, `${question.id}-drag`);
+    return `
+      <p class="question-instruction">Drag one answer into the box. On a phone, tap an answer instead.</p>
+      <div class="drag-options" id="dragOptions">
+        ${options.map(option => `<button class="drag-chip" draggable="true" data-drag-option="${esc(option)}" type="button">${esc(option)}</button>`).join("")}
+      </div>
+      <div class="drop-zone" id="dropZone" aria-live="polite">Drop the answer here</div>
+      <div class="check-row"><button class="btn btn-primary" id="checkDrag" type="button">Check Answer</button><button class="btn btn-secondary" id="resetDrag" type="button">Reset</button></div>`;
+  }
+
   if (question.type === "builder") {
-    return `<p style="color:var(--muted)">Click words to build the sentence. Click a selected word to return it.</p><div class="answer-builder" id="answerBuilder" aria-label="Your sentence"></div><div class="word-bank" id="wordBank" aria-label="Word bank"></div><div class="check-row"><button class="btn btn-primary" id="checkBuilder" type="button">Check Sentence</button><button class="btn btn-secondary" id="resetBuilder" type="button">Reset</button></div>`;
+    const ordering = question.group === "ordering";
+    return `
+      <p class="question-instruction">${ordering ? "Click the cards to put the ideas in the correct order." : "Click the words to build a correct sentence."} Click a selected card to return it.</p>
+      <div class="answer-builder ${ordering ? "sentence-order" : ""}" id="answerBuilder" aria-label="${ordering ? "Your ordered ideas" : "Your sentence"}"></div>
+      <div class="word-bank ${ordering ? "sentence-order" : ""}" id="wordBank" aria-label="Card bank"></div>
+      <div class="check-row"><button class="btn btn-primary" id="checkBuilder" type="button">${ordering ? "Check Order" : "Check Sentence"}</button><button class="btn btn-secondary" id="resetBuilder" type="button">Reset</button></div>`;
   }
+
   return "";
 }
 
 function bindQuestionControls(question) {
-  if (question.type === "mcq") {
-    $$('[data-option]').forEach(button => button.addEventListener("click", () => checkAnswer(button.dataset.option, button)));
+  if (question.type === "listening") {
+    $("#playListening")?.addEventListener("click", () => speak(question.audioText));
+  }
+
+  if (question.type === "mcq" || question.type === "listening") {
+    $$('[data-option]').forEach(button =>
+      button.addEventListener("click", () =>
+        checkAnswer(button.dataset.option, button)
+      )
+    );
     return;
   }
+
   if (question.type === "complete" || question.type === "correction") {
     const input = $("#textAnswer");
     $("#checkText").addEventListener("click", () => checkAnswer(input.value));
@@ -873,40 +1172,113 @@ function bindQuestionControls(question) {
     input.focus();
     return;
   }
+
   if (question.type === "matching") {
     $("#checkMatching").addEventListener("click", () => {
       const answers = $$('[data-match-index]').map(select => select.value);
-      const correct = question.pairs.every((pair, index) => normalizeAnswer(pair.word) === normalizeAnswer(answers[index]));
-      checkAnswer(correct ? "__correct__" : answers.join(" | "), null, correct);
+      const correct = question.pairs.every(
+        (pair, index) =>
+          normalizeAnswer(pair.word) === normalizeAnswer(answers[index])
+      );
+      checkAnswer(
+        correct ? "__correct__" : answers.join(" | "),
+        null,
+        correct
+      );
     });
     return;
   }
+
+  if (question.type === "dragdrop") {
+    setupDragDrop(question);
+    return;
+  }
+
   if (question.type === "builder") setupBuilder(question);
 }
 
+function setupDragDrop(question) {
+  let selected = "";
+  const zone = $("#dropZone");
+  const chips = $$("[data-drag-option]");
+
+  function select(value) {
+    selected = value;
+    zone.textContent = value || "Drop the answer here";
+    zone.classList.toggle("filled", Boolean(value));
+    chips.forEach(chip =>
+      chip.classList.toggle(
+        "selected",
+        normalizeAnswer(chip.dataset.dragOption) === normalizeAnswer(value)
+      )
+    );
+  }
+
+  chips.forEach(chip => {
+    chip.addEventListener("click", () => select(chip.dataset.dragOption));
+    chip.addEventListener("dragstart", event => {
+      event.dataTransfer.setData("text/plain", chip.dataset.dragOption);
+      event.dataTransfer.effectAllowed = "move";
+    });
+  });
+
+  zone.addEventListener("dragover", event => {
+    event.preventDefault();
+    zone.classList.add("drag-over");
+  });
+  zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
+  zone.addEventListener("drop", event => {
+    event.preventDefault();
+    zone.classList.remove("drag-over");
+    select(event.dataTransfer.getData("text/plain"));
+  });
+
+  $("#checkDrag").addEventListener("click", () => checkAnswer(selected));
+  $("#resetDrag").addEventListener("click", () => select(""));
+}
+
 function setupBuilder(question) {
-  const bank = question.words.map((word, index) => ({ id: `${index}-${word}`, word }));
+  const original = question.words.map((word, index) => ({
+    id: `${index}-${word}`,
+    word
+  }));
+  const bank = seededShuffle(original, `${question.id}-bank`);
   const selected = [];
   const bankHost = $("#wordBank");
   const selectedHost = $("#answerBuilder");
+  const sentenceMode = question.group === "ordering";
 
   function draw() {
-    bankHost.innerHTML = bank.map(item => `<button class="word-chip" data-bank-id="${esc(item.id)}" type="button">${esc(item.word)}</button>`).join("");
-    selectedHost.innerHTML = selected.length ? selected.map(item => `<button class="word-chip" data-selected-id="${esc(item.id)}" type="button">${esc(item.word)}</button>`).join("") : `<span style="color:var(--muted)">Your sentence appears here.</span>`;
-    $$('[data-bank-id]', bankHost).forEach(button => button.addEventListener("click", () => {
-      const index = bank.findIndex(item => item.id === button.dataset.bankId);
-      if (index >= 0) selected.push(...bank.splice(index, 1));
-      draw();
-    }));
-    $$('[data-selected-id]', selectedHost).forEach(button => button.addEventListener("click", () => {
-      const index = selected.findIndex(item => item.id === button.dataset.selectedId);
-      if (index >= 0) bank.push(...selected.splice(index, 1));
-      draw();
-    }));
+    bankHost.innerHTML = bank
+      .map(item => `<button class="word-chip ${sentenceMode ? "sentence-chip" : ""}" data-bank-id="${esc(item.id)}" type="button">${esc(item.word)}</button>`)
+      .join("");
+    selectedHost.innerHTML = selected.length
+      ? selected.map(item => `<button class="word-chip ${sentenceMode ? "sentence-chip" : ""}" data-selected-id="${esc(item.id)}" type="button">${esc(item.word)}</button>`).join("")
+      : `<span style="color:var(--muted)">${sentenceMode ? "Your ordered ideas appear here." : "Your sentence appears here."}</span>`;
+
+    $$('[data-bank-id]', bankHost).forEach(button =>
+      button.addEventListener("click", () => {
+        const index = bank.findIndex(item => item.id === button.dataset.bankId);
+        if (index >= 0) selected.push(...bank.splice(index, 1));
+        draw();
+      })
+    );
+
+    $$('[data-selected-id]', selectedHost).forEach(button =>
+      button.addEventListener("click", () => {
+        const index = selected.findIndex(
+          item => item.id === button.dataset.selectedId
+        );
+        if (index >= 0) bank.push(...selected.splice(index, 1));
+        draw();
+      })
+    );
   }
 
   draw();
-  $("#checkBuilder").addEventListener("click", () => checkAnswer(selected.map(item => item.word).join(" ")));
+  $("#checkBuilder").addEventListener("click", () =>
+    checkAnswer(selected.map(item => item.word).join(" "))
+  );
   $("#resetBuilder").addEventListener("click", () => {
     bank.push(...selected.splice(0));
     const reset = seededShuffle(bank, `${question.id}-reset`);
@@ -915,20 +1287,40 @@ function setupBuilder(question) {
   });
 }
 
+function answerMatchesQuestion(value, question) {
+  const accepted = Array.isArray(question.accepted) && question.accepted.length
+    ? question.accepted
+    : [question.answer];
+  return accepted.some(
+    answer => normalizeAnswer(value) === normalizeAnswer(answer)
+  );
+}
+
 function checkAnswer(value, optionButton = null, forcedResult = null) {
   const quiz = activeQuiz;
   if (!quiz || quiz.answered) return;
   const question = quiz.questions[quiz.index];
-  if (!String(value).trim() && forcedResult === null) return toast("Write or choose an answer first.");
+
+  if (!String(value).trim() && forcedResult === null) {
+    return toast("Write, choose, or drag an answer first.");
+  }
+
   quiz.answered = true;
-  let correct;
-  if (forcedResult !== null) correct = forcedResult;
-  else correct = normalizeAnswer(value) === normalizeAnswer(question.answer);
+  const correct = forcedResult !== null
+    ? forcedResult
+    : answerMatchesQuestion(value, question);
+  const firstTime = !state.earnedQuestions[question.id];
 
   disableCurrentControls();
-  if (question.type === "mcq") {
+
+  if (question.type === "mcq" || question.type === "listening") {
     $$('[data-option]').forEach(button => {
-      if (normalizeAnswer(button.dataset.option) === normalizeAnswer(question.answer)) button.classList.add("correct");
+      if (
+        normalizeAnswer(button.dataset.option) ===
+        normalizeAnswer(question.answer)
+      ) {
+        button.classList.add("correct");
+      }
     });
     if (!correct && optionButton) optionButton.classList.add("wrong");
   }
@@ -936,8 +1328,17 @@ function checkAnswer(value, optionButton = null, forcedResult = null) {
   if (correct) {
     quiz.correct += 1;
     awardQuestion(question.id);
+    // The answer was submitted, so the next open should not repeat it.
+    persistQuizSession(activeQuiz.index + 1);
     playTone(true);
-    $("#feedbackArea").innerHTML = `<div class="feedback-box good">✅ Correct!${state.earnedQuestions[question.id] ? "" : ""}<small>${esc(question.explain || "Well done.")}</small><span class="next-countdown"><i class="pulse-dot"></i> Next question in <strong id="countdownValue">5</strong> seconds…</span></div>`;
+
+    $("#feedbackArea").innerHTML = `
+      <div class="feedback-box good">
+        ✅ Correct! ${firstTime ? "<strong>+10 XP</strong>" : "<strong>Already completed — no extra points</strong>"}
+        <small>${esc(question.explain || "Well done.")}</small>
+        <span class="next-countdown"><i class="pulse-dot"></i> Next question in <strong id="countdownValue">5</strong> seconds…</span>
+      </div>`;
+
     let seconds = 5;
     countdownTimer = setInterval(() => {
       seconds -= 1;
@@ -945,11 +1346,28 @@ function checkAnswer(value, optionButton = null, forcedResult = null) {
     }, 1000);
     autoTimer = setTimeout(advanceQuestion, 5000);
   } else {
+    // The answer was submitted, so the next open should not repeat it.
+    persistQuizSession(activeQuiz.index + 1);
     playTone(false);
+
     const correctDisplay = question.type === "matching"
-      ? question.pairs.map(pair => `${pair.context} → ${pair.word}`).join(" • ")
+      ? question.pairs
+          .map(pair => `${pair.context} → ${pair.word}`)
+          .join(" • ")
       : question.answer;
-    $("#feedbackArea").innerHTML = `<div class="feedback-box bad">Not correct. <small>Correct answer: <strong>${esc(correctDisplay)}</strong><br>${esc(question.explain || "Review the lesson station and try again.")}</small><div class="check-row"><button class="btn btn-primary" id="gotItButton" type="button">GOT IT →</button></div></div>`;
+
+    $("#feedbackArea").innerHTML = `
+      <div class="feedback-box bad">
+        Not correct.
+        <small>
+          Correct answer: <strong>${esc(correctDisplay)}</strong><br>
+          ${esc(question.explain || "Review the lesson station and try again.")}
+        </small>
+        <div class="check-row">
+          <button class="btn btn-primary" id="gotItButton" type="button">GOT IT →</button>
+        </div>
+      </div>`;
+
     $("#gotItButton").addEventListener("click", advanceQuestion);
   }
 }
@@ -972,8 +1390,12 @@ function advanceQuestion() {
   if (!activeQuiz) return;
   activeQuiz.index += 1;
   activeQuiz.answered = false;
-  if (activeQuiz.index >= activeQuiz.questions.length) finishQuiz();
-  else renderQuestion();
+  if (activeQuiz.index >= activeQuiz.questions.length) {
+    finishQuiz();
+  } else {
+    persistQuizSession();
+    renderQuestion();
+  }
 }
 
 function finishQuiz() {
@@ -983,6 +1405,9 @@ function finishQuiz() {
   const score = Math.round((quiz.correct / quiz.questions.length) * 100);
   const passed = score >= 70;
   let firstPass = false;
+
+  state.quizSessions = state.quizSessions || {};
+  delete state.quizSessions[quiz.sessionKey];
 
   if (quiz.challenge) {
     const previousScore = state.moduleScores[module.id] || 0;
@@ -1016,7 +1441,7 @@ function finishQuiz() {
   $("#quizStage").innerHTML = `
     <div class="quiz-card"><div class="quiz-result"><div class="result-icon">${passed ? "🏆" : "🌱"}</div><h2>${passed ? "Excellent work!" : "Review and try again"}</h2><strong>${score}% • ${quiz.correct}/${quiz.questions.length} correct</strong><p>${passed ? (quiz.challenge ? "You earned the unit badge and unlocked the next unit." : "The next lesson is now available.") : "You need 70% to pass. Return to the learning stations, review, and retry."}</p><div class="quiz-result-actions"><button class="btn btn-secondary" id="retryQuiz" type="button">Try Again</button>${nextLessonAvailable ? `<button class="btn btn-primary" id="nextLesson" type="button">Next Lesson →</button>` : `<button class="btn btn-primary" id="returnMap" type="button">Return to Unit Map</button>`}</div></div></div>`;
 
-  $("#retryQuiz").addEventListener("click", () => startQuiz(quiz.moduleIndex, quiz.lessonIndex, quiz.challenge));
+  $("#retryQuiz").addEventListener("click", () => startQuiz(quiz.moduleIndex, quiz.lessonIndex, quiz.challenge, true));
   $("#nextLesson")?.addEventListener("click", () => renderLesson(quiz.moduleIndex, quiz.lessonIndex + 1));
   $("#returnMap")?.addEventListener("click", () => renderUnit(quiz.moduleIndex));
   activeQuiz = null;
@@ -1116,6 +1541,16 @@ $("#soundToggle").addEventListener("click", () => {
   saveState();
   toast(state.sound ? "Sound is on." : "Sound is off.");
 });
+$("#fontDecrease").addEventListener("click", () => {
+  state.fontScale = Math.max(1, Number((state.fontScale - 0.08).toFixed(2)));
+  saveState();
+  toast("Reading text size decreased.");
+});
+$("#fontIncrease").addEventListener("click", () => {
+  state.fontScale = Math.min(1.28, Number((state.fontScale + 0.08).toFixed(2)));
+  saveState();
+  toast("Reading text size increased.");
+});
 $("#continueButton").addEventListener("click", continueLearning);
 $("#certificateButton").addEventListener("click", renderCertificate);
 $("#confirmReset").addEventListener("click", () => {
@@ -1142,7 +1577,15 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
 }
 
 updateChrome();
-renderCurrent();
+// Always open the course dashboard first. The Continue button can resume the
+// saved learning location without forcing a fresh visit back into a previous route.
+if (restoreRouteOnBoot) renderCurrent();
+else renderHome();
+
+window.addEventListener("pagehide", () => {
+  saveState();
+  void window.MrFaridCourseProgress?.saveNow();
+});
 
 window.MrFaridCourseProgress?.connect({
   courseId: "english-primary-5-first-term",
@@ -1151,11 +1594,12 @@ window.MrFaridCourseProgress?.connect({
     state = next;
     localStorage.setItem(storageKey(), JSON.stringify(state));
     updateChrome();
-    renderCurrent();
+    if (restoreRouteOnBoot) renderCurrent();
+    else renderHome();
   },
   mergeState: (_local, remote) => ({ ...makeDefaultState(), ...remote }),
   onStatus: ({ online, message }) => {
-    document.title = online ? "English Primary 5 • Saved" : "English Primary 5";
+    document.title = online ? "English Primary 5 - Saved" : "English Primary 5";
     if (message && !online) console.info(message);
   }
 });

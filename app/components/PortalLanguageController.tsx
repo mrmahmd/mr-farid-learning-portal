@@ -5,6 +5,7 @@ import { useEffect } from "react";
 type PortalLanguage = "en" | "ar";
 
 const translations: Record<string, string> = {
+  "Explore interactive assessment workbooks organized by primary grade. Books open according to the learning stage and access assigned to the student account.": "استكشف كتب التقييمات التفاعلية المنظمة حسب المرحلة الدراسية. تفتح الكتب وفق المرحلة التعليمية والصلاحيات المحددة لحساب الطالب.",
   "Learning Portal": "بوابة التعلّم",
   "Home": "الرئيسية",
   "Meet the Teacher": "تعرّف على المعلم",
@@ -67,9 +68,11 @@ const translations: Record<string, string> = {
   "Choose your curriculum": "اختر منهجك",
   "About Mr.Mohamed Farid": "عن مستر محمد فريد",
   "Meet the teacher": "تعرّف على المعلم",
-  "Senior English Instructor": "معلم أول لغة إنجليزية",
+  "Senior English Instructor": "معلم لغة إنجليزية",
+  "English Teacher": "معلم لغة إنجليزية",
   "Education": "المؤهلات العلمية",
-  "Current Position": "المنصب الحالي",
+  "Teaching Focus": "مجال التميز التعليمي",
+  "Creates clear, practical, and enjoyable English learning experiences for young learners.": "يصمم تجارب تعلم للغة الإنجليزية واضحة وعملية وممتعة للطلاب الصغار.",
   "Educational Technology": "تكنولوجيا التعليم",
   "Teacher Development": "تطوير المعلمين",
   "My Mission": "رسالتي",
@@ -100,7 +103,6 @@ const translations: Record<string, string> = {
   "DESIGNED & DEVELOPED BY": "تصميم وتطوير",
   "English Teacher & Educational Content Designer": "معلم لغة إنجليزية ومصمم محتوى تعليمي",
   "Bachelor of Arts and Education, Faculty of Education, Mansoura University — 2007.": "ليسانس الآداب والتربية، كلية التربية، جامعة المنصورة — 2007.",
-  "English Teacher at AlAndalus Private Schools — Egyptian Section, Al-Hamdaniyah, Jeddah.": "معلم لغة إنجليزية في مدارس الأندلس الخاصة — القسم المصري، الحمدانية، جدة.",
   "Designs interactive educational applications, digital learning experiences, worksheets, games, and AI-powered learning content.": "يصمم تطبيقات تعليمية تفاعلية وتجارب تعلم رقمية وأوراق عمل وألعابًا ومحتوى تعليميًا مدعومًا بالذكاء الاصطناعي.",
   "Supports and trains teachers in using artificial intelligence for lesson planning and educational content creation.": "يدعم المعلمين ويدرّبهم على استخدام الذكاء الاصطناعي في تخطيط الدروس وإنشاء المحتوى التعليمي.",
   "“To make English clear, enjoyable, practical, and memorable for every learner.”": "لجعل اللغة الإنجليزية واضحة وممتعة وعملية ولا تُنسى لكل متعلم.",
@@ -132,6 +134,8 @@ const translations: Record<string, string> = {
   "Full name": "الاسم بالكامل",
   "Primary grade": "المرحلة الدراسية",
   "Your grade is fixed to keep your learning organised. To change it, contact Mr.Farid on WhatsApp.": "مرحلتك مثبتة للحفاظ على تنظيم تعلمك. لتغييرها، تواصل مع مستر فريد عبر واتساب.",
+  "Need to change your primary grade? Contact Mr.Farid on WhatsApp.": "هل تحتاج إلى تغيير مرحلتك الدراسية؟ تواصل مع مستر فريد عبر واتساب.",
+  "Request Grade Change": "طلب تغيير المرحلة",
   "Save Settings": "حفظ الإعدادات",
   "Your registered learning stage": "مرحلتك التعليمية المسجلة",
   "Your latest activity will appear here as you explore a curriculum.": "سيظهر آخر نشاط لك هنا أثناء استكشافك للمناهج.",

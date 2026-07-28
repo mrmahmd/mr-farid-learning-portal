@@ -1,0 +1,17 @@
+{
+  "name": "English Primary 6 - Term 1",
+  "short_name": "English P6",
+  "description": "Interactive English learning website for Primary 6 Term 1.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#081638",
+  "theme_color": "#10265f",
+  "icons": [
+    {
+      "src": "assets/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

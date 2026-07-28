@@ -1,0 +1,15 @@
+CONNECT PLUS 4 — FINAL MERGED PROJECT V6
+
+Base project:
+- Connect_Plus_4_First_Term_FULL_CURRENT_2026-07-16(1).zip
+
+Applied update:
+- Grouped question sections in this order:
+  Choose → Complete → Correct → Reorder → Match → Sort → Write
+- Added questions-v6-word-correction.js
+- Correct questions highlight one wrong word and require the correct word only.
+- Existing cloud.js, teacher dashboard files, images, Supabase configuration, and assets were preserved from the supplied base project.
+
+Important:
+- This package is a complete merged project based on the uploaded 2026-07-16 project copy.
+- Before publishing over a newer repository revision, compare/merge any changes made after that uploaded copy.
