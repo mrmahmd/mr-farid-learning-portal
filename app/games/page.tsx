@@ -55,9 +55,7 @@ export default function GamesPage() {
     );
   }
 
-  const visibleGrades = access.grade
-    ? [access.grade, ...grades.filter((grade) => grade !== access.grade)]
-    : grades;
+  const visibleGrades = access.accessMode === "grade" && access.grade ? [access.grade] : [];
   return (
     <InnerPageShell className="content-page games-page">
       <section className="games-card">

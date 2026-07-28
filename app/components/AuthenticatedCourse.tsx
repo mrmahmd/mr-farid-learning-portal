@@ -58,9 +58,8 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
         router.replace("/student/setup-grade");
         return;
       }
-      // A grade assignment or custom selection is not a subscription. Only an
-      // explicit Full Portal grant from the admin can open course content.
-      const curriculumAllowed = false;
+      // A subscription opens exactly the student's assigned primary grade.
+      const curriculumAllowed = accessMode === "grade" && assignedGrade === curriculum.grade;
       if (!curriculumAllowed) {
         if (isActive) setDeniedReason("This curriculum is locked for your account. Please contact Mr.Farid if you need access.");
         return;

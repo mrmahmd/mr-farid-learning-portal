@@ -28,7 +28,7 @@ export default function AssessmentBooksPage() {
         .eq("user_id", sessionData.session.user.id)
         .maybeSingle();
       const curricula = Array.isArray(row?.allowed_curricula) ? row.allowed_curricula.filter((value: unknown): value is string => typeof value === "string") : [];
-      const allowed = false;
+      const allowed = Boolean(row && !row.is_suspended && row.booklet_access === true && row.access_mode === "grade");
       if (active) setAccess({ checked: true, session: true, allowed, grade: row?.grade ?? null, mode: row?.access_mode ?? "grade", curricula, userId: sessionData.session.user.id, studentName: sessionData.session.user.user_metadata?.full_name ?? "Star Learner" });
     }
     void loadAccess();
@@ -37,7 +37,7 @@ export default function AssessmentBooksPage() {
 
   const canOpen = (grade: number) => {
     if (!access.checked || !access.session || !access.allowed) return false;
-    return access.mode === "all";
+    return access.mode === "grade" && access.grade === grade;
   };
 
   const bookHref = (grade: number) => {
@@ -58,7 +58,7 @@ export default function AssessmentBooksPage() {
             {!access.session && <p className="assessment-access-note">Sign in to open the assessment book assigned to your stage.</p>}
         </div>
         <div className="grade-grid">
-          {grades.map((grade) => {
+          {(access.allowed && access.grade ? [access.grade] : []).map((grade) => {
             const available = grade === 1 || grade === 2 || grade === 4;
             const open = available && canOpen(grade);
             const connectAvailable = false;

@@ -7,7 +7,7 @@ const validCurricula = new Set(Array.from({ length: 6 }, (_, index) => {
   const grade = index + 1;
   return [`english-primary-${grade}`, `connect-plus-primary-${grade}`];
 }).flat());
-const validAccessModes = new Set(["grade", "custom", "all", "none"]);
+const validAccessModes = new Set(["grade", "none"]);
 
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") return new Response("ok", { headers: cors });
@@ -47,7 +47,7 @@ Deno.serve(async (request) => {
   if (body.action === "update_access") {
     const grade = body.grade == null ? null : Number(body.grade);
     if (grade !== null && (!Number.isInteger(grade) || grade < 1 || grade > 6)) return json({ error: "Invalid grade" }, 400);
-    const accessMode = String(body.accessMode ?? "grade");
+    const accessMode = String(body.accessMode ?? "none");
     if (!validAccessModes.has(accessMode)) return json({ error: "Invalid access mode" }, 400);
     const allowed = Array.isArray(body.allowedCurricula)
       ? [...new Set(body.allowedCurricula.map(String))].filter((slug) => validCurricula.has(slug))
@@ -55,8 +55,8 @@ Deno.serve(async (request) => {
     const saved = await saveAccess({
       grade,
       access_mode: accessMode,
-      allowed_curricula: accessMode === "custom" ? allowed : [],
-      booklet_access: Boolean(body.bookletAccess),
+      allowed_curricula: [],
+      booklet_access: accessMode === "grade",
     });
     return saved.ok ? json({ success: true }) : json({ error: await saved.text() }, saved.status);
   }

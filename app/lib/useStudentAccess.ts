@@ -19,7 +19,7 @@ const initialState: StudentAccessState = {
   signedIn: false,
   suspended: false,
   grade: null,
-  accessMode: "grade",
+  accessMode: "none",
   mustChangePassword: false,
   allowedCurricula: [],
   bookletAccess: true,
@@ -52,7 +52,7 @@ export function useStudentAccess() {
       const accessMode: StudentAccessState["accessMode"] = typeof candidateMode === "string"
         && ["grade", "custom", "all", "none"].includes(candidateMode)
         ? candidateMode as StudentAccessState["accessMode"]
-        : "grade";
+        : "none";
       setState({
         loading: false,
         signedIn: true,
@@ -77,9 +77,9 @@ export function useStudentAccess() {
 }
 
 export function canOpenGrade(grade: number, access: StudentAccessState) {
-  return false;
+  return access.signedIn && !access.suspended && access.accessMode === "grade" && access.grade === grade;
 }
 
 export function canOpenCurriculum(slug: string, grade: number, access: StudentAccessState) {
-  return false;
+  return canOpenGrade(grade, access);
 }

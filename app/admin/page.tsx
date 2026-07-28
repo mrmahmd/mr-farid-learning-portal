@@ -34,7 +34,7 @@ export default function AdminDashboardPage() {
   const [creating, setCreating] = useState(false);
   const [editingStudentId, setEditingStudentId] = useState<string | null>(null);
   const [editingGrade, setEditingGrade] = useState(1);
-  const [accessMode, setAccessMode] = useState<AccessMode>("grade");
+  const [accessMode, setAccessMode] = useState<AccessMode>("none");
   const [selectedCurricula, setSelectedCurricula] = useState<string[]>([]);
   const [bookletAccess, setBookletAccess] = useState(true);
 
@@ -65,9 +65,9 @@ export default function AdminDashboardPage() {
         updatedAt: latest?.updated_at ?? null,
         suspended: controls?.is_suspended ?? false,
         grade: controls?.grade ?? null,
-        accessMode: (["grade", "custom", "all", "none"].includes(controls?.access_mode) ? controls?.access_mode : "grade") as AccessMode,
+        accessMode: (["grade", "custom", "all", "none"].includes(controls?.access_mode) ? controls?.access_mode : "none") as AccessMode,
         allowedCurricula: controls?.allowed_curricula ?? [],
-        bookletAccess: controls?.booklet_access ?? true,
+        bookletAccess: controls?.booklet_access ?? false,
       };
     });
     setStudents(rows);
@@ -169,8 +169,8 @@ export default function AdminDashboardPage() {
       action: "update_access",
       grade: editingGrade,
       accessMode,
-      allowedCurricula: accessMode === "custom" ? selectedCurricula : [],
-      bookletAccess,
+      allowedCurricula: [],
+      bookletAccess: accessMode === "grade",
     };
     const { data, error } = await invokeAdminFunction("admin-manage-student", body);
     let detail = data?.error ?? error?.message ?? "Could not save changes.";
@@ -266,7 +266,7 @@ export default function AdminDashboardPage() {
           </section>
           <section className="admin-panel">
             <div className="admin-panel-heading"><div><span className="panel-kicker">STUDENT ACCOUNTS</span><h2>Manage students</h2></div><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search name or username" /></div>
-            <div className="student-table"><div className="student-table-head"><span>Student</span><span>Status</span><span>Grade / Courses</span><span>Last activity</span><span>Controls</span></div>{visibleStudents.map((student) => <div className="student-table-row" key={student.id}><div className="student-cell"><span className="admin-avatar">{student.name.split(" ").map((part) => part[0]).join("").slice(0, 2)}</span><p><b>{student.name}</b><small>{student.username}</small></p></div><span className={`status-pill ${student.suspended ? "suspended" : "active"}`}>{student.suspended ? "Suspended" : "Active"}</span><span>{student.grade ? `Primary ${student.grade}` : "Grade needs assignment"} · {student.accessMode === "all" ? "Full portal" : student.accessMode === "none" ? "All locked" : student.accessMode === "custom" ? `${student.allowedCurricula.length} selected` : "Grade only"} · {student.bookletAccess ? "Booklets on" : "Booklets off"}</span><span>{student.activity}</span><div className="row-actions"><button type="button" onClick={() => void manageStudent(student, "suspend")}>{student.suspended ? "Activate" : "Suspend"}</button><button type="button" onClick={() => void manageStudent(student, "reset_password")}>Password</button><button type="button" onClick={() => openAccessEditor(student)}>Access</button></div></div>)}</div>
+            <div className="student-table"><div className="student-table-head"><span>Student</span><span>Status</span><span>Grade / Subscription</span><span>Last activity</span><span>Controls</span></div>{visibleStudents.map((student) => <div className="student-table-row" key={student.id}><div className="student-cell"><span className="admin-avatar">{student.name.split(" ").map((part) => part[0]).join("").slice(0, 2)}</span><p><b>{student.name}</b><small>{student.username}</small></p></div><span className={`status-pill ${student.suspended ? "suspended" : "active"}`}>{student.suspended ? "Suspended" : "Active"}</span><span>{student.grade ? `Primary ${student.grade}` : "Grade needs assignment"} · {student.accessMode === "grade" ? "Stage subscription active" : "Content locked"}</span><span>{student.activity}</span><div className="row-actions"><button type="button" onClick={() => void manageStudent(student, "suspend")}>{student.suspended ? "Activate" : "Suspend"}</button><button type="button" onClick={() => void manageStudent(student, "reset_password")}>Password</button><button type="button" onClick={() => openAccessEditor(student)}>Access</button></div></div>)}</div>
             {editingStudentId && (() => {
               const student = students.find((item) => item.id === editingStudentId);
               if (!student) return null;
@@ -282,18 +282,9 @@ export default function AdminDashboardPage() {
                   </select>
                 </label>
                 <div className="access-presets">
-                  <button className={accessMode === "grade" ? "active" : ""} type="button" onClick={() => setAccessMode("grade")}><b>Grade Only</b><small>Open both curricula for Primary {editingGrade}</small></button>
-                  <button className={accessMode === "custom" ? "active" : ""} type="button" onClick={() => setAccessMode("custom")}><b>Choose Curricula</b><small>Open only the courses selected below</small></button>
-                  <button className={accessMode === "all" ? "active" : ""} type="button" onClick={() => setAccessMode("all")}><b>Full Portal</b><small>Open every curriculum, game and booklet</small></button>
-                  <button className={accessMode === "none" ? "active danger" : "danger"} type="button" onClick={() => setAccessMode("none")}><b>Close All</b><small>Lock all learning content</small></button>
+                  <button className={accessMode === "grade" ? "active" : ""} type="button" onClick={() => setAccessMode("grade")}><b>Activate This Stage</b><small>Open only Primary {editingGrade}: curricula, games, booklets and assessment books.</small></button>
+                  <button className={accessMode === "none" ? "active danger" : "danger"} type="button" onClick={() => setAccessMode("none")}><b>Close Content</b><small>Keep every learning page locked until the student subscribes.</small></button>
                 </div>
-                <div className={`curriculum-access-grid${accessMode === "custom" ? "" : " disabled"}`}>
-                  {curricula.map((curriculum) => <label key={curriculum.slug}>
-                    <input type="checkbox" checked={selectedCurricula.includes(curriculum.slug)} disabled={accessMode !== "custom"} onChange={() => toggleCurriculum(curriculum.slug)} />
-                    <span><b>{curriculum.title}</b><small>Curriculum · Games · Booklets</small></span>
-                  </label>)}
-                </div>
-                <label className="booklet-master-switch"><input type="checkbox" checked={bookletAccess} onChange={(event) => setBookletAccess(event.target.checked)} /><span><b>Allow booklet area</b><small>Selected curriculum permissions still apply inside the booklet page.</small></span></label>
                 <div className="access-editor-actions"><button type="button" onClick={() => setEditingStudentId(null)}>Cancel</button><button className="save" type="button" onClick={() => void saveStudentAccess(student)}>Save Access</button></div>
               </div>;
             })()}

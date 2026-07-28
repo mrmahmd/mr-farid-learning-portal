@@ -21,7 +21,7 @@ export function BookletAccessGate({ children }: { children: ReactNode }) {
         .select("is_suspended, booklet_access, access_mode")
         .eq("user_id", data.session.user.id)
         .maybeSingle();
-      setState("blocked");
+      setState(access && !access.is_suspended && access.booklet_access === true && access.access_mode === "grade" ? "allowed" : "blocked");
     }
     void verify();
   }, []);

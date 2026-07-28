@@ -20,7 +20,7 @@ const ENGLISH_FIRST_TERM_BOOKLETS: Record<number, string> = {
 
 export default function BookletsPage() {
   const access = useStudentAccess();
-  const visibleGrades = access.grade ? [access.grade, ...grades.filter((grade) => grade !== access.grade)] : grades;
+  const visibleGrades = access.accessMode === "grade" && access.grade ? [access.grade] : [];
 
   if (!access.loading && access.mustChangePassword) return <InnerPageShell className="booklets-page"><section className="glass-card standalone-form"><span className="mini-logo">MF</span><h1>Create your private password first</h1><p>For your account security, choose a new personal password before opening the booklets.</p><Link className="primary-button" href="/student/change-password">Create New Password</Link></section></InnerPageShell>;
   if (!access.loading && access.signedIn && access.grade === null) return <InnerPageShell className="booklets-page"><section className="glass-card standalone-form"><span className="mini-logo">MF</span><h1>Choose your primary grade first</h1><p dir="rtl">اختر مرحلتك الدراسية أولًا حتى تظهر لك البوكلتس الخاصة بمرحلتك.</p><Link className="primary-button" href="/student/setup-grade">Choose My Grade · اختيار المرحلة</Link></section></InnerPageShell>;

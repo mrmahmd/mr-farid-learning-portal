@@ -21,9 +21,7 @@ export default function StudentCurriculaPage() {
   const [hasError, setHasError] = useState(false);
   const router = useRouter();
   const access = useStudentAccess();
-  const visibleGrades = access.grade
-    ? [access.grade, ...grades.filter((grade) => grade !== access.grade)]
-    : grades;
+  const visibleGrades = access.accessMode === "grade" && access.grade ? [access.grade] : [];
 
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
@@ -115,6 +113,7 @@ export default function StudentCurriculaPage() {
             <button className="sign-out-button" type="button" onClick={handleSignOut}>Sign Out</button>
           </div>
         </div>
+        {access.accessMode !== "grade" && <p className="student-access-note" dir="rtl">محتوى مرحلتك مغلق حاليًا. لمعرفة تفاصيل الاشتراك تواصل مع مستر فريد عبر واتساب: 00966552019074.</p>}
 
         <div className="student-grade-grid">
           {visibleGrades.map((grade) => {

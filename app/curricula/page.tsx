@@ -44,7 +44,7 @@ export default function CurriculaPage() {
         </div>
 
         <div className="grade-grid">
-          {grades.map((grade) => (
+          {(access.signedIn && access.accessMode === "grade" && access.grade ? [access.grade] : []).map((grade) => (
             <article className={`grade-card${canOpenGrade(grade, access) ? " grade-subscription-open" : " grade-subscription-locked"}`} key={grade}>
               <header>
                 <span className="grade-number">P{grade}</span>
