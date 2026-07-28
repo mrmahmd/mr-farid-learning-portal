@@ -22,7 +22,7 @@ export default function StudentCurriculaPage() {
   const [hasError, setHasError] = useState(false);
   const router = useRouter();
   const access = useStudentAccess();
-  const visibleGrades = access.accessMode === "grade" && access.grade ? [access.grade] : [];
+  const visibleGrades = access.accessMode === "all" ? grades : access.accessMode === "grade" && access.grade ? [access.grade] : [];
 
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
@@ -114,9 +114,9 @@ export default function StudentCurriculaPage() {
             <button className="sign-out-button" type="button" onClick={handleSignOut}>Sign Out</button>
           </div>
         </div>
-        {access.accessMode !== "grade" && <p className="student-access-note" dir="rtl">محتوى مرحلتك مغلق حاليًا. لمعرفة تفاصيل الاشتراك تواصل مع مستر فريد عبر واتساب: 00966552019074.</p>}
+        {access.accessMode !== "grade" && access.accessMode !== "all" && <p className="student-access-note" dir="rtl">محتوى مرحلتك مغلق حاليًا. لمعرفة تفاصيل الاشتراك تواصل مع مستر فريد عبر واتساب: 00966552019074.</p>}
 
-        {access.accessMode !== "grade" && <SubscriptionNotice />}
+        {access.accessMode !== "grade" && access.accessMode !== "all" && <SubscriptionNotice />}
         <div className="student-grade-grid">
           {visibleGrades.map((grade) => {
             const gradeAvailable = curricula.filter((curriculum) => curriculum.grade === grade).some((curriculum) => canOpenCurriculum(curriculum.slug, grade, access));

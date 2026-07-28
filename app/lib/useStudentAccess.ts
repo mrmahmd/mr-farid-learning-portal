@@ -77,7 +77,10 @@ export function useStudentAccess() {
 }
 
 export function canOpenGrade(grade: number, access: StudentAccessState) {
-  return access.signedIn && !access.suspended && access.accessMode === "grade" && access.grade === grade;
+  return access.signedIn && !access.suspended && (
+    access.accessMode === "all" ||
+    (access.accessMode === "grade" && access.grade === grade)
+  );
 }
 
 export function canOpenCurriculum(slug: string, grade: number, access: StudentAccessState) {

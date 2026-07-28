@@ -58,8 +58,8 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
         router.replace("/student/setup-grade");
         return;
       }
-      // A subscription opens exactly the student's assigned primary grade.
-      const curriculumAllowed = accessMode === "grade" && assignedGrade === curriculum.grade;
+      // Stage subscriptions open one grade; the owner test account may open all grades.
+      const curriculumAllowed = accessMode === "all" || (accessMode === "grade" && assignedGrade === curriculum.grade);
       if (!curriculumAllowed) {
         if (isActive) setDeniedReason("This curriculum is locked for your account. Please contact Mr.Farid if you need access.");
         return;

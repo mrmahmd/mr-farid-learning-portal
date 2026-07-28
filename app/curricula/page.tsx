@@ -11,7 +11,8 @@ const grades = [1, 2, 3, 4, 5, 6];
 
 export default function CurriculaPage() {
   const access = useStudentAccess();
-  const hasActiveStage = access.signedIn && access.accessMode === "grade" && Boolean(access.grade);
+  const hasActiveStage = access.signedIn && (access.accessMode === "all" || (access.accessMode === "grade" && Boolean(access.grade)));
+  const visibleGrades = access.accessMode === "all" ? [1, 2, 3, 4, 5, 6] : access.accessMode === "grade" && access.grade ? [access.grade] : [];
   return (
     <InnerPageShell className="content-page curricula-page">
       <section className="curricula-card">
@@ -46,7 +47,7 @@ export default function CurriculaPage() {
         </div>
 
         <div className="grade-grid stage-centered-grid">
-          {(access.signedIn && access.accessMode === "grade" && access.grade ? [access.grade] : []).map((grade) => (
+          {visibleGrades.map((grade) => (
             <article className={`grade-card${canOpenGrade(grade, access) ? " grade-subscription-open" : " grade-subscription-locked"}`} key={grade}>
               <header>
                 <span className="grade-number">P{grade}</span>

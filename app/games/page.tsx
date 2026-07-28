@@ -55,11 +55,11 @@ export default function GamesPage() {
     );
   }
 
-  const visibleGrades = access.accessMode === "grade" && access.grade ? [access.grade] : [];
+  const visibleGrades = access.accessMode === "all" ? grades : access.accessMode === "grade" && access.grade ? [access.grade] : [];
   return (
     <InnerPageShell className="content-page games-page">
       <section className="games-card">
-        {access.accessMode !== "grade" && <SubscriptionNotice showSignIn={!access.signedIn} />}
+        {access.accessMode !== "grade" && access.accessMode !== "all" && <SubscriptionNotice showSignIn={!access.signedIn} />}
         <div className="games-heading">
           <p className="eyebrow"><span /> Learn, play, remember</p>
           <h1>Educational Games</h1>
