@@ -54,9 +54,9 @@ export default function AssessmentBooksPage() {
           <p className="eyebrow"><span /> Assessment resources</p>
           <h1>Assessment Books</h1>
             <p>Explore interactive assessment workbooks organized by primary grade. Books open according to the learning stage and access assigned to the student account.</p>
-            {!access.allowed && <SubscriptionNotice showSignIn={!access.session} />}
             {!access.session && <p className="assessment-access-note">Sign in to open the assessment book assigned to your stage.</p>}
         </div>
+        {!access.allowed && <SubscriptionNotice showSignIn={!access.session} />}
         <div className="grade-grid">
           {(access.allowed && access.grade ? [access.grade] : []).map((grade) => {
             const available = grade === 1 || grade === 2 || grade === 4;
