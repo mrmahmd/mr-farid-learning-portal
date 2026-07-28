@@ -8,12 +8,17 @@ export function SubscriptionNotice({ showSignIn: _showSignIn = false }: { showSi
   const [language, setLanguage] = useState<"ar" | "en">("en");
 
   useEffect(() => {
-    const syncLanguage = () => setLanguage(localStorage.getItem("mrfarid-language") === "ar" ? "ar" : "en");
+    const currentLanguage = () => document.documentElement.lang === "ar" || localStorage.getItem("mrfarid-language") === "ar" ? "ar" : "en";
+    const syncLanguage = () => setLanguage(currentLanguage());
+    const handleLanguageChange = (event: Event) => {
+      const nextLanguage = (event as CustomEvent<"ar" | "en">).detail;
+      setLanguage(nextLanguage === "ar" ? "ar" : "en");
+    };
     syncLanguage();
-    window.addEventListener("mrfarid-language-change", syncLanguage);
+    window.addEventListener("mrfarid-language-change", handleLanguageChange);
     window.addEventListener("storage", syncLanguage);
     return () => {
-      window.removeEventListener("mrfarid-language-change", syncLanguage);
+      window.removeEventListener("mrfarid-language-change", handleLanguageChange);
       window.removeEventListener("storage", syncLanguage);
     };
   }, []);
