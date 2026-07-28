@@ -78,16 +78,12 @@ export function useStudentAccess() {
 
 export function canOpenGrade(grade: number, access: StudentAccessState) {
   if (!access.signedIn || access.suspended) return false;
-  if (access.accessMode === "all") return true;
-  if (access.accessMode === "none") return false;
-  if (access.accessMode === "grade" && access.grade === grade) return true;
-  return access.allowedCurricula.some((slug) => slug.endsWith(`primary-${grade}`));
+  // Subscription access is explicit. Grade assignment alone must not unlock content.
+  return access.accessMode === "all";
 }
 
 export function canOpenCurriculum(slug: string, grade: number, access: StudentAccessState) {
   if (!access.signedIn || access.suspended) return false;
-  if (access.accessMode === "all") return true;
-  if (access.accessMode === "none") return false;
-  if (access.accessMode === "grade" && access.grade === grade) return true;
-  return access.allowedCurricula.includes(slug);
+  // Subscription access is explicit. Grade/custom assignment alone must not unlock content.
+  return access.accessMode === "all";
 }
