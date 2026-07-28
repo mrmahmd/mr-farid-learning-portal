@@ -312,3 +312,17 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
   .numbered-step>span{width:34px;height:34px}
   .detailed-lesson-layout .content-card p,.detailed-lesson-layout li{font-size:1rem;line-height:1.76}
 }
+
+/* Expanded drag-and-drop assessment */
+.drag-instructions{margin:0 0 14px;padding:12px 14px;border-radius:14px;background:#eef5ff;color:#37517d;font-weight:800;line-height:1.55}
+.drag-source{display:flex;flex-wrap:wrap;gap:10px;min-height:70px;padding:14px;border:2px dashed #b8c8e8;border-radius:18px;background:#f8fbff;margin-bottom:16px}
+.drag-card{border:2px solid #cbd7f0;background:#fff;color:#153366;border-radius:13px;padding:10px 14px;font-weight:900;box-shadow:0 7px 17px rgba(28,58,119,.10);transition:.18s transform,.18s border-color,.18s background;cursor:grab}
+.drag-card:hover,.drag-card.selected{transform:translateY(-2px);border-color:#f3a71d;background:#fff9e8}
+.drag-card:active{cursor:grabbing}.drag-card.placed{opacity:.35}.placed-card{cursor:pointer;background:#eaf7ff;border-color:#7dc5ec;color:#113d64;display:inline-flex;gap:8px;align-items:center}
+.drag-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:16px 0}
+.drag-bucket{min-height:140px;border:2px dashed #9db1d8;border-radius:18px;background:linear-gradient(180deg,#fff,#f5f8ff);padding:13px;transition:.18s border-color,.18s background,.18s transform}
+.drag-bucket.drag-over{border-color:#24a56a;background:#effcf5;transform:scale(1.015)}
+.drag-bucket h3{margin:0 0 11px;color:#173d75;font-size:1rem}
+.drag-bucket-items{display:flex;flex-wrap:wrap;align-content:flex-start;gap:8px;min-height:76px}
+.drag-empty{color:#8794ad;font-size:.9rem;font-weight:800;padding:10px 4px}
+@media(max-width:640px){.drag-groups{grid-template-columns:1fr}.drag-card{width:100%;text-align:left}.placed-card{width:auto}}

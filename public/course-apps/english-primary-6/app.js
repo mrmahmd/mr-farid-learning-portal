@@ -5,11 +5,12 @@
   const params = new URLSearchParams(location.search);
   const student = { id: params.get('studentId') || 'guest', name: params.get('studentName') || 'Student', className: 'Primary 6' };
   let storageKey = `mrfarid-primary6-term1:${student.id}`;
-  const TYPE_ORDER = ['fill', 'mcq', 'correction', 'reorder', 'order-sentences', 'match', 'truefalse', 'listening-mcq'];
+  const TYPE_ORDER = ['fill', 'mcq', 'correction', 'drag-drop', 'reorder', 'order-sentences', 'match', 'truefalse', 'listening-mcq'];
   const TYPE_LABELS = {
     fill: 'Complete',
     mcq: 'Choose',
     correction: 'Correct',
+    'drag-drop': 'Drag and Drop',
     reorder: 'Order Words',
     'order-sentences': 'Order Sentences',
     match: 'Match',
@@ -47,7 +48,7 @@
 
   function loadState() {
     try {
-    const saved = JSON.parse(localStorage.getItem(storageKey));
+      const saved = JSON.parse(localStorage.getItem(storageKey));
       return Object.assign(defaultState(), saved || {});
     } catch {
       return defaultState();
@@ -60,9 +61,12 @@
       const unit = activity.unitId ? findUnit(activity.unitId) : null;
       const lesson = activity.lessonId ? findLesson(activity.lessonId)?.lesson : null;
       state.portalLastActivity = {
-        courseId: 'english-primary-6-first-term', courseTitle: 'English Primary 6 - First Term',
+        courseId: 'english-primary-6-first-term',
+        courseTitle: 'English Primary 6 - First Term',
         detail: `${unit ? `Unit ${unit.number}: ${unit.title}` : 'English Primary 6'}${lesson ? ` - ${lesson.title}` : ''}${Number.isInteger(activity.questionIndex) ? ` - Question ${activity.questionIndex + 1}` : ''}`,
-        route: activity.name, ...activity, updatedAt: new Date().toISOString()
+        route: activity.name,
+        ...activity,
+        updatedAt: new Date().toISOString()
       };
     }
     localStorage.setItem(storageKey, JSON.stringify(state));
@@ -702,6 +706,14 @@
     if (question.type === 'fill' || question.type === 'correction') {
       return `<input id="textAnswer" class="answer-input" type="text" autocomplete="off" spellcheck="false" placeholder="Type your answer" />${question.hint ? `<p style="color:var(--muted);font-size:.86rem">Hint: ${escapeHtml(question.hint)}</p>` : ''}`;
     }
+    if (question.type === 'drag-drop') {
+      const items = question.groups.flatMap((group, groupIndex) => group.items.map((text) => ({ text, groupIndex })));
+      const shuffled = deterministicShuffle(items);
+      return `<div class="drag-instructions">Drag a card to a group. On touch screens, tap a card and then tap its group.</div>
+        <div class="drag-source" id="dragSource">${shuffled.map((item, index) => `<button class="drag-card" draggable="true" data-drag-item="${index}" data-text="${escapeHtml(item.text)}" data-expected="${item.groupIndex}" type="button">${escapeHtml(item.text)}</button>`).join('')}</div>
+        <div class="drag-groups">${question.groups.map((group, groupIndex) => `<section class="drag-bucket" data-drag-group="${groupIndex}"><h3>${escapeHtml(group.name)}</h3><div class="drag-bucket-items" data-drag-group-items="${groupIndex}"></div></section>`).join('')}</div>
+        <div id="dragStatus" class="match-status">0 of ${items.length} cards placed</div><button id="resetDragBtn" class="secondary-btn" type="button">Reset Cards</button>`;
+    }
     if (question.type === 'reorder' || question.type === 'order-sentences') {
       const tokens = question.type === 'reorder' ? question.words : question.sentences;
       const shuffled = deterministicShuffle(tokens);
@@ -736,6 +748,63 @@
         });
       });
       if (question.type === 'listening-mcq') el('listenQuestionBtn').addEventListener('click', () => speak(question.audio));
+    }
+    if (question.type === 'drag-drop') {
+      const flatItems = question.groups.flatMap((group, groupIndex) => group.items.map((text) => ({ text, groupIndex })));
+      const itemByText = Object.fromEntries(flatItems.map((item) => [item.text, item]));
+      currentPractice.dragSelections = {};
+      currentPractice.selectedDragItem = null;
+      const refreshDrag = () => {
+        document.querySelectorAll('[data-drag-item]').forEach((button) => {
+          const text = button.dataset.text;
+          button.classList.toggle('selected', currentPractice.selectedDragItem === text);
+          button.classList.toggle('placed', currentPractice.dragSelections[text] != null);
+          button.style.display = currentPractice.dragSelections[text] != null ? 'none' : '';
+        });
+        document.querySelectorAll('[data-drag-group-items]').forEach((host) => {
+          const groupIndex = Number(host.dataset.dragGroupItems);
+          const placed = Object.entries(currentPractice.dragSelections).filter(([, group]) => Number(group) === groupIndex);
+          host.innerHTML = placed.map(([text]) => `<button class="drag-card placed-card" data-remove-drag="${escapeHtml(text)}" type="button">${escapeHtml(text)} <span aria-hidden="true">×</span></button>`).join('') || '<span class="drag-empty">Drop cards here</span>';
+        });
+        document.querySelectorAll('[data-remove-drag]').forEach((button) => button.addEventListener('click', () => {
+          delete currentPractice.dragSelections[button.dataset.removeDrag];
+          refreshDrag();
+        }));
+        el('dragStatus').textContent = `${Object.keys(currentPractice.dragSelections).length} of ${flatItems.length} cards placed`;
+      };
+      const assign = (text, groupIndex) => {
+        if (!itemByText[text]) return;
+        currentPractice.dragSelections[text] = Number(groupIndex);
+        currentPractice.selectedDragItem = null;
+        refreshDrag();
+      };
+      document.querySelectorAll('[data-drag-item]').forEach((button) => {
+        button.addEventListener('click', () => {
+          currentPractice.selectedDragItem = currentPractice.selectedDragItem === button.dataset.text ? null : button.dataset.text;
+          refreshDrag();
+        });
+        button.addEventListener('dragstart', (event) => {
+          event.dataTransfer.setData('text/plain', button.dataset.text);
+          event.dataTransfer.effectAllowed = 'move';
+        });
+      });
+      document.querySelectorAll('[data-drag-group]').forEach((bucket) => {
+        bucket.addEventListener('click', () => {
+          if (currentPractice.selectedDragItem) assign(currentPractice.selectedDragItem, bucket.dataset.dragGroup);
+        });
+        bucket.addEventListener('dragover', (event) => { event.preventDefault(); bucket.classList.add('drag-over'); });
+        bucket.addEventListener('dragleave', () => bucket.classList.remove('drag-over'));
+        bucket.addEventListener('drop', (event) => {
+          event.preventDefault(); bucket.classList.remove('drag-over');
+          assign(event.dataTransfer.getData('text/plain'), bucket.dataset.dragGroup);
+        });
+      });
+      el('resetDragBtn').addEventListener('click', () => {
+        currentPractice.dragSelections = {};
+        currentPractice.selectedDragItem = null;
+        refreshDrag();
+      });
+      refreshDrag();
     }
     if (question.type === 'reorder' || question.type === 'order-sentences') {
       const updateOrder = () => {
@@ -820,17 +889,22 @@
     if (q.type === 'mcq' || q.type === 'listening-mcq') answer = currentPractice.selectedOption || '';
     else if (q.type === 'truefalse') answer = currentPractice.selectedOption === 'true';
     else if (q.type === 'fill' || q.type === 'correction') answer = el('textAnswer').value;
+    else if (q.type === 'drag-drop') answer = currentPractice.dragSelections;
     else if (q.type === 'reorder' || q.type === 'order-sentences') answer = currentPractice.selections;
     else if (q.type === 'match') answer = currentPractice.matchSelections;
 
     const emptyMatch = q.type === 'match' && Object.keys(answer || {}).length !== q.pairs.length;
-    if ((q.type !== 'truefalse' && q.type !== 'match' && !answer?.length) || (q.type === 'truefalse' && currentPractice.selectedOption == null) || emptyMatch) {
+    const dragTotal = q.type === 'drag-drop' ? q.groups.reduce((sum, group) => sum + group.items.length, 0) : 0;
+    const emptyDrag = q.type === 'drag-drop' && Object.keys(answer || {}).length !== dragTotal;
+    if ((q.type !== 'truefalse' && q.type !== 'match' && q.type !== 'drag-drop' && !answer?.length) || (q.type === 'truefalse' && currentPractice.selectedOption == null) || emptyMatch || emptyDrag) {
       showToast('Choose or write an answer first.');
       return;
     }
 
     const correct = (q.type === 'reorder' || q.type === 'order-sentences')
       ? JSON.stringify(answer.map(normalize)) === JSON.stringify(q.answer.map(normalize))
+      : q.type === 'drag-drop'
+        ? q.groups.every((group, groupIndex) => group.items.every((text) => Number(answer[text]) === groupIndex))
       : q.type === 'match'
         ? q.pairs.every((_, index) => Number(answer[index]) === index)
       : q.type === 'truefalse'
@@ -842,6 +916,7 @@
   }
 
   function displayAnswer(question) {
+    if (question.type === 'drag-drop') return question.groups.map((group) => `${group.name}: ${group.items.join(', ')}`).join(' | ');
     if (question.type === 'match') return question.pairs.map((pair) => `${pair[0]} → ${pair[1]}`).join(' | ');
     if (Array.isArray(question.answer)) return question.answer.join(question.type === 'order-sentences' ? ' → ' : ' ');
     if (typeof question.answer === 'boolean') return question.answer ? 'True' : 'False';

@@ -1,0 +1,610 @@
+{
+  "generatedAt": "2026-07-27T08:59:41.900Z",
+  "course": "English Primary 6",
+  "units": [
+    {
+      "id": "u1",
+      "title": "Amazing Places in Egypt",
+      "bankCount": 50,
+      "bankTypes": {
+        "mcq": 17,
+        "fill": 4,
+        "match": 3,
+        "reorder": 5,
+        "truefalse": 2,
+        "order-sentences": 4,
+        "listening-mcq": 2,
+        "drag-drop": 5,
+        "correction": 8
+      },
+      "lessons": [
+        {
+          "id": "u1l1",
+          "title": "A Day in Egypt",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u1l2",
+          "title": "Ras Mohamed National Park",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u1l3",
+          "title": "Around Egypt",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u1l4",
+          "title": "A Day in My School",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u1l5",
+          "title": "Think and Create",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "u2",
+      "title": "Our Nature",
+      "bankCount": 50,
+      "bankTypes": {
+        "mcq": 17,
+        "fill": 4,
+        "match": 3,
+        "reorder": 5,
+        "truefalse": 2,
+        "order-sentences": 4,
+        "listening-mcq": 2,
+        "drag-drop": 5,
+        "correction": 8
+      },
+      "lessons": [
+        {
+          "id": "u2l1",
+          "title": "Caring for Plants",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u2l2",
+          "title": "How's the Weather in Your City?",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u2l3",
+          "title": "The Wonderful Nile River",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u2l4",
+          "title": "Unforgettable Trip to Wadi El Rayan",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u2l5",
+          "title": "Think and Create",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "u3",
+      "title": "Community Builders",
+      "bankCount": 50,
+      "bankTypes": {
+        "mcq": 17,
+        "fill": 4,
+        "match": 3,
+        "reorder": 5,
+        "truefalse": 2,
+        "order-sentences": 4,
+        "listening-mcq": 2,
+        "drag-drop": 5,
+        "correction": 8
+      },
+      "lessons": [
+        {
+          "id": "u3l1",
+          "title": "Jobs That Help the Community",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u3l2",
+          "title": "Let's Help Our Community",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u3l3",
+          "title": "The Proud Rose",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u3l4",
+          "title": "A Biography of an Egyptian Hero",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u3l5",
+          "title": "Think and Create",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "u4",
+      "title": "Resources Around Us",
+      "bankCount": 50,
+      "bankTypes": {
+        "mcq": 17,
+        "fill": 4,
+        "match": 3,
+        "reorder": 5,
+        "truefalse": 2,
+        "order-sentences": 4,
+        "listening-mcq": 2,
+        "drag-drop": 5,
+        "correction": 8
+      },
+      "lessons": [
+        {
+          "id": "u4l1",
+          "title": "Egypt: Past and Present",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u4l2",
+          "title": "Let's Use Energy Wisely!",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u4l3",
+          "title": "Gifts from Under the Ground",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u4l4",
+          "title": "Man-Made Resources",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u4l5",
+          "title": "Think and Create: The High Dam",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "u5",
+      "title": "Made in Egypt",
+      "bankCount": 50,
+      "bankTypes": {
+        "mcq": 17,
+        "fill": 4,
+        "match": 3,
+        "reorder": 5,
+        "truefalse": 2,
+        "order-sentences": 4,
+        "listening-mcq": 2,
+        "drag-drop": 5,
+        "correction": 8
+      },
+      "lessons": [
+        {
+          "id": "u5l1",
+          "title": "A Trip Through Time",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u5l2",
+          "title": "A Dream Comes True",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u5l3",
+          "title": "The Bundle of Sticks",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u5l4",
+          "title": "Egypt Goes Green",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u5l5",
+          "title": "Think and Create",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "u6",
+      "title": "The Water Savers",
+      "bankCount": 50,
+      "bankTypes": {
+        "mcq": 17,
+        "fill": 4,
+        "match": 3,
+        "reorder": 5,
+        "truefalse": 2,
+        "order-sentences": 4,
+        "listening-mcq": 2,
+        "drag-drop": 5,
+        "correction": 8
+      },
+      "lessons": [
+        {
+          "id": "u6l1",
+          "title": "Meet the Water Savers",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u6l2",
+          "title": "A Problem at School",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u6l3",
+          "title": "The Plan",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u6l4",
+          "title": "Action Day",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        },
+        {
+          "id": "u6l5",
+          "title": "A School That Saves Water",
+          "count": 30,
+          "types": {
+            "mcq": 8,
+            "fill": 5,
+            "correction": 4,
+            "reorder": 4,
+            "order-sentences": 2,
+            "drag-drop": 2,
+            "match": 2,
+            "truefalse": 2,
+            "listening-mcq": 1
+          }
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "lessons": 30,
+    "lessonQuestions": 900,
+    "unitBankQuestions": 300,
+    "allQuestions": 1200
+  },
+  "checks": {
+    "syntax": true,
+    "lessonCounts": true,
+    "bankCounts": true,
+    "correctionHighlight": true,
+    "correctionSingleWord": true,
+    "dragGroups": true,
+    "duplicatePrompts": true
+  },
+  "issues": []
+}

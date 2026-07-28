@@ -1,7 +1,7 @@
-const CACHE = 'english-primary-6-v5-cloud-race-fix';
+const CACHE = 'english-primary-6-v4-precision-question-bank';
 const ASSETS = [
-  './', './index.html', './styles.css', './data.js', './banks.js', './app.js', './manifest.json',
-  './assets/favicon.svg', './portal-progress.js', './assets/covers/main-cover.png',
+  './', './index.html', './styles.css', './data.js', './banks.js', './question-upgrade.js', './app.js', './manifest.json',
+  './assets/favicon.svg', './assets/covers/main-cover.png',
   './assets/covers/unit-1.png', './assets/covers/unit-2.png', './assets/covers/unit-3.png',
   './assets/covers/unit-4.png', './assets/covers/unit-5.png', './assets/covers/unit-6.png'
 ];
