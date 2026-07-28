@@ -1829,6 +1829,45 @@ body { font-size: 17px; }
 .student-access-drawer .access-editor-actions button { padding: 13px 18px; font-size: 13px; }
 @media (max-width: 850px) { .student-access-drawer { right: 14px; left: 14px; top: 14px; bottom: 14px; width: auto; } }
 @media (max-width: 560px) { .student-access-drawer { padding: 20px 16px; border-radius: 20px; }.student-access-drawer .access-presets,.student-access-drawer .curriculum-access-grid { grid-template-columns: 1fr; } }
+
+/* The administrator console stays English and left-to-right in every portal language. */
+body.portal-arabic .admin-page,
+body.portal-arabic .admin-page * {
+  direction: ltr !important;
+  text-align: left !important;
+  font-family: Arial, "Segoe UI", sans-serif !important;
+}
+body.portal-arabic .admin-page .admin-sidebar {
+  border-left: 0;
+  border-right: 1px solid rgba(65,110,180,.14);
+}
+body.portal-arabic .admin-page .student-table-head,
+body.portal-arabic .admin-page .student-table-row {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+/* Access opens as a true modal in the current viewport, not at the top of the page. */
+.access-drawer-backdrop {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.student-access-drawer {
+  position: relative;
+  top: auto;
+  right: auto;
+  bottom: auto;
+  left: auto;
+  width: min(620px, 100%);
+  max-height: calc(100dvh - 48px);
+}
+@media (max-width: 850px) {
+  .student-access-drawer {
+    inset: auto;
+    width: min(620px, 100%);
+  }
+}
 .password-setup-page { min-height:100vh; display:grid; place-items:center; padding:36px 18px 70px; }
 .password-setup-card { width:min(100%,620px); padding:clamp(28px,5vw,48px); border:1px solid rgba(255,255,255,.88); border-radius:30px; background:rgba(255,255,255,.82); box-shadow:0 24px 60px rgba(45,85,140,.16); backdrop-filter:blur(22px) saturate(145%); }
 .password-setup-card > .mini-logo { margin-bottom:18px; }.password-setup-card h1 { margin:12px 0 10px; color:var(--blue-deep); font-size:clamp(32px,6vw,50px); line-height:1.08; font-weight:950; }.password-setup-lead { color:var(--ink-soft); font-size:17px; font-weight:700; line-height:1.65; }

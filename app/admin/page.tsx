@@ -84,6 +84,13 @@ export default function AdminDashboardPage() {
     if (authState === "allowed") void loadStudents();
   }, [authState, loadStudents]);
 
+  useEffect(() => {
+    if (!editingStudentId) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = previousOverflow; };
+  }, [editingStudentId]);
+
   const visibleStudents = useMemo(
     () => students.filter((student) => `${student.name} ${student.username}`.toLowerCase().includes(query.toLowerCase())),
     [students, query],
