@@ -27,7 +27,7 @@ export default function BookletsPage() {
 
   return <InnerPageShell className="booklets-page"><BookletAccessGate><section className="booklets-card">
     <header className="booklets-heading"><p className="eyebrow"><span /> Study resources</p><h1>Booklets &amp; Explanations</h1><p>Choose a primary grade, then find the English and Connect Plus explanations and booklets prepared for that level.</p></header>
-    <SubscriptionNotice showSignIn={false} />
+    {access.accessMode !== "grade" && <SubscriptionNotice showSignIn={false} />}
     <div className="booklets-grid">{visibleGrades.map((grade) => {
       const gradeAvailable = canOpenGrade(grade, access);
       const englishAvailable = canOpenCurriculum(`english-primary-${grade}`, grade, access);

@@ -11,6 +11,7 @@ const grades = [1, 2, 3, 4, 5, 6];
 
 export default function CurriculaPage() {
   const access = useStudentAccess();
+  const hasActiveStage = access.signedIn && access.accessMode === "grade" && Boolean(access.grade);
   return (
     <InnerPageShell className="content-page curricula-page">
       <section className="curricula-card">
@@ -26,7 +27,7 @@ export default function CurriculaPage() {
           </p>
         </div>
 
-        <aside className="curricula-access-notice" aria-label="Account required to open curricula">
+        {!hasActiveStage && <aside className="curricula-access-notice" aria-label="Account required to open curricula">
           <div className="curricula-access-icon" aria-hidden="true">🔒</div>
           <div className="curricula-access-copy">
             <strong>Sign in or create an account to open the curricula</strong>
@@ -36,15 +37,15 @@ export default function CurriculaPage() {
             <Link className="curricula-signin-link" href="/login">Sign In</Link>
             <Link className="curricula-create-link" href="/register">Create Account</Link>
           </div>
-        </aside>
-        <SubscriptionNotice />
+        </aside>}
+        {!hasActiveStage && <SubscriptionNotice />}
         <div className="subscription-banner" dir="rtl" aria-hidden="true">
           <span className="subscription-banner-lock" aria-hidden="true">🔒</span>
           <div><strong>هذا المحتوى متاح للمشتركين فقط</strong><span>لمعرفة طريقة وتفاصيل الاشتراك تواصل معي عبر واتساب: 00966552019074</span></div>
           <a href="https://wa.me/966552019074" target="_blank" rel="noreferrer" aria-label="التواصل عبر واتساب">واتساب ↗</a>
         </div>
 
-        <div className="grade-grid">
+        <div className="grade-grid stage-centered-grid">
           {(access.signedIn && access.accessMode === "grade" && access.grade ? [access.grade] : []).map((grade) => (
             <article className={`grade-card${canOpenGrade(grade, access) ? " grade-subscription-open" : " grade-subscription-locked"}`} key={grade}>
               <header>

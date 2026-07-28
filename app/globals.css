@@ -1117,6 +1117,7 @@ input::placeholder { color: #9aacc0; }
 @media(max-width:700px){.subscription-notice{grid-template-columns:52px minmax(0,1fr);padding:18px;gap:13px;border-radius:22px}.subscription-notice-icon{width:52px;height:52px;border-radius:17px;font-size:22px}.subscription-notice-copy strong{font-size:21px}.subscription-notice-copy span{font-size:14px}.subscription-notice-copy b{font-size:15px}.subscription-whatsapp{grid-column:1/-1;width:100%;min-height:50px;font-size:15px}}
 @media(max-width:700px){.subscription-banner{align-items:flex-start;flex-wrap:wrap;padding:14px}.subscription-banner div{min-width:calc(100% - 58px)}.subscription-banner a{margin-right:56px}}
 .grade-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.stage-centered-grid:has(.grade-card:only-child) { grid-template-columns: minmax(320px, 470px); justify-content: center; }
 .grade-card { min-height: 250px; padding: 14px; border: 1px solid var(--line); border-radius: 23px; background: rgba(249, 253, 255, 0.86); box-shadow: 0 10px 25px rgba(52, 89, 132, 0.07); transition: 0.22s ease; }
 .grade-card:nth-child(3n + 1) { background: linear-gradient(145deg, #f3f9ff, #ffffff); }
 .grade-card:nth-child(3n + 2) { background: linear-gradient(145deg, #f0fff9, #ffffff); }

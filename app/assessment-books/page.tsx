@@ -54,7 +54,7 @@ export default function AssessmentBooksPage() {
           <p className="eyebrow"><span /> Assessment resources</p>
           <h1>Assessment Books</h1>
             <p>Explore interactive assessment workbooks organized by primary grade. Books open according to the learning stage and access assigned to the student account.</p>
-            <SubscriptionNotice showSignIn={!access.session} />
+            {!access.allowed && <SubscriptionNotice showSignIn={!access.session} />}
             {!access.session && <p className="assessment-access-note">Sign in to open the assessment book assigned to your stage.</p>}
         </div>
         <div className="grade-grid">

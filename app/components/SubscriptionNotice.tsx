@@ -1,6 +1,6 @@
 const WHATSAPP_URL = "https://wa.me/966552019074";
 
-export function SubscriptionNotice() {
+export function SubscriptionNotice({ showSignIn: _showSignIn = false }: { showSignIn?: boolean }) {
   return (
     <aside className="subscription-notice" dir="rtl" data-no-translate aria-label="محتوى المشتركين فقط">
       <div className="subscription-notice-icon" aria-hidden="true">🔒</div>
