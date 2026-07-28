@@ -77,13 +77,9 @@ export function useStudentAccess() {
 }
 
 export function canOpenGrade(grade: number, access: StudentAccessState) {
-  if (!access.signedIn || access.suspended) return false;
-  // Subscription access is explicit. Grade assignment alone must not unlock content.
-  return access.accessMode === "all";
+  return false;
 }
 
 export function canOpenCurriculum(slug: string, grade: number, access: StudentAccessState) {
-  if (!access.signedIn || access.suspended) return false;
-  // Subscription access is explicit. Grade/custom assignment alone must not unlock content.
-  return access.accessMode === "all";
+  return false;
 }

@@ -28,7 +28,7 @@ export default function AssessmentBooksPage() {
         .eq("user_id", sessionData.session.user.id)
         .maybeSingle();
       const curricula = Array.isArray(row?.allowed_curricula) ? row.allowed_curricula.filter((value: unknown): value is string => typeof value === "string") : [];
-      const allowed = Boolean(row && !row.is_suspended && row.booklet_access === true && row.access_mode === "all");
+      const allowed = false;
       if (active) setAccess({ checked: true, session: true, allowed, grade: row?.grade ?? null, mode: row?.access_mode ?? "grade", curricula, userId: sessionData.session.user.id, studentName: sessionData.session.user.user_metadata?.full_name ?? "Star Learner" });
     }
     void loadAccess();
