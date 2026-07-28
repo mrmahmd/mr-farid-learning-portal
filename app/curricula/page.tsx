@@ -37,7 +37,8 @@ export default function CurriculaPage() {
             <Link className="curricula-create-link" href="/register">Create Account</Link>
           </div>
         </aside>
-        <div className="subscription-banner" dir="rtl">
+        <SubscriptionNotice />
+        <div className="subscription-banner" dir="rtl" aria-hidden="true">
           <span className="subscription-banner-lock" aria-hidden="true">🔒</span>
           <div><strong>هذا المحتوى متاح للمشتركين فقط</strong><span>لمعرفة طريقة وتفاصيل الاشتراك تواصل معي عبر واتساب: 00966552019074</span></div>
           <a href="https://wa.me/966552019074" target="_blank" rel="noreferrer" aria-label="التواصل عبر واتساب">واتساب ↗</a>

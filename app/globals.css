@@ -1089,21 +1089,21 @@ input::placeholder { color: #9aacc0; }
 .curricula-access-copy { min-width: 0; display: grid; gap: 4px; }
 .curricula-access-copy strong { color: var(--ink); font-size: 16px; line-height: 1.35; }
 .curricula-access-copy span { color: var(--muted); font-size: 12px; line-height: 1.45; }
-.subscription-notice { width: min(940px, 100%); margin: 0 auto 28px; padding: 17px 20px; display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; align-items: center; gap: 15px; border: 1px solid rgba(72, 96, 224, 0.25); border-radius: 22px; background: linear-gradient(120deg, rgba(239,244,255,.97), rgba(255,247,232,.97)); box-shadow: 0 14px 32px rgba(52,76,145,.12); }
-.subscription-banner { width: min(940px,100%); margin: 0 auto 28px; padding: 16px 20px; display: flex; align-items: center; gap: 14px; border: 2px solid rgba(65,111,240,.3); border-radius: 20px; background: linear-gradient(120deg,#f1f5ff,#fff7e9); box-shadow: 0 12px 28px rgba(52,76,145,.14); }
+.subscription-notice { width: min(1040px, 100%); margin: 0 auto 32px; padding: 24px 28px; display: grid; grid-template-columns: 66px minmax(0, 1fr) auto; align-items: center; gap: 20px; border: 2px solid rgba(70,101,235,.35); border-radius: 26px; background: linear-gradient(110deg,rgba(234,244,255,.98),rgba(249,242,255,.98) 54%,rgba(237,255,247,.98)); box-shadow: 0 18px 38px rgba(46,78,164,.16); }
+.subscription-banner { display:none; }
 .subscription-banner-lock { width: 42px; height: 42px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 14px; color: #fff; background: linear-gradient(135deg,#416ff0,#795ce8); font-size: 20px; }
 .subscription-banner div { display: grid; gap: 3px; flex: 1; }
 .subscription-banner strong { color: var(--ink); font-size: 17px; }
 .subscription-banner span:not(.subscription-banner-lock) { color: var(--muted); font-size: 13px; font-weight: 700; }
 .subscription-banner a { padding: 10px 14px; border-radius: 11px; color: #fff; background: #16b968; font-size: 12px; font-weight: 900; text-decoration: none; white-space: nowrap; }
-.subscription-notice-icon { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 16px; color: white; background: linear-gradient(135deg,#416ff0,#795ce8); font-size: 21px; }
-.subscription-notice-copy { display: grid; gap: 4px; min-width: 0; }
-.subscription-notice-copy strong { color: var(--ink); font-size: 17px; line-height: 1.35; }
-.subscription-notice-copy span { color: var(--muted); font-size: 13px; line-height: 1.5; font-weight: 700; }
-.subscription-notice-actions { display: flex; gap: 8px; align-items: center; }
-.subscription-notice-actions a { min-height: 40px; padding: 10px 14px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; white-space: nowrap; font-size: 12px; font-weight: 900; }
-.subscription-whatsapp { color: #fff; background: #16b968; box-shadow: 0 8px 18px rgba(22,185,104,.24); }
-.subscription-whatsapp svg { width: 19px; height: 19px; fill: currentColor; }
+.subscription-notice-icon { width:66px;height:66px;display:grid;place-items:center;border-radius:21px;color:#fff;background:linear-gradient(135deg,#416ff0,#795ce8);box-shadow:0 12px 24px rgba(76,80,218,.28);font-size:29px; }
+.subscription-notice-copy { display:grid;gap:6px;min-width:0;text-align:right; }
+.subscription-notice-copy strong { color:#173e91;font-size:clamp(22px,2.2vw,31px);line-height:1.28; }
+.subscription-notice-copy span { color:#425f92;font-size:clamp(15px,1.35vw,18px);line-height:1.65;font-weight:800; }
+.subscription-notice-copy b { color:#18784b;font-size:clamp(16px,1.5vw,19px);font-weight:950;letter-spacing:.2px;direction:ltr;text-align:right; }
+.subscription-whatsapp { min-height:54px;padding:13px 19px;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;gap:8px;color:#fff;background:linear-gradient(135deg,#16c970,#08a95e);box-shadow:0 11px 22px rgba(22,185,104,.28);font-size:15px;font-weight:950;text-decoration:none;white-space:nowrap;transition:transform .2s ease,box-shadow .2s ease; }
+.subscription-whatsapp:hover { transform:translateY(-2px);box-shadow:0 15px 26px rgba(22,185,104,.35); }
+.subscription-whatsapp svg { width:22px;height:22px;fill:currentColor; }
 .subscription-signin { color: #315ed6; background: #fff; border: 1px solid rgba(65,111,240,.22); }
 .curriculum-locked-entry { border: 0; border-radius: 10px; padding: 8px 11px; color: #7d8daa; background: #e7edf8; font: inherit; font-size: 11px; font-weight: 900; cursor: not-allowed; }
 .grade-subscription-locked { opacity: .58; filter: saturate(.45); }
@@ -1114,7 +1114,7 @@ input::placeholder { color: #9aacc0; }
 .curricula-signin-link { color: #4354b8; border: 1px solid rgba(67, 84, 184, 0.2); background: white; }
 .curricula-create-link { color: white; background: linear-gradient(135deg, #3e76f0, #6959e8); box-shadow: 0 8px 18px rgba(63, 89, 217, 0.22); }
 @media(max-width:700px){.curricula-access-notice{grid-template-columns:42px minmax(0,1fr);padding:15px;gap:12px}.curricula-access-icon{width:42px;height:42px;border-radius:14px;font-size:18px}.curricula-access-copy strong{font-size:14px}.curricula-access-copy span{font-size:11px}.curricula-access-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}.curricula-access-actions a{font-size:11px}}
-@media(max-width:700px){.subscription-notice{grid-template-columns:42px minmax(0,1fr);padding:15px;gap:12px}.subscription-notice-icon{width:42px;height:42px;border-radius:14px;font-size:18px}.subscription-notice-copy strong{font-size:14px}.subscription-notice-copy span{font-size:11px}.subscription-notice-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}.subscription-notice-actions a{font-size:11px}}
+@media(max-width:700px){.subscription-notice{grid-template-columns:52px minmax(0,1fr);padding:18px;gap:13px;border-radius:22px}.subscription-notice-icon{width:52px;height:52px;border-radius:17px;font-size:22px}.subscription-notice-copy strong{font-size:21px}.subscription-notice-copy span{font-size:14px}.subscription-notice-copy b{font-size:15px}.subscription-whatsapp{grid-column:1/-1;width:100%;min-height:50px;font-size:15px}}
 @media(max-width:700px){.subscription-banner{align-items:flex-start;flex-wrap:wrap;padding:14px}.subscription-banner div{min-width:calc(100% - 58px)}.subscription-banner a{margin-right:56px}}
 .grade-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .grade-card { min-height: 250px; padding: 14px; border: 1px solid var(--line); border-radius: 23px; background: rgba(249, 253, 255, 0.86); box-shadow: 0 10px 25px rgba(52, 89, 132, 0.07); transition: 0.22s ease; }
@@ -1266,6 +1266,7 @@ input::placeholder { color: #9aacc0; }
 .student-curriculum-copy button { margin-top: 18px; padding: 11px 16px; border: 0; border-radius: 13px; color: white; background: linear-gradient(135deg, #3d7bf2, #5961dc); box-shadow: 0 10px 22px rgba(53, 105, 232, 0.2); font-size: 10px; font-weight: 900; cursor: pointer; }
 .connect-student-card .student-curriculum-copy button { background: linear-gradient(135deg, #32c99e, #22aa80); box-shadow: 0 10px 22px rgba(34, 170, 128, 0.18); }
 .student-access-note { margin: 24px 0 0; color: var(--muted); font-size: 10px; text-align: center; }
+.student-curricula-card > .student-access-note { display: none; }
 .student-access-note a { color: var(--blue); font-weight: 850; }
 .grade-card-active { border-color: var(--sky); }
 .grade-accessible {

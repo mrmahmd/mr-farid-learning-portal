@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { InnerPageShell } from "../../components/InnerPageShell";
 import { CurriculumIcon } from "../../components/CurriculumIcon";
+import { SubscriptionNotice } from "../../components/SubscriptionNotice";
 import { portalAsset } from "../../asset-path";
 import { curricula } from "../../data/curricula";
 import {
@@ -115,6 +116,7 @@ export default function StudentCurriculaPage() {
         </div>
         {access.accessMode !== "grade" && <p className="student-access-note" dir="rtl">محتوى مرحلتك مغلق حاليًا. لمعرفة تفاصيل الاشتراك تواصل مع مستر فريد عبر واتساب: 00966552019074.</p>}
 
+        {access.accessMode !== "grade" && <SubscriptionNotice />}
         <div className="student-grade-grid">
           {visibleGrades.map((grade) => {
             const gradeAvailable = curricula.filter((curriculum) => curriculum.grade === grade).some((curriculum) => canOpenCurriculum(curriculum.slug, grade, access));
