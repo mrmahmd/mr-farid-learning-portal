@@ -10,7 +10,7 @@ import { getSupabaseBrowserClient } from "../lib/supabase";
 const grades = [1, 2, 3, 4, 5, 6];
 
 export default function AssessmentBooksPage() {
-  const [access, setAccess] = useState<{ checked: boolean; session: boolean; allowed: boolean; grade?: number | null; mode?: string; curricula: string[] }>({ checked: false, session: false, allowed: false, curricula: [] });
+  const [access, setAccess] = useState<{ checked: boolean; session: boolean; allowed: boolean; grade?: number | null; mode?: string; curricula: string[]; userId?: string; studentName?: string }>({ checked: false, session: false, allowed: false, curricula: [] });
 
   useEffect(() => {
     let active = true;
@@ -28,7 +28,7 @@ export default function AssessmentBooksPage() {
         .maybeSingle();
       const curricula = Array.isArray(row?.allowed_curricula) ? row.allowed_curricula.filter((value: unknown): value is string => typeof value === "string") : [];
       const allowed = Boolean(row && !row.is_suspended && row.booklet_access !== false && row.access_mode !== "none");
-      if (active) setAccess({ checked: true, session: true, allowed, grade: row?.grade ?? null, mode: row?.access_mode ?? "grade", curricula });
+      if (active) setAccess({ checked: true, session: true, allowed, grade: row?.grade ?? null, mode: row?.access_mode ?? "grade", curricula, userId: sessionData.session.user.id, studentName: sessionData.session.user.user_metadata?.full_name ?? "Star Learner" });
     }
     void loadAccess();
     return () => { active = false; };
@@ -37,6 +37,13 @@ export default function AssessmentBooksPage() {
   const canOpen = (grade: number) => {
     if (!access.checked || !access.session || !access.allowed) return false;
     return access.mode === "all" || access.grade === grade || access.curricula.includes(`english-primary-${grade}`);
+  };
+
+  const bookHref = (grade: number) => {
+    const base = portalAsset(`/assessment-books/english-primary-${grade}/`);
+    if (!access.userId) return base;
+    const query = new URLSearchParams({ studentId: access.userId, studentName: access.studentName ?? "Star Learner", className: `Primary ${grade}` });
+    return `${base}?${query.toString()}`;
   };
 
   return (
@@ -63,7 +70,7 @@ export default function AssessmentBooksPage() {
                     <div className="curriculum-option-content">
                       <strong>English Primary {grade}</strong><small>Interactive assessment workbook</small>
                       <div className="curriculum-terms">
-                        <div className="curriculum-term"><strong>First Term</strong>{open ? <Link className="new-curriculum-entry" href={portalAsset(`/assessment-books/english-primary-${grade}/`)}>Open Book</Link> : available ? <span className="locked-entry">Locked</span> : <span>Coming soon</span>}</div>
+                        <div className="curriculum-term"><strong>First Term</strong>{open ? <Link className="new-curriculum-entry" href={bookHref(grade)}>Open Book</Link> : available ? <span className="locked-entry">Locked</span> : <span>Coming soon</span>}</div>
                         <div className="curriculum-term unavailable"><strong>Second Term</strong><span>Coming soon</span></div>
                       </div>
                     </div>

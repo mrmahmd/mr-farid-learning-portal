@@ -439,14 +439,16 @@ window.PRIMARY1_DATA={UNITS,PAGES};
     name:new URLSearchParams(location.search).get('studentName')||'',
     className:new URLSearchParams(location.search).get('className')||''
   };
-  const KEY='primary1-assessment-interactive-v2';
+  const studentKey=parentStudent.id||parentStudent.name||'guest';
+  const KEY=`primary1-assessment-interactive-v2:${studentKey}`;
+  const LEGACY_KEY='primary1-assessment-interactive-v2';
   const initial={name:parentStudent.name||'Star Learner',className:parentStudent.className||'Primary 1',points:0,stars:0,streak:0,completed:{},lastPage:4,current:{route:'dashboard'},sound:true};
   let state=load();
   let activeUnit=null,activePage=null;
   let audioCtx=null;
 
   function load(){
-    try{return {...initial,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch{return {...initial}}
+    try{const saved=localStorage.getItem(KEY)||(!parentStudent.id&&!parentStudent.name?localStorage.getItem(LEGACY_KEY):'');return {...initial,...JSON.parse(saved||'{}')}}catch{return {...initial}}
   }
   function save(){
     if(state.current?.route==='page'||state.current?.route==='unit') state.portalLastActivity={detail:state.current.route==='page'?`Primary 1 Assessment Book • ${state.current.unit||'Unit'} • Page ${state.current.page||state.lastPage||''}`:`Primary 1 Assessment Book • ${state.current.unit||'Unit'}`,route:state.current.route,page:state.current.page||null,unit:state.current.unit||null};
@@ -518,7 +520,7 @@ window.PRIMARY1_DATA={UNITS,PAGES};
     $('#homeBtn').addEventListener('click',renderDashboard);
     $('#resetBtn').addEventListener('click',()=>{if(confirm('Reset all saved progress for this book?')){localStorage.removeItem(KEY);state={...initial,name:state.name,className:state.className};save();renderDashboard()}});
     $('#certificateBtn').addEventListener('click',renderCertificate);
-    window.Primary1Book={setStudent(student={}){state.name=student.name||state.name;state.className=student.className||state.className;save();updateChrome()},getProgress(){return JSON.parse(JSON.stringify(state))},replaceState(next={}){state={...state,...next,current:{route:'dashboard'}};localStorage.setItem(KEY,JSON.stringify(state));updateChrome();renderDashboard()},mergeState(current={},remote={}){return {...current,...remote}}};
+    window.Primary1Book={setStudent(student={}){state.name=student.name||state.name;state.className=student.className||state.className;save();updateChrome()},getProgress(){return JSON.parse(JSON.stringify(state))},replaceState(next={}){const route=next.current||state.current||{route:'dashboard'};state={...state,...next,current:route};localStorage.setItem(KEY,JSON.stringify(state));updateChrome();if(route.route==='page'&&route.page)renderPage(route.page);else if(route.route==='unit'&&route.unit)renderUnit(route.unit);else if(route.route==='certificate')renderCertificate();else renderDashboard()},mergeState(current={},remote={}){return {...current,...remote,completed:{...(current.completed||{}),...(remote.completed||{})}}}};
     window.addEventListener('message',e=>{if(e.data?.type==='PRIMARY1_SET_STUDENT')window.Primary1Book.setStudent(e.data.student)});
     function enter(continueMode){
       state.name=state.name||'Star Learner';
@@ -530,8 +532,11 @@ window.PRIMARY1_DATA={UNITS,PAGES};
       updateChrome();
       if(continueMode&&state.lastPage&&pageUnlocked(state.lastPage))renderPage(state.lastPage);else renderDashboard();
     }
-    // Always begin on the book welcome/dashboard screen. The saved page is
-    // available through Continue Learning rather than opening automatically.
+    // A browser refresh stays on the exact page; a fresh visit starts at the
+    // book welcome/dashboard screen and uses Continue Learning explicitly.
+    const navType=performance.getEntriesByType?.('navigation')?.[0]?.type;
+    if(navType==='reload' && state.current?.route==='page' && state.current.page) enter(true);
+    else if(navType==='reload' && state.current?.route==='unit' && state.current.unit){ enter(false); renderUnit(state.current.unit); }
   }
 
   function buildSidebar(){
