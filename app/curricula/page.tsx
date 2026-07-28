@@ -5,6 +5,7 @@ import { InnerPageShell } from "../components/InnerPageShell";
 import { CurriculumCover } from "../components/CurriculumCover";
 import { SubscriptionNotice } from "../components/SubscriptionNotice";
 import { canOpenCurriculum, useStudentAccess } from "../lib/useStudentAccess";
+import { canOpenGrade } from "../lib/useStudentAccess";
 
 const grades = [1, 2, 3, 4, 5, 6];
 
@@ -40,7 +41,7 @@ export default function CurriculaPage() {
 
         <div className="grade-grid">
           {grades.map((grade) => (
-            <article className="grade-card" key={grade}>
+            <article className={`grade-card${canOpenGrade(grade, access) ? " grade-subscription-open" : " grade-subscription-locked"}`} key={grade}>
               <header>
                 <span className="grade-number">P{grade}</span>
                 <div>
