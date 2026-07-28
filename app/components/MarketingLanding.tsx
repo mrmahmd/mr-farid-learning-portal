@@ -259,7 +259,7 @@ export function MarketingLanding() {
             </div>
           </div>
         </div>
-        <a className={styles.scrollCue} href="#features">{content.discover}<i /></a>
+        <a className={styles.scrollCue} href="#features"><span>{content.discover}</span><i /></a>
       </section>
 
       <section className={`${styles.intro} ${styles.shell}`} id="features">

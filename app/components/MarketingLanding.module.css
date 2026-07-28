@@ -38,7 +38,7 @@
   min-height: 100svh;
   overflow-x: hidden;
   color: var(--marketing-ink);
-  background: var(--marketing-paper);
+  background: transparent;
   font-family: "Cairo", Tahoma, sans-serif;
 }
 
@@ -82,16 +82,26 @@
 
 .ambient {
   position: fixed;
-  z-index: -2;
+  z-index: 0;
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at 8% 30%, rgba(84, 215, 229, 0.22), transparent 28%),
-    radial-gradient(circle at 92% 62%, rgba(255, 214, 90, 0.22), transparent 24%),
-    linear-gradient(180deg, #f7fbff, #f9fcff 42%, #f3f9ff);
+    linear-gradient(rgba(247, 251, 255, 0.62), rgba(247, 251, 255, 0.72)),
+    url("/hero-learning-world-v2.png") 76% center / cover no-repeat;
+}
+
+.ambient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 8% 30%, rgba(84, 215, 229, 0.16), transparent 28%),
+    radial-gradient(circle at 92% 62%, rgba(255, 214, 90, 0.16), transparent 24%);
 }
 
 .shell {
+  position: relative;
+  z-index: 1;
   width: min(1220px, calc(100% - 42px));
   margin-inline: auto;
 }
@@ -229,9 +239,10 @@
 
 .heroBackground {
   position: absolute;
-  z-index: -1;
+  z-index: 0;
   inset: 0;
-  background: url("/hero-learning-world-v2.png") 76% center / cover no-repeat;
+  pointer-events: none;
+  background: transparent;
 }
 
 .heroBackground::after {
@@ -258,6 +269,8 @@
 }
 
 .heroCopy {
+  position: relative;
+  z-index: 1;
   width: min(760px, 78%);
   margin-inline: auto;
   padding: 36px 0 28px;
@@ -329,7 +342,7 @@
   justify-content: center;
   gap: 10px;
   flex-wrap: wrap;
-  margin-top: 28px;
+  margin: 28px 0 78px;
 }
 
 .trustRow span {
@@ -345,24 +358,51 @@
 
 .scrollCue {
   position: absolute;
-  bottom: 22px;
+  z-index: 3;
+  bottom: 24px;
   left: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #52749a;
+  gap: 7px;
+  color: #fff;
   transform: translateX(-50%);
-  font-size: 12px;
-  font-weight: 700;
+  font-family: "Baloo Bhaijaan 2", "Cairo", sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  white-space: nowrap;
+  animation: marketingCueFloat 2.4s ease-in-out infinite;
+}
+
+.scrollCue span {
+  position: relative;
+  min-width: 205px;
+  padding: 10px 24px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.86);
+  border-radius: 999px;
+  background: linear-gradient(105deg, #3268ee, #7359e8 52%, #e95ba5);
+  box-shadow: 0 14px 30px rgba(59, 83, 207, 0.3);
+  text-align: center;
+}
+
+.scrollCue span::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 22%, rgba(255, 255, 255, 0.62) 48%, transparent 72%);
+  transform: translateX(-130%);
+  animation: marketingCueSweep 3s ease-in-out infinite;
 }
 
 .scrollCue i {
   position: relative;
-  width: 25px;
-  height: 38px;
-  margin-top: 8px;
-  border: 2px solid #7da3cf;
+  width: 27px;
+  height: 40px;
+  border: 2px solid #4f74e9;
   border-radius: 20px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 9px 20px rgba(49, 86, 174, 0.18);
 }
 
 .scrollCue i::after {
@@ -381,6 +421,16 @@
   0% { transform: translate(-50%, 0); opacity: 0; }
   35% { opacity: 1; }
   100% { transform: translate(-50%, 13px); opacity: 0; }
+}
+
+@keyframes marketingCueFloat {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, -6px); }
+}
+
+@keyframes marketingCueSweep {
+  0%, 25% { transform: translateX(-130%); }
+  65%, 100% { transform: translateX(130%); }
 }
 
 .intro {
@@ -749,22 +799,22 @@
   }
 
   .heroBackground {
-    position: relative;
+    position: absolute;
     z-index: 0;
-    height: 410px;
-    background-position: 78% top;
+    inset: 0;
+    height: auto;
   }
 
   .heroBackground::after,
   .arabic .heroBackground::after {
-    background: linear-gradient(180deg, transparent 50%, var(--marketing-paper) 100%);
+    background: linear-gradient(180deg, rgba(247, 251, 255, 0.2), rgba(247, 251, 255, 0.52));
   }
 
   .heroCopy,
   .arabic .heroCopy {
     width: 100%;
     margin: 0;
-    padding: 28px 22px 70px;
+    padding: 130px 22px 70px;
     text-align: center;
   }
 
@@ -778,7 +828,14 @@
   }
 
   .scrollCue {
-    display: none;
+    bottom: 16px;
+    display: flex;
+    font-size: 15px;
+  }
+
+  .scrollCue span {
+    min-width: 175px;
+    padding: 8px 18px;
   }
 
   .stats {
@@ -873,8 +930,10 @@
     display: none;
   }
 
-  .heroBackground {
-    height: 340px;
+  .ambient {
+    background:
+      linear-gradient(rgba(247, 251, 255, 0.64), rgba(247, 251, 255, 0.76)),
+      url("/hero-learning-world-v2.png") 72% center / cover no-repeat;
   }
 
   .hero h1 {
@@ -883,6 +942,10 @@
 
   .heroCopy > p {
     font-size: 16px;
+  }
+
+  .trustRow {
+    margin-bottom: 82px;
   }
 
   .stats {
@@ -941,6 +1004,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .entryLoading span,
+  .scrollCue,
+  .scrollCue span::after,
   .scrollCue i::after {
     animation: none;
   }
