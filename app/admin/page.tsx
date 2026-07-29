@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { getSupabaseBrowserClient, usernameToStudentEmail } from "../lib/supabase";
 import { curricula } from "../data/curricula";
@@ -274,7 +275,7 @@ export default function AdminDashboardPage() {
           <section className="admin-panel">
             <div className="admin-panel-heading"><div><span className="panel-kicker">STUDENT ACCOUNTS</span><h2>Manage students</h2></div><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search name or username" /></div>
             <div className="student-table"><div className="student-table-head"><span>Student</span><span>Status</span><span>Grade / Subscription</span><span>Last activity</span><span>Controls</span></div>{visibleStudents.map((student) => <div className={`student-table-row${editingStudentId === student.id ? " selected" : ""}`} key={student.id}><div className="student-cell"><span className="admin-avatar">{student.name.split(" ").map((part) => part[0]).join("").slice(0, 2)}</span><p><b>{student.name}</b><small>{student.username}</small></p></div><span className={`status-pill ${student.suspended ? "suspended" : "active"}`}>{student.suspended ? "Suspended" : "Active"}</span><span>{student.grade ? `Primary ${student.grade}` : "Grade needs assignment"} · {student.accessMode === "all" ? "Full portal access" : student.accessMode === "custom" ? "Custom access" : student.accessMode === "grade" ? "Stage subscription active" : "Content locked"}</span><span>{student.activity}</span><div className="row-actions"><button type="button" onClick={() => void manageStudent(student, "suspend")}>{student.suspended ? "Activate" : "Suspend"}</button><button type="button" onClick={() => void manageStudent(student, "reset_password")}>Password</button><button className="access-action" type="button" onClick={() => openAccessEditor(student)}>Access</button></div></div>)}</div>
-            {editingStudentId && (() => {
+            {editingStudentId && typeof document !== "undefined" && createPortal((() => {
               const student = students.find((item) => item.id === editingStudentId);
               if (!student) return null;
               return <div className="access-drawer-backdrop" onClick={() => setEditingStudentId(null)}>
@@ -302,7 +303,7 @@ export default function AdminDashboardPage() {
                 <div className="access-editor-actions"><button type="button" onClick={() => setEditingStudentId(null)}>Cancel</button><button className="save" type="button" onClick={() => void saveStudentAccess(student)}>Save Access</button></div>
                 </aside>
               </div>;
-            })()}
+            })(), document.body)}
             {dataMessage && <p>{dataMessage}</p>}
           </section>
         </>}

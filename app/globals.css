@@ -1846,6 +1846,12 @@ body.portal-arabic .admin-page .student-table-row {
   direction: ltr !important;
   text-align: left !important;
 }
+body.portal-arabic .access-drawer-backdrop,
+body.portal-arabic .access-drawer-backdrop * {
+  direction: ltr !important;
+  text-align: left !important;
+  font-family: Arial, "Segoe UI", sans-serif !important;
+}
 
 /* Access opens as a true modal in the current viewport, not at the top of the page. */
 .access-drawer-backdrop {
