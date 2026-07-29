@@ -37,10 +37,13 @@ begin
   insert into public.profiles (id, full_name, username, role)
   values (new.id, student_name, student_username, 'student');
 
-  insert into public.student_access (user_id, grade)
-  values (new.id, student_grade)
+  insert into public.student_access (user_id, grade, access_mode, booklet_access)
+  values (new.id, student_grade, 'sample', false)
   on conflict (user_id) do update
-  set grade = excluded.grade, updated_at = now();
+  set grade = excluded.grade,
+      access_mode = case when public.student_access.grade is null then 'sample' else public.student_access.access_mode end,
+      booklet_access = case when public.student_access.grade is null then false else public.student_access.booklet_access end,
+      updated_at = now();
 
   return new;
 end;

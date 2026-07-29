@@ -7,7 +7,7 @@ const validCurricula = new Set(Array.from({ length: 6 }, (_, index) => {
   const grade = index + 1;
   return [`english-primary-${grade}`, `connect-plus-primary-${grade}`];
 }).flat());
-const validAccessModes = new Set(["grade", "custom", "all", "none"]);
+const validAccessModes = new Set(["sample", "grade", "custom", "all", "none"]);
 
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") return new Response("ok", { headers: cors });

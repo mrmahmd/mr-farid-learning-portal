@@ -12,6 +12,7 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
   const [studentName, setStudentName] = useState("Student");
   const [sessionBridge, setSessionBridge] = useState<{ accessToken: string; refreshToken: string; userId: string } | null>(null);
   const [shouldResume, setShouldResume] = useState(false);
+  const [isSample, setIsSample] = useState(false);
   const [deniedReason, setDeniedReason] = useState("");
   const courseFrame = useRef<HTMLIFrameElement>(null);
   const router = useRouter();
@@ -50,7 +51,7 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
       const assignedGrade = typeof access?.grade === "number" ? access.grade : null;
       const candidateMode = access?.access_mode;
       const accessMode = typeof candidateMode === "string"
-        && ["grade", "custom", "all", "none"].includes(candidateMode)
+        && ["sample", "grade", "custom", "all", "none"].includes(candidateMode)
         ? candidateMode
         : "grade";
       const extraCurricula = Array.isArray(access?.allowed_curricula) ? access.allowed_curricula : [];
@@ -59,7 +60,9 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
         return;
       }
       // Stage subscriptions open one grade; the owner test account may open all grades.
-      const curriculumAllowed = accessMode === "all" || (accessMode === "grade" && assignedGrade === curriculum.grade);
+      const curriculumAllowed = accessMode === "all"
+        || ((accessMode === "grade" || accessMode === "sample") && assignedGrade === curriculum.grade)
+        || (accessMode === "custom" && extraCurricula.includes(curriculum.slug));
       if (!curriculumAllowed) {
         if (isActive) setDeniedReason("This curriculum is locked for your account. Please contact Mr.Farid if you need access.");
         return;
@@ -67,6 +70,7 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
 
       if (isActive) {
         setStudentName(String(data.session.user.user_metadata?.username ?? data.session.user.user_metadata?.full_name ?? "Student"));
+        setIsSample(accessMode === "sample" && assignedGrade === curriculum.grade);
         setSessionBridge({
           accessToken: data.session.access_token,
           refreshToken: data.session.refresh_token,
@@ -137,10 +141,15 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
 
   if (embeddedApp) {
     const cacheVersion = curriculum.slug === "english-primary-1" ? "&v=20260718-6" : curriculum.slug === "english-primary-2" ? "&v=20260728-1" : curriculum.slug === "english-primary-3" ? "&v=20260719-2" : curriculum.slug === "english-primary-4" ? "&v=20260717-12" : curriculum.slug === "english-primary-5" ? "&v=20260726-6" : curriculum.slug === "english-primary-6" ? "&v=20260729-1" : curriculum.slug === "connect-plus-primary-4" ? "&v=20260717-10" : "";
-    const appUrl = `${portalAsset(embeddedApp)}?student=${encodeURIComponent(studentName)}&studentId=${encodeURIComponent(sessionBridge.userId)}${cacheVersion}${shouldResume ? "&resume=1" : ""}`;
+    const appUrl = `${portalAsset(embeddedApp)}?student=${encodeURIComponent(studentName)}&studentId=${encodeURIComponent(sessionBridge.userId)}${cacheVersion}${shouldResume ? "&resume=1" : ""}${isSample ? "&sample=1" : ""}`;
 
     return (
       <section className="integrated-course-shell" aria-label={`${curriculum.title} application`}>
+        {isSample && <div className="course-sample-notice" role="status">
+          <strong>Free sample: Unit 1, Lesson 1</strong>
+          <span>You can explore this lesson. Subscribe to open the full curriculum.</span>
+          <a href="https://wa.me/966552019074" target="_blank" rel="noreferrer">Subscribe on WhatsApp</a>
+        </div>}
         <iframe
           ref={courseFrame}
           className="integrated-course-frame"
@@ -159,6 +168,10 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
             );
             courseFrame.current.contentWindow.postMessage(
               { type: "mrfarid-course-entry", destination: shouldResume ? "resume" : "dashboard" },
+              window.location.origin,
+            );
+            courseFrame.current.contentWindow.postMessage(
+              { type: "mrfarid-course-access", mode: isSample ? "sample" : "full", sample: isSample ? { unit: 1, lesson: 1 } : null },
               window.location.origin,
             );
             courseFrame.current.contentWindow.postMessage(

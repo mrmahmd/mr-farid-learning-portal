@@ -55,7 +55,7 @@ export default function GamesPage() {
     );
   }
 
-  const visibleGrades = access.accessMode === "all" ? grades : access.accessMode === "grade" && access.grade ? [access.grade] : [];
+  const visibleGrades = access.accessMode === "all" ? grades : (access.accessMode === "grade" || access.accessMode === "sample") && access.grade ? [access.grade] : [];
   return (
     <InnerPageShell className="content-page games-page">
       <section className="games-card">
@@ -86,7 +86,7 @@ export default function GamesPage() {
                       <h3>English Primary {grade}</h3>
                       <p>Vocabulary, grammar and lesson games</p>
                       {englishAvailable && englishGames
-                        ? <a className="game-launch" href={portalAsset(englishGames)}>Open English Primary {grade} Games</a>
+                        ? <a className="game-launch" href={`${portalAsset(englishGames)}${access.accessMode === "sample" ? "?sample=1" : ""}`}>{access.accessMode === "sample" ? `Open Primary ${grade} Sample` : `Open English Primary ${grade} Games`}</a>
                         : <button type="button" disabled>{englishAvailable ? "Coming Soon" : "Locked"}</button>}
                     </div>
                   </div>

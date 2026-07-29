@@ -22,7 +22,7 @@ export default function StudentCurriculaPage() {
   const [hasError, setHasError] = useState(false);
   const router = useRouter();
   const access = useStudentAccess();
-  const visibleGrades = access.accessMode === "all" ? grades : access.accessMode === "grade" && access.grade ? [access.grade] : [];
+  const visibleGrades = access.accessMode === "all" ? grades : (access.accessMode === "grade" || access.accessMode === "sample") && access.grade ? [access.grade] : [];
 
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
@@ -144,7 +144,7 @@ export default function StudentCurriculaPage() {
                       </div>
                       <div className="term-entry-options">
                         {canOpenCurriculum(curriculum.slug, grade, access) ? <Link className="term-entry first-term-entry" href={`/courses/${curriculum.slug}`}>
-                          <span>First Term</span><small>Open →</small>
+                          <span>First Term</span><small>{access.accessMode === "sample" ? "Open sample →" : "Open →"}</small>
                         </Link> : <span className="term-entry first-term-entry locked-entry" aria-disabled="true"><span>First Term</span><small>🔒 Locked</small></span>}
                         <span className="term-entry second-term-entry" aria-label="Second Term will be available soon">
                           <span>Second Term</span><small>Coming soon</small>

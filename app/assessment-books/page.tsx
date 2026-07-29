@@ -11,7 +11,7 @@ import { SubscriptionNotice } from "../components/SubscriptionNotice";
 const grades = [1, 2, 3, 4, 5, 6];
 
 export default function AssessmentBooksPage() {
-  const [access, setAccess] = useState<{ checked: boolean; session: boolean; allowed: boolean; grade?: number | null; mode?: string; curricula: string[]; userId?: string; studentName?: string }>({ checked: false, session: false, allowed: false, curricula: [] });
+  const [access, setAccess] = useState<{ checked: boolean; session: boolean; allowed: boolean; sample: boolean; grade?: number | null; mode?: string; curricula: string[]; userId?: string; studentName?: string }>({ checked: false, session: false, allowed: false, sample: false, curricula: [] });
 
   useEffect(() => {
     let active = true;
@@ -19,7 +19,7 @@ export default function AssessmentBooksPage() {
       const supabase = getSupabaseBrowserClient();
       const { data: sessionData } = await supabase.auth.getSession();
       if (!sessionData.session) {
-        if (active) setAccess({ checked: true, session: false, allowed: false, curricula: [] });
+        if (active) setAccess({ checked: true, session: false, allowed: false, sample: false, curricula: [] });
         return;
       }
       const { data: row } = await supabase
@@ -28,22 +28,25 @@ export default function AssessmentBooksPage() {
         .eq("user_id", sessionData.session.user.id)
         .maybeSingle();
       const curricula = Array.isArray(row?.allowed_curricula) ? row.allowed_curricula.filter((value: unknown): value is string => typeof value === "string") : [];
-      const allowed = Boolean(row && !row.is_suspended && row.booklet_access === true && ["grade", "all"].includes(row.access_mode));
-      if (active) setAccess({ checked: true, session: true, allowed, grade: row?.grade ?? null, mode: row?.access_mode ?? "grade", curricula, userId: sessionData.session.user.id, studentName: sessionData.session.user.user_metadata?.full_name ?? "Star Learner" });
+      const mode = typeof row?.access_mode === "string" ? row.access_mode : "none";
+      const sample = Boolean(row && !row.is_suspended && mode === "sample" && row.grade);
+      const allowed = Boolean(row && !row.is_suspended && ["grade", "all"].includes(mode));
+      if (active) setAccess({ checked: true, session: true, allowed, sample, grade: row?.grade ?? null, mode, curricula, userId: sessionData.session.user.id, studentName: sessionData.session.user.user_metadata?.full_name ?? "Star Learner" });
     }
     void loadAccess();
     return () => { active = false; };
   }, []);
 
   const canOpen = (grade: number) => {
-    if (!access.checked || !access.session || !access.allowed) return false;
-    return access.mode === "all" || (access.mode === "grade" && access.grade === grade);
+    if (!access.checked || !access.session) return false;
+    return access.mode === "all" || ((access.mode === "grade" || access.mode === "sample") && access.grade === grade);
   };
 
   const bookHref = (grade: number) => {
     const base = portalAsset(`/assessment-books/english-primary-${grade}/`);
     if (!access.userId) return base;
     const query = new URLSearchParams({ studentId: access.userId, studentName: access.studentName ?? "Star Learner", className: `Primary ${grade}` });
+    if (access.sample && access.grade === grade) query.set("sample", "1");
     return `${base}?${query.toString()}`;
   };
 
@@ -58,7 +61,7 @@ export default function AssessmentBooksPage() {
         </div>
         {!access.allowed && <SubscriptionNotice showSignIn={!access.session} />}
         <div className="grade-grid">
-          {(access.allowed ? (access.mode === "all" ? grades : access.grade ? [access.grade] : []) : []).map((grade) => {
+          {((access.allowed || access.sample) ? (access.mode === "all" ? grades : access.grade ? [access.grade] : []) : []).map((grade) => {
             const available = grade === 1 || grade === 2 || grade === 4;
             const open = available && canOpen(grade);
             const connectAvailable = false;
@@ -72,7 +75,7 @@ export default function AssessmentBooksPage() {
                     <div className="curriculum-option-content">
                       <strong>English Primary {grade}</strong><small>Interactive assessment workbook</small>
                       <div className="curriculum-terms">
-                        <div className="curriculum-term"><strong>First Term</strong>{open ? <Link className="new-curriculum-entry" href={bookHref(grade)}>Open Book</Link> : available ? <span className="locked-entry">Locked</span> : <span>Coming soon</span>}</div>
+                        <div className="curriculum-term"><strong>First Term</strong>{open ? <Link className="new-curriculum-entry" href={bookHref(grade)}>{access.sample ? "Open Sample" : "Open Book"}</Link> : available ? <span className="locked-entry">Locked</span> : <span>Coming soon</span>}</div>
                         <div className="curriculum-term unavailable"><strong>Second Term</strong><span>Coming soon</span></div>
                       </div>
                     </div>

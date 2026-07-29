@@ -11,8 +11,8 @@ const grades = [1, 2, 3, 4, 5, 6];
 
 export default function CurriculaPage() {
   const access = useStudentAccess();
-  const hasActiveStage = access.signedIn && (access.accessMode === "all" || (access.accessMode === "grade" && Boolean(access.grade)));
-  const visibleGrades = access.accessMode === "all" ? [1, 2, 3, 4, 5, 6] : access.accessMode === "grade" && access.grade ? [access.grade] : [];
+  const hasActiveStage = access.signedIn && (access.accessMode === "all" || ((access.accessMode === "grade" || access.accessMode === "sample") && Boolean(access.grade)));
+  const visibleGrades = access.accessMode === "all" ? [1, 2, 3, 4, 5, 6] : (access.accessMode === "grade" || access.accessMode === "sample") && access.grade ? [access.grade] : [];
   return (
     <InnerPageShell className="content-page curricula-page">
       <section className="curricula-card">
@@ -39,7 +39,7 @@ export default function CurriculaPage() {
             <Link className="curricula-create-link" href="/register">Create Account</Link>
           </div>
         </aside>}
-        {!hasActiveStage && <SubscriptionNotice />}
+        {access.accessMode !== "grade" && access.accessMode !== "all" && <SubscriptionNotice />}
         <div className="subscription-banner" dir="rtl" aria-hidden="true">
           <span className="subscription-banner-lock" aria-hidden="true">🔒</span>
           <div><strong>هذا المحتوى متاح للمشتركين فقط</strong><span>لمعرفة طريقة وتفاصيل الاشتراك تواصل معي عبر واتساب: 00966552019074</span></div>

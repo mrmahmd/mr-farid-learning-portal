@@ -8,7 +8,7 @@ export type StudentAccessState = {
   signedIn: boolean;
   suspended: boolean;
   grade: number | null;
-  accessMode: "grade" | "custom" | "all" | "none";
+  accessMode: "sample" | "grade" | "custom" | "all" | "none";
   mustChangePassword: boolean;
   allowedCurricula: string[];
   bookletAccess: boolean;
@@ -22,7 +22,7 @@ const initialState: StudentAccessState = {
   accessMode: "none",
   mustChangePassword: false,
   allowedCurricula: [],
-  bookletAccess: true,
+  bookletAccess: false,
 };
 
 export function useStudentAccess() {
@@ -50,7 +50,7 @@ export function useStudentAccess() {
       if (!active) return;
       const candidateMode = data?.access_mode;
       const accessMode: StudentAccessState["accessMode"] = typeof candidateMode === "string"
-        && ["grade", "custom", "all", "none"].includes(candidateMode)
+        && ["sample", "grade", "custom", "all", "none"].includes(candidateMode)
         ? candidateMode as StudentAccessState["accessMode"]
         : "none";
       setState({
@@ -79,10 +79,20 @@ export function useStudentAccess() {
 export function canOpenGrade(grade: number, access: StudentAccessState) {
   return access.signedIn && !access.suspended && (
     access.accessMode === "all" ||
-    (access.accessMode === "grade" && access.grade === grade)
+    ((access.accessMode === "grade" || access.accessMode === "sample") && access.grade === grade)
   );
 }
 
 export function canOpenCurriculum(slug: string, grade: number, access: StudentAccessState) {
-  return canOpenGrade(grade, access);
+  return canOpenGrade(grade, access)
+    || (access.signedIn && !access.suspended && access.accessMode === "custom" && access.allowedCurricula.includes(slug));
+}
+
+export function isSampleAccess(grade: number, access: StudentAccessState) {
+  return access.signedIn && !access.suspended && access.accessMode === "sample" && access.grade === grade;
+}
+
+export function canDownloadBooklets(access: StudentAccessState) {
+  return access.signedIn && !access.suspended && access.bookletAccess
+    && (access.accessMode === "grade" || access.accessMode === "all");
 }
