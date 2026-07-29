@@ -4,6 +4,7 @@
 const COURSE = window.COURSE;
 const app = document.getElementById('app');
 const studentId = new URLSearchParams(location.search).get('studentId') || 'guest';
+const sampleMode = new URLSearchParams(location.search).get('sample') === '1';
 const STORE = `primary2-complete-progress-v2:${studentId}`;
 const OLD_STORE = `primary2-complete-progress-v1:${studentId}`;
 
@@ -161,11 +162,13 @@ function imageStage(src, alt, className = '') {
 }
 
 function isUnitUnlocked(uid) {
+  if (sampleMode) return Number(uid) === 1;
   if (uid === 1) return true;
   return unit(uid - 1).lessons.every(item => progress.lessons[lessonKey(uid - 1, item.id)]?.completed);
 }
 
 function isLessonUnlocked(uid, lid) {
+  if (sampleMode) return Number(uid) === 1 && Number(lid) === 1;
   if (!isUnitUnlocked(uid)) return false;
   if (lid === 1) return true;
   return Boolean(progress.lessons[lessonKey(uid, lid - 1)]?.completed);
@@ -246,6 +249,10 @@ function home() {
 }
 
 function openUnit(uid) {
+  if (!isUnitUnlocked(uid)) {
+    toast('This unit is available with the full subscription.');
+    return;
+  }
   state.view = 'unit';
   const u = unit(uid);
   const outcomes = Object.entries(u.outcomes).map(([skill, items]) => `
@@ -604,12 +611,20 @@ function startBank(bank, isReview, bankKey, reviewId = null) {
 }
 
 function startChallenge(uid) {
+  if (sampleMode) {
+    toast('The unit challenge is available with the full subscription.');
+    return;
+  }
   state.unitId = Number(uid);
   state.lessonId = 0;
   startBank(unit(uid).challenge, true, `unit-${uid}`, `unit-${uid}`);
 }
 
 function startReview(id) {
+  if (sampleMode) {
+    toast('Book reviews are available with the full subscription.');
+    return;
+  }
   const review = COURSE.reviews.find(item => item.id === id);
   startBank(review.questions, true, id, id);
 }
@@ -875,6 +890,10 @@ function celebrate(title, subtitle, points, emoji) {
 }
 
 function openReviews() {
+  if (sampleMode) {
+    toast('Book reviews are available with the full subscription.');
+    return;
+  }
   const cards = COURSE.reviews.map((review, index) => {
     const record = progress.reviews[review.id];
     return `
