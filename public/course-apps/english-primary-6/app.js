@@ -2,10 +2,11 @@
   'use strict';
 
   const COURSE = window.COURSE_DATA;
+  const APP_VERSION = window.APP_BUILD_VERSION || '2026.07.29.3';
   const params = new URLSearchParams(location.search);
   const student = { id: params.get('studentId') || 'guest', name: params.get('studentName') || 'Student', className: 'Primary 6' };
   let storageKey = `mrfarid-primary6-term1:${student.id}`;
-  const TYPE_ORDER = ['fill', 'mcq', 'correction', 'drag-drop', 'reorder', 'order-sentences', 'match', 'truefalse', 'listening-mcq'];
+  const TYPE_ORDER = ['mcq', 'fill', 'correction', 'drag-drop', 'reorder', 'order-sentences', 'match', 'truefalse', 'listening-mcq'];
   const TYPE_LABELS = {
     fill: 'Complete',
     mcq: 'Choose',
@@ -711,7 +712,7 @@
       const shuffled = deterministicShuffle(items);
       return `<div class="drag-instructions">Drag a card to a group. On touch screens, tap a card and then tap its group.</div>
         <div class="drag-source" id="dragSource">${shuffled.map((item, index) => `<button class="drag-card" draggable="true" data-drag-item="${index}" data-text="${escapeHtml(item.text)}" data-expected="${item.groupIndex}" type="button">${escapeHtml(item.text)}</button>`).join('')}</div>
-        <div class="drag-groups">${question.groups.map((group, groupIndex) => `<section class="drag-bucket" data-drag-group="${groupIndex}"><h3>${escapeHtml(group.name)}</h3><div class="drag-bucket-items" data-drag-group-items="${groupIndex}"></div></section>`).join('')}</div>
+        <div class="drag-groups">${question.groups.map((group, groupIndex) => `<section class="drag-bucket" role="button" tabindex="0" aria-label="Place selected card in ${escapeHtml(group.name)}" data-drag-group="${groupIndex}"><h3>${escapeHtml(group.name)}</h3><div class="drag-bucket-items" data-drag-group-items="${groupIndex}"></div></section>`).join('')}</div>
         <div id="dragStatus" class="match-status">0 of ${items.length} cards placed</div><button id="resetDragBtn" class="secondary-btn" type="button">Reset Cards</button>`;
     }
     if (question.type === 'reorder' || question.type === 'order-sentences') {
@@ -726,7 +727,8 @@
       const right = rightPairs.map((item) => `<button class="match-item match-right" data-match-right="${item.original}" type="button">${escapeHtml(item.text)}</button>`).join('');
       return `<div class="match-instructions">Choose one item from each side to make a pair.</div><div class="match-board"><div class="match-column">${left}</div><div class="match-column">${right}</div></div><div id="matchStatus" class="match-status">0 of ${question.pairs.length} pairs connected</div><button id="resetMatchBtn" class="secondary-btn" type="button">Reset Matches</button>`;
     }
-    return '<p>Answer control is not available.</p>';
+    console.error('Unsupported question type', question);
+    return `<div class="question-load-error"><strong>This activity could not load.</strong><p>Please refresh the page. App version: ${escapeHtml(APP_VERSION)}</p></div>`;
   }
 
   function deterministicShuffle(words) {
@@ -791,6 +793,12 @@
       document.querySelectorAll('[data-drag-group]').forEach((bucket) => {
         bucket.addEventListener('click', () => {
           if (currentPractice.selectedDragItem) assign(currentPractice.selectedDragItem, bucket.dataset.dragGroup);
+        });
+        bucket.addEventListener('keydown', (event) => {
+          if ((event.key === 'Enter' || event.key === ' ') && currentPractice.selectedDragItem) {
+            event.preventDefault();
+            assign(currentPractice.selectedDragItem, bucket.dataset.dragGroup);
+          }
         });
         bucket.addEventListener('dragover', (event) => { event.preventDefault(); bucket.classList.add('drag-over'); });
         bucket.addEventListener('dragleave', () => bucket.classList.remove('drag-over'));
@@ -1137,5 +1145,5 @@
 })();
 
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20260729-3').then((registration) => registration.update()).catch(() => {}));
 }
