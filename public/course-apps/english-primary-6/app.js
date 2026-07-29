@@ -6,6 +6,7 @@
   const params = new URLSearchParams(location.search);
   const student = { id: params.get('studentId') || 'guest', name: params.get('studentName') || 'Student', className: 'Primary 6' };
   let storageKey = `mrfarid-primary6-term1:${student.id}`;
+  const reloadRouteKey = () => `mrfarid-primary6-reload-route:${student.id}`;
   const TYPE_ORDER = ['mcq', 'fill', 'correction', 'drag-drop', 'reorder', 'order-sentences', 'match', 'truefalse', 'listening-mcq'];
   const TYPE_LABELS = {
     fill: 'Complete',
@@ -33,6 +34,23 @@
   let currentPractice = null;
   let pendingFeedbackAction = null;
   let state = loadState();
+  let reloadRoute = readReloadRoute();
+
+  function readReloadRoute() {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(reloadRouteKey()));
+      sessionStorage.removeItem(reloadRouteKey());
+      return saved?.route?.name ? saved.route : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function rememberReloadRoute() {
+    const currentRoute = state.lastRoute && state.lastRoute.name ? state.lastRoute : route;
+    if (!currentRoute?.name || currentRoute.name === 'dashboard') return;
+    try { sessionStorage.setItem(reloadRouteKey(), JSON.stringify({ route: currentRoute, savedAt: Date.now() })); } catch {}
+  }
 
   function defaultState() {
     return {
@@ -1091,8 +1109,7 @@
   document.querySelectorAll('[data-close-dialog]').forEach((button) => button.addEventListener('click', () => teacherDialog.close()));
   el('feedbackActionBtn').addEventListener('click', () => pendingFeedbackAction?.());
 
-  const restoreRouteOnReload = performance.getEntriesByType('navigation')[0]?.type === 'reload' || window.performance?.navigation?.type === 1;
-  window.addEventListener('pagehide', () => { saveState(); void window.MrFaridCourseProgress?.saveNow(); });
+  window.addEventListener('pagehide', () => { rememberReloadRoute(); saveState(); void window.MrFaridCourseProgress?.saveNow(); });
   window.Primary6App = {
     setStudent(next = {}) {
       const nextId = next.studentId ? String(next.studentId) : student.id;
@@ -1100,6 +1117,7 @@
         student.id = nextId;
         storageKey = `mrfarid-primary6-term1:${student.id}`;
         state = loadState();
+        reloadRoute = readReloadRoute();
         route = { name: 'dashboard' };
       }
       if (next.studentName) student.name = String(next.studentName);
@@ -1116,7 +1134,7 @@
   if (state.started) {
     splash.classList.add('is-hidden');
     app.classList.remove('is-hidden');
-    route = restoreRouteOnReload ? (state.lastRoute || { name: 'dashboard' }) : { name: 'dashboard' };
+    route = reloadRoute || { name: 'dashboard' };
     render();
   }
 
@@ -1126,7 +1144,7 @@
     setState: (next) => {
       state = Object.assign(defaultState(), next || {});
       try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch {}
-      route = restoreRouteOnReload ? (state.lastRoute || { name: 'dashboard' }) : { name: 'dashboard' };
+      route = reloadRoute || { name: 'dashboard' };
       updateChrome();
       if (state.started) render();
     },
