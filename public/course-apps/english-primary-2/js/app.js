@@ -1093,5 +1093,26 @@ window.Primary2Store = {
   setSyncStatus: () => {},
 };
 
+// The portal may open this application from a "last activity" link.  The
+// course must still begin on its own dashboard, where the learner decides
+// whether to use Continue or start somewhere else.  This also handles a
+// browser restoring the iframe from its back/forward cache.
+function showCourseDashboard() {
+  state.view = 'home';
+  state.bank = [];
+  state.bankKey = '';
+  state.answered = false;
+  home();
+}
+
+window.addEventListener('message', event => {
+  if (event.origin !== window.location.origin || event.data?.type !== 'mrfarid-course-entry') return;
+  showCourseDashboard();
+});
+
+window.addEventListener('pageshow', () => {
+  showCourseDashboard();
+});
+
 home();
 })();
