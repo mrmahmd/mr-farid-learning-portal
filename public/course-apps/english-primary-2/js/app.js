@@ -2,6 +2,58 @@
 'use strict';
 
 const COURSE = window.COURSE;
+
+// Question clarity audit (Ministry Primary 2, Term 1): some generated
+// multiple-choice items lost the picture or number cue from the printed book.
+// Keep the existing question bank, scores, progress keys and UI unchanged;
+// only add the missing learning clue so every item has one fair answer.
+function applyQuestionClarityFixes() {
+  const fixes = new Map([
+    ['This is a _____.|desk', { prompt: 'I put my notebook on the _____.', explanation: 'I put my notebook on the desk.' }],
+    ['This is a _____.|chair', { prompt: 'I sit on a _____.', explanation: 'I sit on a chair.' }],
+    ['That is a _____.|board', { prompt: 'The teacher writes on the _____.', explanation: 'The teacher writes on the board.' }],
+    ['That is a _____.|window', { prompt: 'I can see outside through the _____.', explanation: 'I can see outside through the window.' }],
+    ['This is an _____.|eraser', { prompt: 'I use an _____ to rub out pencil marks.', explanation: 'I use an eraser to rub out pencil marks.' }],
+    ['That is a _____.|door', { prompt: 'We open the _____ to enter the classroom.', explanation: 'We open the door to enter the classroom.' }],
+    ['I have _____ books.|two', { type: 'picture', prompt: 'Look at the books. Choose the correct number.', visual: '📚 📚', explanation: 'There are two books.' }],
+    ['I see _____ pencils.|three', { type: 'picture', prompt: 'Look at the pencils. Choose the correct number.', visual: '✏️ ✏️ ✏️', explanation: 'There are three pencils.' }],
+    ['There are _____ desks.|four', { type: 'picture', prompt: 'Look at the desks. Choose the correct number.', visual: '🗄️ 🗄️ 🗄️ 🗄️', explanation: 'There are four desks.' }],
+    ['I have _____ pens.|five', { type: 'picture', prompt: 'Look at the pens. Choose the correct number.', visual: '🖊️ 🖊️ 🖊️ 🖊️ 🖊️', explanation: 'There are five pens.' }],
+    ['There are _____ chairs.|two', { type: 'picture', prompt: 'Look at the chairs. Choose the correct number.', visual: '🪑 🪑', explanation: 'There are two chairs.' }],
+    ['There are _____ pens.|three', { type: 'picture', prompt: 'Look at the pens. Choose the correct number.', visual: '🖊️ 🖊️ 🖊️', explanation: 'There are three pens.' }],
+    ['This is my _____.|father', { type: 'picture', prompt: 'Look at the family member. Choose the correct word.', visual: '👨', explanation: 'This is my father.' }],
+    ['This is my _____.|mother', { type: 'picture', prompt: 'Look at the family member. Choose the correct word.', visual: '👩', explanation: 'This is my mother.' }],
+    ['This is my _____.|sister', { type: 'picture', prompt: 'Look at the family member. Choose the correct word.', visual: '👧', explanation: 'This is my sister.' }],
+    ['This is my _____.|brother', { type: 'picture', prompt: 'Look at the family member. Choose the correct word.', visual: '👦', explanation: 'This is my brother.' }],
+    ['This is my _____.|grandmother', { type: 'picture', prompt: 'Look at the family member. Choose the correct word.', visual: '👵', explanation: 'This is my grandmother.' }],
+    ['This is my _____.|grandfather', { type: 'picture', prompt: 'Look at the family member. Choose the correct word.', visual: '👴', explanation: 'This is my grandfather.' }],
+    ['The chair is next to the _____.|chair', { prompt: 'The chair is _____ the table.', options: ['under', 'on', 'next to'], answer: 'next to', explanation: 'The chair is next to the table.' }],
+    ['The _____ is open.|door', { prompt: 'We open the _____ to enter a room.', explanation: 'We open the door to enter a room.' }],
+    ['There is a _____ next to the table.|chair', { prompt: 'I sit on a _____ next to the table.', explanation: 'I sit on a chair next to the table.' }],
+    ['This is my _____.|room', { prompt: 'I sleep in my _____.', explanation: 'I sleep in my room.' }],
+    ['The _____ is on the table.|lamp', { prompt: 'It gives light. The _____ is on the table.', explanation: 'The lamp is on the table.' }],
+    ['The _____ is next to the bed.|desk', { prompt: 'I do my homework at the _____ next to the bed.', explanation: 'I do my homework at the desk next to the bed.' }],
+    ['The _____ is big.|kitchen', { prompt: 'We cook food in the _____.', explanation: 'We cook food in the kitchen.' }],
+    ['The _____ has a TV.|living room', { prompt: 'We sit and watch TV in the _____.', explanation: 'We sit and watch TV in the living room.' }],
+    ['My _____ is clean.|bedroom', { prompt: 'I sleep in my clean _____.', explanation: 'I sleep in my clean bedroom.' }],
+    ['The fruit is _____.|orange', { type: 'picture', prompt: 'Look at the fruit. Choose its color.', visual: '🍊', explanation: 'The orange is orange.' }],
+    ['The lamp is _____ the sofa.|next to', { prompt: 'The lamp is beside the sofa. It is _____ the sofa.', explanation: 'Beside means next to.' }]
+  ]);
+
+  const apply = question => {
+    if (!question || question.type !== 'mcq') return;
+    const fix = fixes.get(`${question.prompt}|${question.answer}`);
+    if (fix) Object.assign(question, fix);
+  };
+
+  for (const unit of COURSE.units || []) {
+    for (const lesson of unit.lessons || []) lesson.questions?.forEach(apply);
+    unit.challenge?.forEach(apply);
+  }
+  for (const review of COURSE.reviews || []) review.questions?.forEach(apply);
+}
+
+applyQuestionClarityFixes();
 const app = document.getElementById('app');
 const studentId = new URLSearchParams(location.search).get('studentId') || 'guest';
 const STORE = `primary2-complete-progress-v2:${studentId}`;
@@ -17,6 +69,7 @@ const progress = {
   reviews: {},
   stations: {},
   rewardedQuestions: {},
+  checkpoint: null,
   badges: [],
   ...oldProgress,
   ...storedProgress
@@ -73,6 +126,36 @@ const coursePercent = () => Math.round((completedLessons() / 24) * 100);
 const level = () => Math.floor(progress.xp / 250) + 1;
 const levelStart = () => (level() - 1) * 250;
 const levelPercent = () => Math.min(100, Math.round(((progress.xp - levelStart()) / 250) * 100));
+
+function saveQuestionCheckpoint() {
+  if (!state.bankKey || !state.bank.length || state.qIndex >= state.bank.length) return;
+
+  const questionNumber = state.qIndex + 1;
+  const detail = state.isReview
+    ? `${practiceTitle()} • Question ${questionNumber} of ${state.bank.length}`
+    : `Unit ${state.unitId}, Lesson ${state.lessonId}: Mission Challenge • Question ${questionNumber} of ${state.bank.length}`;
+
+  progress.checkpoint = {
+    bankKey: state.bankKey,
+    isReview: Boolean(state.isReview),
+    reviewId: state.reviewId,
+    unitId: Number(state.unitId),
+    lessonId: Number(state.lessonId),
+    qIndex: Number(state.qIndex),
+    score: Number(state.score),
+    correct: Number(state.correct),
+    streak: Number(state.streak),
+    maxStreak: Number(state.maxStreak),
+    hearts: Number(state.hearts),
+    sessionXP: Number(state.sessionXP),
+    updatedAt: new Date().toISOString(),
+  };
+  progress.portalLastActivity = {
+    detail,
+    path: `question-${state.bankKey}-${state.qIndex}`,
+  };
+  save();
+}
 
 function speak(text) {
   if (!('speechSynthesis' in window)) {
@@ -177,7 +260,9 @@ function home() {
   state.view = 'home';
   clearTimeout(state.answerTimer);
 
-  const continueButton = progress.last
+  const continueButton = progress.checkpoint
+    ? `<button class="hero-button hero-button-secondary" onclick="App.continueActivity()">▶ Continue Question ${Number(progress.checkpoint.qIndex || 0) + 1}</button>`
+    : progress.last
     ? `<button class="hero-button hero-button-secondary" onclick="App.openLesson(${progress.last.u},${progress.last.l},'map')">▶ Continue Unit ${progress.last.u}, Lesson ${progress.last.l}</button>`
     : '';
 
@@ -333,7 +418,7 @@ function lessonHeader(u, l, active) {
     </section>`;
 }
 
-function openLesson(uid, lid, station = 'map') {
+function openLesson(uid, lid, station = 'map', resume = false) {
   if (!isLessonUnlocked(uid, lid)) {
     toast('This lesson is locked. Complete the previous lesson first.');
     return;
@@ -359,7 +444,7 @@ function openLesson(uid, lid, station = 'map') {
   if (station === 'phonics') return renderPhonics(u, l);
   if (station === 'reading') return renderReading(u, l);
   if (station === 'writing') return renderWriting(u, l);
-  if (station === 'practice') return startBank(l.questions, false, `lesson-${uid}-${lid}`);
+  if (station === 'practice') return startBank(l.questions, false, `lesson-${uid}-${lid}`, null, resume);
 }
 
 function renderLessonMap(u, l) {
@@ -587,33 +672,58 @@ function clearWriting(uid, lid) {
   saveWriting(uid, lid);
 }
 
-function startBank(bank, isReview, bankKey, reviewId = null) {
+function startBank(bank, isReview, bankKey, reviewId = null, resume = false) {
   clearTimeout(state.answerTimer);
+  const checkpoint = progress.checkpoint;
+  const canResume = Boolean(
+    resume &&
+    checkpoint &&
+    checkpoint.bankKey === bankKey &&
+    Boolean(checkpoint.isReview) === Boolean(isReview) &&
+    Number.isInteger(Number(checkpoint.qIndex)) &&
+    Number(checkpoint.qIndex) >= 0 &&
+    Number(checkpoint.qIndex) < bank.length
+  );
   state.bank = bank;
   state.bankKey = bankKey;
-  state.qIndex = 0;
-  state.score = 0;
-  state.correct = 0;
+  state.qIndex = canResume ? Number(checkpoint.qIndex) : 0;
+  state.score = canResume ? Number(checkpoint.score || 0) : 0;
+  state.correct = canResume ? Number(checkpoint.correct || 0) : 0;
   state.answered = false;
   state.isReview = isReview;
   state.reviewId = reviewId;
   state.order = [];
-  state.streak = 0;
-  state.maxStreak = 0;
-  state.hearts = 3;
-  state.sessionXP = 0;
+  state.streak = canResume ? Number(checkpoint.streak || 0) : 0;
+  state.maxStreak = canResume ? Number(checkpoint.maxStreak || 0) : 0;
+  state.hearts = canResume ? Number(checkpoint.hearts ?? 3) : 3;
+  state.sessionXP = canResume ? Number(checkpoint.sessionXP || 0) : 0;
+  saveQuestionCheckpoint();
   renderQuestion();
 }
 
-function startChallenge(uid) {
+function startChallenge(uid, resume = false) {
   state.unitId = Number(uid);
   state.lessonId = 0;
-  startBank(unit(uid).challenge, true, `unit-${uid}`, `unit-${uid}`);
+  startBank(unit(uid).challenge, true, `unit-${uid}`, `unit-${uid}`, resume);
 }
 
-function startReview(id) {
+function startReview(id, resume = false) {
   const review = COURSE.reviews.find(item => item.id === id);
-  startBank(review.questions, true, id, id);
+  startBank(review.questions, true, id, id, resume);
+}
+
+function continueActivity() {
+  const checkpoint = progress.checkpoint;
+  if (!checkpoint) return home();
+
+  if (checkpoint.isReview) {
+    if (String(checkpoint.reviewId || '').startsWith('unit-')) {
+      return startChallenge(checkpoint.unitId, true);
+    }
+    return startReview(checkpoint.reviewId, true);
+  }
+
+  return openLesson(checkpoint.unitId, checkpoint.lessonId, 'practice', true);
 }
 
 function practiceTitle() {
@@ -754,6 +864,7 @@ function check(choice) {
   const correct = normalize(choice) === normalize(q.answer);
   state.answered = true;
   clearTimeout(state.answerTimer);
+  saveQuestionCheckpoint();
 
   const feedback = document.getElementById('feedback');
   const card = document.getElementById('questionCard');
@@ -801,6 +912,7 @@ function nextQuestion() {
   state.qIndex += 1;
   state.answered = false;
   state.order = [];
+  saveQuestionCheckpoint();
   renderQuestion();
 }
 
@@ -830,6 +942,7 @@ function finishBank() {
     };
     if (state.reviewId.startsWith('unit-')) addBadge(`boss-${state.reviewId}`, `${practiceTitle()} Champion`, '🏆');
   }
+  progress.checkpoint = null;
   save();
 
   const stars = percent >= 90 ? 3 : percent >= 70 ? 2 : 1;
@@ -948,6 +1061,7 @@ window.App = {
   startReview,
   openReviews,
   openGlossary,
+  continueActivity,
   filterGlossary,
   teacher,
   closeModal,
