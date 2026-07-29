@@ -7,21 +7,42 @@
     return match ? Number(match[1]) : null;
   }
 
+  function lessonNumber(value) {
+    const match = String(value || "").match(/(?:^|[-_:]|u\d+)l(?:esson)?[-_]?([1-9]\d*)/i);
+    return match ? Number(match[1]) : null;
+  }
+
   function isLaterNavigation(target) {
-    let element = target instanceof Element ? target : null;
+    const interactive = target instanceof Element ? target.closest("a, button, [role='button'], [onclick]") : null;
+    const cardContext = interactive?.closest("article, .unit-card, .module-card, .dashboard-module-card, .progress-row, .lesson-card, .lesson-node");
+    if (cardContext && isLaterContent((cardContext.textContent || "").replace(/\s+/g, " "))) return true;
+    let element = interactive;
     while (element && element !== document.body) {
       const dataset = element.dataset || {};
-      const indexValues = [dataset.unitIndex, dataset.openUnit, dataset.progressUnit, dataset.lesson, dataset.openLesson];
+      // These values are zero-based indexes in the applications.
+      const indexValues = [dataset.unitIndex, dataset.progressUnit, dataset.lesson];
       if (indexValues.some((value) => value !== undefined && Number(value) > 0)) return true;
 
-      const unitValues = [dataset.module, dataset.dashboardModule, dataset.unit, dataset.unitId, element.getAttribute("href"), element.id];
+      // data-open-unit is not consistent: some apps use a zero-based index and
+      // others use the visible Unit number. Treat only values after Unit 1 as locked.
+      if (dataset.openUnit !== undefined && Number.isFinite(Number(dataset.openUnit)) && Number(dataset.openUnit) > 1) return true;
+      if (dataset.openLesson !== undefined && Number.isFinite(Number(dataset.openLesson)) && Number(dataset.openLesson) > 1) return true;
+
+      const unitValues = [dataset.module, dataset.dashboardModule, dataset.unit, dataset.unitId, dataset.openUnit, dataset.openLesson, element.getAttribute("href"), element.id];
       if (unitValues.some((value) => {
         const unitNumber = numberAfter("u", value);
         return unitNumber !== null && unitNumber > 1;
       })) return true;
+      if (unitValues.some((value) => {
+        const number = lessonNumber(value);
+        return number !== null && number > 1;
+      })) return true;
 
+      // Only inspect visible text on the clickable element itself. Inspecting a
+      // parent panel would accidentally find “Unit 2” elsewhere in the menu
+      // and block the first sample lesson as well.
       const signature = [
-        element.textContent,
+        element === interactive ? element.textContent : "",
         element.getAttribute("aria-label"),
         element.getAttribute("title"),
         element.id,
