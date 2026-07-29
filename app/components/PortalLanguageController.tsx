@@ -307,6 +307,14 @@ function applyLanguage(language: PortalLanguage) {
     const currentValue = element.textContent ?? "";
     const storedSource = element.getAttribute("data-portal-en-text");
     let source = storedSource ?? originalElementText.get(element) ?? currentValue;
+    const expectedValue = language === "ar" ? translatedText(source) : source;
+    // React can replace a header action after authentication (for example,
+    // Sign In becomes Student Dashboard). Treat that rendered value as the
+    // new English source instead of reusing the previous button label.
+    if (storedSource && currentValue !== expectedValue) {
+      source = currentValue;
+      element.setAttribute("data-portal-en-text", source);
+    }
     if (!storedSource) element.setAttribute("data-portal-en-text", source);
     originalElementText.set(element, source);
     const nextValue = language === "ar" ? translatedText(source) : source;
