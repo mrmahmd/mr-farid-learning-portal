@@ -29,7 +29,7 @@ export default function AssessmentBooksPage() {
         .maybeSingle();
       const curricula = Array.isArray(row?.allowed_curricula) ? row.allowed_curricula.filter((value: unknown): value is string => typeof value === "string") : [];
       const mode = typeof row?.access_mode === "string" ? row.access_mode : "none";
-      const sample = Boolean(row && !row.is_suspended && mode === "sample" && row.grade);
+      const sample = Boolean(row && !row.is_suspended && mode === "sample" && (row.grade || curricula.includes("__sample_all__")));
       const allowed = Boolean(row && !row.is_suspended && ["grade", "all"].includes(mode));
       if (active) setAccess({ checked: true, session: true, allowed, sample, grade: row?.grade ?? null, mode, curricula, userId: sessionData.session.user.id, studentName: sessionData.session.user.user_metadata?.full_name ?? "Star Learner" });
     }
@@ -39,14 +39,14 @@ export default function AssessmentBooksPage() {
 
   const canOpen = (grade: number) => {
     if (!access.checked || !access.session) return false;
-    return access.mode === "all" || ((access.mode === "grade" || access.mode === "sample") && access.grade === grade);
+    return access.mode === "all" || (access.mode === "sample" && access.curricula.includes("__sample_all__")) || ((access.mode === "grade" || access.mode === "sample") && access.grade === grade);
   };
 
   const bookHref = (grade: number) => {
     const base = portalAsset(`/assessment-books/english-primary-${grade}/`);
     if (!access.userId) return base;
     const query = new URLSearchParams({ studentId: access.userId, studentName: access.studentName ?? "Star Learner", className: `Primary ${grade}` });
-    if (access.sample && access.grade === grade) query.set("sample", "1");
+    if (access.sample && (access.curricula.includes("__sample_all__") || access.grade === grade)) query.set("sample", "1");
     return `${base}?${query.toString()}`;
   };
 
@@ -61,7 +61,7 @@ export default function AssessmentBooksPage() {
         </div>
         {!access.allowed && <SubscriptionNotice showSignIn={!access.session} />}
         <div className="grade-grid">
-          {((access.allowed || access.sample) ? (access.mode === "all" ? grades : access.grade ? [access.grade] : []) : []).map((grade) => {
+          {((access.allowed || access.sample) ? (access.mode === "all" || access.curricula.includes("__sample_all__") ? grades : access.grade ? [access.grade] : []) : []).map((grade) => {
             const available = grade === 1 || grade === 2 || grade === 4;
             const open = available && canOpen(grade);
             const connectAvailable = false;

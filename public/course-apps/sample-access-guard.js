@@ -2,6 +2,37 @@
   let sampleMode = new URLSearchParams(window.location.search).get("sample") === "1";
   const isLaterContent = (text) => /\b(?:unit|lesson)\s*(?:[2-9]|1\d)\b/i.test(text);
 
+  function numberAfter(prefix, value) {
+    const match = String(value || "").match(new RegExp(`(?:^|[-_:])${prefix}(?:nit)?[-_]?([1-9]\\d*)`, "i"));
+    return match ? Number(match[1]) : null;
+  }
+
+  function isLaterNavigation(target) {
+    let element = target instanceof Element ? target : null;
+    while (element && element !== document.body) {
+      const dataset = element.dataset || {};
+      const indexValues = [dataset.unitIndex, dataset.openUnit, dataset.progressUnit, dataset.lesson, dataset.openLesson];
+      if (indexValues.some((value) => value !== undefined && Number(value) > 0)) return true;
+
+      const unitValues = [dataset.module, dataset.dashboardModule, dataset.unit, dataset.unitId, element.getAttribute("href"), element.id];
+      if (unitValues.some((value) => {
+        const unitNumber = numberAfter("u", value);
+        return unitNumber !== null && unitNumber > 1;
+      })) return true;
+
+      const signature = [
+        element.textContent,
+        element.getAttribute("aria-label"),
+        element.getAttribute("title"),
+        element.id,
+        element.className,
+      ].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
+      if (isLaterContent(signature)) return true;
+      element = element.parentElement;
+    }
+    return false;
+  }
+
   function showNotice(message) {
     if (!document.getElementById("mrfarid-sample-style")) {
       const style = document.createElement("style");
@@ -25,7 +56,7 @@
     showNotice();
     document.querySelectorAll("a, button, [role='button'], [onclick]").forEach((element) => {
       const text = (element.textContent || "").replace(/\s+/g, " ").trim();
-      if (!isLaterContent(text) || element.dataset.mrfaridSampleLocked) return;
+      if (!(isLaterContent(text) || isLaterNavigation(element)) || element.dataset.mrfaridSampleLocked) return;
       element.dataset.mrfaridSampleLocked = "true";
       element.classList.add("mrfarid-sample-locked");
       element.setAttribute("aria-disabled", "true");
@@ -39,6 +70,12 @@
 
   function start() {
     lockLaterItems();
+    document.addEventListener("click", (event) => {
+      if (!sampleMode || !isLaterNavigation(event.target)) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      showNotice("This is part of the full course. Subscribe to continue.");
+    }, true);
     new MutationObserver(lockLaterItems).observe(document.documentElement, { childList: true, subtree: true });
   }
 

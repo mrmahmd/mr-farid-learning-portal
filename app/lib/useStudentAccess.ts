@@ -79,6 +79,7 @@ export function useStudentAccess() {
 export function canOpenGrade(grade: number, access: StudentAccessState) {
   return access.signedIn && !access.suspended && (
     access.accessMode === "all" ||
+    (access.accessMode === "sample" && access.allowedCurricula.includes("__sample_all__")) ||
     ((access.accessMode === "grade" || access.accessMode === "sample") && access.grade === grade)
   );
 }
@@ -89,7 +90,13 @@ export function canOpenCurriculum(slug: string, grade: number, access: StudentAc
 }
 
 export function isSampleAccess(grade: number, access: StudentAccessState) {
-  return access.signedIn && !access.suspended && access.accessMode === "sample" && access.grade === grade;
+  return access.signedIn && !access.suspended && access.accessMode === "sample" && (
+    access.allowedCurricula.includes("__sample_all__") || access.grade === grade
+  );
+}
+
+export function isSampleAllAccess(access: StudentAccessState) {
+  return access.signedIn && !access.suspended && access.accessMode === "sample" && access.allowedCurricula.includes("__sample_all__");
 }
 
 export function canDownloadBooklets(access: StudentAccessState) {

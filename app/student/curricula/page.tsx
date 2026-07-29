@@ -12,7 +12,7 @@ import {
   getSupabaseBrowserClient,
   type StudentProfile,
 } from "../../lib/supabase";
-import { canOpenCurriculum, useStudentAccess } from "../../lib/useStudentAccess";
+import { canOpenCurriculum, isSampleAllAccess, useStudentAccess } from "../../lib/useStudentAccess";
 
 const grades = [1, 2, 3, 4, 5, 6];
 
@@ -22,7 +22,7 @@ export default function StudentCurriculaPage() {
   const [hasError, setHasError] = useState(false);
   const router = useRouter();
   const access = useStudentAccess();
-  const visibleGrades = access.accessMode === "all" ? grades : (access.accessMode === "grade" || access.accessMode === "sample") && access.grade ? [access.grade] : [];
+  const visibleGrades = access.accessMode === "all" || isSampleAllAccess(access) ? grades : (access.accessMode === "grade" || access.accessMode === "sample") && access.grade ? [access.grade] : [];
 
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();

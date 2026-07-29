@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { InnerPageShell } from "../components/InnerPageShell";
 import { portalAsset } from "../asset-path";
-import { canOpenCurriculum, canOpenGrade, useStudentAccess } from "../lib/useStudentAccess";
+import { canOpenCurriculum, canOpenGrade, isSampleAllAccess, useStudentAccess } from "../lib/useStudentAccess";
 import { SubscriptionNotice } from "../components/SubscriptionNotice";
 
 const grades = [1, 2, 3, 4, 5, 6];
@@ -55,7 +55,7 @@ export default function GamesPage() {
     );
   }
 
-  const visibleGrades = access.accessMode === "all" ? grades : (access.accessMode === "grade" || access.accessMode === "sample") && access.grade ? [access.grade] : [];
+  const visibleGrades = access.accessMode === "all" || isSampleAllAccess(access) ? grades : (access.accessMode === "grade" || access.accessMode === "sample") && access.grade ? [access.grade] : [];
   return (
     <InnerPageShell className="content-page games-page">
       <section className="games-card">

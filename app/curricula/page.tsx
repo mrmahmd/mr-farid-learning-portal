@@ -4,15 +4,15 @@ import Link from "next/link";
 import { InnerPageShell } from "../components/InnerPageShell";
 import { CurriculumCover } from "../components/CurriculumCover";
 import { SubscriptionNotice } from "../components/SubscriptionNotice";
-import { canOpenCurriculum, useStudentAccess } from "../lib/useStudentAccess";
-import { canOpenGrade } from "../lib/useStudentAccess";
+import { canOpenCurriculum, canOpenGrade, isSampleAllAccess, useStudentAccess } from "../lib/useStudentAccess";
 
 const grades = [1, 2, 3, 4, 5, 6];
 
 export default function CurriculaPage() {
   const access = useStudentAccess();
-  const hasActiveStage = access.signedIn && (access.accessMode === "all" || ((access.accessMode === "grade" || access.accessMode === "sample") && Boolean(access.grade)));
-  const visibleGrades = access.accessMode === "all" ? [1, 2, 3, 4, 5, 6] : (access.accessMode === "grade" || access.accessMode === "sample") && access.grade ? [access.grade] : [];
+  const sampleAll = isSampleAllAccess(access);
+  const hasActiveStage = access.signedIn && (access.accessMode === "all" || sampleAll || ((access.accessMode === "grade" || access.accessMode === "sample") && Boolean(access.grade)));
+  const visibleGrades = access.accessMode === "all" || sampleAll ? grades : (access.accessMode === "grade" || access.accessMode === "sample") && access.grade ? [access.grade] : [];
   return (
     <InnerPageShell className="content-page curricula-page">
       <section className="curricula-card">

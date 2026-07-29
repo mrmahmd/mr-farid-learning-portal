@@ -72,12 +72,14 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
         ? candidateMode
         : "grade";
       const extraCurricula = Array.isArray(access?.allowed_curricula) ? access.allowed_curricula : [];
+      const sampleAll = accessMode === "sample" && extraCurricula.includes("__sample_all__");
       if (assignedGrade === null) {
         router.replace("/student/setup-grade");
         return;
       }
       // Stage subscriptions open one grade; the owner test account may open all grades.
       const curriculumAllowed = accessMode === "all"
+        || sampleAll
         || ((accessMode === "grade" || accessMode === "sample") && assignedGrade === curriculum.grade)
         || (accessMode === "custom" && extraCurricula.includes(curriculum.slug));
       if (!curriculumAllowed) {
@@ -87,7 +89,7 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
 
       if (isActive) {
         setStudentName(String(data.session.user.user_metadata?.username ?? data.session.user.user_metadata?.full_name ?? "Student"));
-        setIsSample(accessMode === "sample" && assignedGrade === curriculum.grade);
+        setIsSample(accessMode === "sample" && (sampleAll || assignedGrade === curriculum.grade));
         setSessionBridge({
           accessToken: data.session.access_token,
           refreshToken: data.session.refresh_token,
