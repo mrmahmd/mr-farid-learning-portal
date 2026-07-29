@@ -717,8 +717,8 @@
   function firstVisibleLessonIndex(m){return m?m.lessons.findIndex(l=>lessonAccessStatus(l.id)!=='hidden'):-1}
   function firstAvailableLessonIndex(m,start=0){if(!m)return -1;for(let i=Math.max(0,start);i<m.lessons.length;i++)if(lessonAccessStatus(m.lessons[i].id)==='visible')return i;return -1}
   function moduleComplete(id){const m=moduleById(id);if(!m)return false;const shown=visibleLessons(m);if(!shown.length)return true;if(!m.special)return activityDone(bossId(id),true);return shown.every(l=>activityDone(activityId(l.id)))}
-  function moduleUnlocked(id){if(id==="u1")return true;const m=moduleById(id);if(m.special)return moduleComplete(m.unlockAfter);const units=unitModules();const i=units.findIndex(x=>x.id===id);return i<=0||moduleComplete(units[i-1].id)}
-  function lessonUnlocked(m,index){return !!(m&&m.lessons[index]&&lessonAccessStatus(m.lessons[index].id)==='visible'&&moduleUnlocked(m.id))}
+  function moduleUnlocked(id){if(new URLSearchParams(location.search).get('sample')==='1')return id==='u1';if(id==="u1")return true;const m=moduleById(id);if(m.special)return moduleComplete(m.unlockAfter);const units=unitModules();const i=units.findIndex(x=>x.id===id);return i<=0||moduleComplete(units[i-1].id)}
+  function lessonUnlocked(m,index){if(new URLSearchParams(location.search).get('sample')==='1')return !!(m&&m.id==='u1'&&index===0&&m.lessons[index]&&lessonAccessStatus(m.lessons[index].id)==='visible');return !!(m&&m.lessons[index]&&lessonAccessStatus(m.lessons[index].id)==='visible'&&moduleUnlocked(m.id))}
   function bossUnlocked(m){return !m.special&&visibleLessons(m).every(l=>activityDone(activityId(l.id)))}
   function completedCount(){return BOOK_DATA.reduce((count,m)=>count+visibleLessons(m).filter(l=>activityDone(activityId(l.id))).length,0)}
   function totalLessonCount(){return BOOK_DATA.reduce((n,m)=>n+visibleLessons(m).length,0)}

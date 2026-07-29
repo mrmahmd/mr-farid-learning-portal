@@ -4,6 +4,7 @@
   const COURSE = window.COURSE_DATA;
   const APP_VERSION = window.APP_BUILD_VERSION || '2026.07.29.3';
   const params = new URLSearchParams(location.search);
+  const sampleMode = params.get('sample') === '1';
   const student = { id: params.get('studentId') || 'guest', name: params.get('studentName') || 'Student', className: 'Primary 6' };
   let storageKey = `mrfarid-primary6-term1:${student.id}`;
   const reloadRouteKey = () => `mrfarid-primary6-reload-route:${student.id}`;
@@ -132,6 +133,20 @@
     return null;
   }
 
+  function isSampleRouteAllowed(nextRoute) {
+    if (!sampleMode) return true;
+    const firstUnit = COURSE.units[0];
+    const firstLesson = firstUnit?.lessons[0];
+    if (!firstUnit || !firstLesson) return false;
+    if (nextRoute.name === 'dashboard' || nextRoute.name === 'course') return true;
+    if (nextRoute.name === 'unit') return nextRoute.unitId === firstUnit.id;
+    if (nextRoute.lessonId) {
+      const found = findLesson(nextRoute.lessonId);
+      return found?.unit.id === firstUnit.id && found.lesson.id === firstLesson.id;
+    }
+    return false;
+  }
+
   function questionKey(item) {
     return item.id;
   }
@@ -198,6 +213,10 @@
   }
 
   function navigate(nextRoute, options = {}) {
+    if (!isSampleRouteAllowed(nextRoute)) {
+      alert('This is part of the full course. Subscribe to open all lessons.');
+      return;
+    }
     route = nextRoute;
     state.lastRoute = nextRoute;
     saveState();
@@ -336,11 +355,11 @@
         <section class="assessment-grid">
           <article class="review-banner">
             <div><h3>Unit ${unit.number} Challenge</h3><p>${unit.review.length} mixed review questions covering the full unit.</p></div>
-            <button class="primary-btn" id="openReviewBtn" type="button">Start Challenge</button>
+            <button class="primary-btn" id="openReviewBtn" type="button" ${sampleMode ? 'disabled' : ''}>${sampleMode ? 'Subscribe to unlock' : 'Start Challenge'}</button>
           </article>
           <article class="bank-banner">
             <div><span class="bank-icon">🏦</span><h3>Unit Question Bank</h3><p>${unit.bank?.length || 0} carefully written questions organised by skill.</p></div>
-            <button class="primary-btn" id="openBankBtn" type="button">Open Question Bank</button>
+            <button class="primary-btn" id="openBankBtn" type="button" ${sampleMode ? 'disabled' : ''}>${sampleMode ? 'Subscribe to unlock' : 'Open Question Bank'}</button>
           </article>
         </section>
       </div>
@@ -354,13 +373,14 @@
 
   function lessonRow(unit, lesson, index) {
     const percent = lessonPercent(lesson);
+    const open = !sampleMode || (unit === COURSE.units[0] && index === 0);
     return `
-      <article class="lesson-row">
+      <article class="lesson-row ${open ? '' : 'locked'}">
         <div class="lesson-badge">${index + 1}</div>
         <div><h3>${escapeHtml(lesson.title)}</h3><p>${escapeHtml(lesson.station)} • ${lesson.questions.length} activities</p></div>
         <div class="lesson-status">
           <span class="status-pill ${percent === 100 ? 'done' : ''}">${percent === 100 ? 'Finished' : `${percent}%`}</span>
-          <button class="lesson-open-btn" data-open-lesson="${lesson.id}" type="button">Open</button>
+          <button class="lesson-open-btn" data-open-lesson="${lesson.id}" type="button" ${open ? '' : 'disabled'}>${open ? 'Open' : 'Locked'}</button>
         </div>
       </article>
     `;

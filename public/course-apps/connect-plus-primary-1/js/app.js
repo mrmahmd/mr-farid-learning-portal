@@ -188,6 +188,7 @@
   }
 
   function isUnitUnlocked(unitId) {
+    if (new URLSearchParams(location.search).get('sample') === '1') return unitId === 'unit1';
     if (state.previewUnlocked) return true;
     const index = allUnitIds.indexOf(unitId);
     if (index <= 0) return true;

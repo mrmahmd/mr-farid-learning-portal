@@ -161,11 +161,13 @@ function imageStage(src, alt, className = '') {
 }
 
 function isUnitUnlocked(uid) {
+  if (new URLSearchParams(location.search).get('sample') === '1') return uid === 1;
   if (uid === 1) return true;
   return unit(uid - 1).lessons.every(item => progress.lessons[lessonKey(uid - 1, item.id)]?.completed);
 }
 
 function isLessonUnlocked(uid, lid) {
+  if (new URLSearchParams(location.search).get('sample') === '1') return uid === 1 && lid === 1;
   if (!isUnitUnlocked(uid)) return false;
   if (lid === 1) return true;
   return Boolean(progress.lessons[lessonKey(uid, lid - 1)]?.completed);

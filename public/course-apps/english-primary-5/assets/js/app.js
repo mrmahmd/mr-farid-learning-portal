@@ -233,12 +233,14 @@ function moduleLessonProgress(module) {
 }
 
 function unitUnlocked(moduleIndex) {
+  if (new URLSearchParams(location.search).get('sample') === '1') return moduleIndex === 0;
   if (previewMode || moduleIndex === 0) return true;
   const previous = curriculum[moduleIndex - 1];
   return (state.moduleScores[previous.id] || 0) >= 70;
 }
 
 function lessonUnlocked(moduleIndex, lessonIndex) {
+  if (new URLSearchParams(location.search).get('sample') === '1') return moduleIndex === 0 && lessonIndex === 0;
   if (previewMode || lessonIndex === 0) return true;
   const module = curriculum[moduleIndex];
   return Boolean(state.completed[lessonKey(module.id, lessonIndex - 1)]?.passed);

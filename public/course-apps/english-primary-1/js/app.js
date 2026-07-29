@@ -8,6 +8,8 @@
   const $$ = (s, root = document) => [...root.querySelectorAll(s)];
   const state = () => Store.getState();
   const unlockAll = new URLSearchParams(location.search).get('unlockAll') === '1';
+  const sampleMode = new URLSearchParams(location.search).get('sample') === '1';
+  const firstSampleLessonId = C.units[0]?.lessons[0]?.id;
 
   const STATIONS = [
     { id: 'vocab', title: 'Vocabulary Flashcards', icon: '🃏', tone: 'blue' },
@@ -97,22 +99,26 @@
   }
 
   function isUnitUnlocked(unit) {
+    if (sampleMode) return Number(unit.id) === 1;
     if (unlockAll || unit.id === 1) return true;
     return isUnitChallengeComplete(unit.id - 1);
   }
 
   function isLessonUnlocked(unit, index) {
+    if (sampleMode) return Number(unit.id) === 1 && index === 0;
     if (unlockAll || index === 0) return isUnitUnlocked(unit);
     return isUnitUnlocked(unit) && isLessonComplete(unit.lessons[index - 1].id);
   }
 
   function isLessonChallengeUnlocked(lesson) {
+    if (sampleMode) return lesson.id === firstSampleLessonId;
     if (unlockAll) return true;
     const completed = state().completedStations[lesson.id] || {};
     return requiredStationIds(lesson).every((id) => completed[id]);
   }
 
   function isUnitChallengeUnlocked(unit) {
+    if (sampleMode) return false;
     return unlockAll || unit.lessons.every((l) => isLessonComplete(l.id));
   }
 

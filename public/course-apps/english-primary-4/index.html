@@ -143,8 +143,8 @@ function getUnit(n){return CURRICULUM.units.find(u=>u.number===n)}
 function getLesson(id){for(const u of CURRICULUM.units){const l=u.lessons.find(x=>x.id===id);if(l)return {unit:u,lesson:l,index:u.lessons.indexOf(l)+1}}}
 function lessonTeacherStatus(id){return 'visible'}
 function visibleUnitLessons(u){return u.lessons.filter(l=>lessonTeacherStatus(l.id)!=='hidden')}
-function isUnitUnlocked(n){return !!getUnit(n)}
-function isLessonUnlocked(u,n){return !!u.lessons[n-1]}
+function isUnitUnlocked(n){if(new URLSearchParams(location.search).get('sample')==='1')return Number(n)===1;return !!getUnit(n)}
+function isLessonUnlocked(u,n){if(new URLSearchParams(location.search).get('sample')==='1')return Number(u.number)===1&&Number(n)===1;return !!u.lessons[n-1]}
 function lessonDone(id){return !!state.completedLessons[id]}
 function unitDone(n){return !!state.completedUnits['u'+n]}
 function activityScore(mode,id){if(mode==='lesson')return state.lessonScores[id];if(mode==='grammar')return state.grammarScores[id];return state.unitBankScores[id]}
