@@ -13,12 +13,29 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
   const [sessionBridge, setSessionBridge] = useState<{ accessToken: string; refreshToken: string; userId: string } | null>(null);
   const [shouldResume, setShouldResume] = useState(false);
   const [isSample, setIsSample] = useState(false);
+  const [portalLanguage, setPortalLanguage] = useState<"ar" | "en">("en");
   const [deniedReason, setDeniedReason] = useState("");
   const courseFrame = useRef<HTMLIFrameElement>(null);
   const router = useRouter();
 
   useEffect(() => {
     setShouldResume(new URLSearchParams(window.location.search).get("resume") === "1");
+  }, []);
+
+  useEffect(() => {
+    const syncLanguage = () => setPortalLanguage(
+      document.documentElement.lang === "ar" || localStorage.getItem("mrfarid-language") === "ar" ? "ar" : "en",
+    );
+    const handleLanguageChange = (event: Event) => setPortalLanguage(
+      (event as CustomEvent<"ar" | "en">).detail === "ar" ? "ar" : "en",
+    );
+    syncLanguage();
+    window.addEventListener("mrfarid-language-change", handleLanguageChange);
+    window.addEventListener("storage", syncLanguage);
+    return () => {
+      window.removeEventListener("mrfarid-language-change", handleLanguageChange);
+      window.removeEventListener("storage", syncLanguage);
+    };
   }, []);
 
   useEffect(() => {
@@ -138,6 +155,7 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
   };
 
   const embeddedApp = embeddedApps[curriculum.slug];
+  const arabic = portalLanguage === "ar";
 
   if (embeddedApp) {
     const cacheVersion = curriculum.slug === "english-primary-1" ? "&v=20260718-6" : curriculum.slug === "english-primary-2" ? "&v=20260728-1" : curriculum.slug === "english-primary-3" ? "&v=20260719-2" : curriculum.slug === "english-primary-4" ? "&v=20260717-12" : curriculum.slug === "english-primary-5" ? "&v=20260726-6" : curriculum.slug === "english-primary-6" ? "&v=20260729-1" : curriculum.slug === "connect-plus-primary-4" ? "&v=20260717-10" : "";
@@ -145,10 +163,10 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
 
     return (
       <section className="integrated-course-shell" aria-label={`${curriculum.title} application`}>
-        {isSample && <div className="course-sample-notice" role="status">
-          <strong>Free sample: Unit 1, Lesson 1</strong>
-          <span>You can explore this lesson. Subscribe to open the full curriculum.</span>
-          <a href="https://wa.me/966552019074" target="_blank" rel="noreferrer">Subscribe on WhatsApp</a>
+        {isSample && <div className="course-sample-notice" role="status" dir={arabic ? "rtl" : "ltr"}>
+          <strong>{arabic ? "عينة مجانية: الوحدة الأولى، الدرس الأول" : "Free sample: Unit 1, Lesson 1"}</strong>
+          <span>{arabic ? "يمكنك استكشاف هذا الدرس. اشترك لفتح المنهج كاملًا." : "You can explore this lesson. Subscribe to open the full curriculum."}</span>
+          <a href="https://wa.me/966552019074" target="_blank" rel="noreferrer">{arabic ? "اشترك عبر واتساب: 00966552019074" : "Subscribe on WhatsApp: 00966552019074"}</a>
         </div>}
         <iframe
           ref={courseFrame}
