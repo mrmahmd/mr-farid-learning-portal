@@ -13,6 +13,7 @@ export default function PlayLearnPage() {
           </p>
         </div>
 
+        <div className="play-learn-showcase">
         <article className="play-learn-game-card">
           <div
             className="play-learn-art"
@@ -38,6 +39,21 @@ export default function PlayLearnPage() {
             <a className="play-learn-launch" href={portalAsset("/play-learn/grammar-goal-champions/")}>Open Game <b aria-hidden="true">→</b></a>
           </div>
         </article>
+
+          <aside className="play-learn-howto" aria-label="How to play">
+            <p className="play-learn-howto-kicker">How to Play</p>
+            <h2>Choose your level, then score your grammar goals!</h2>
+            <ol>
+              <li><b>1</b><span><strong>Choose a level</strong> — Rookie, Pro, Champion, or Legend.</span></li>
+              <li><b>2</b><span><strong>Read and answer</strong> — choose the best grammar answer before time runs out.</span></li>
+              <li><b>3</b><span><strong>Score goals</strong> — every correct answer earns points, stars, and rewards.</span></li>
+            </ol>
+            <div className="play-learn-levels" aria-label="Available game levels">
+              <span>Rookie</span><span>Pro</span><span>Champion</span><span>Legend</span>
+            </div>
+            <p className="play-learn-timer">⏱ You have 20 seconds for every question.</p>
+          </aside>
+        </div>
       </section>
     </InnerPageShell>
   );
