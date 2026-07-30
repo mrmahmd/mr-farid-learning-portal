@@ -1892,3 +1892,27 @@ body.portal-arabic .access-drawer-backdrop * {
 .password-setup-arabic { margin:20px 0; padding:18px; border-radius:18px; color:#21457b; background:linear-gradient(135deg,#e8f4ff,#fff8de); }.password-setup-arabic h2 { margin:0 0 7px; font-size:24px; font-weight:950; }.password-setup-arabic p { margin:0; font-size:16px; font-weight:800; line-height:1.8; }
 .password-setup-form { display:grid; gap:10px; }.password-setup-form label { color:#294a79; font-size:14px; font-weight:900; }.password-setup-form input { width:100%; min-height:52px; padding:0 16px; border:1px solid rgba(66,111,166,.2); border-radius:14px; color:var(--ink); background:#fff; font:inherit; font-size:17px; outline:0; }.password-setup-form input:focus { border-color:#4b7dea; box-shadow:0 0 0 4px rgba(75,125,234,.12); }.password-setup-form .primary-button { margin-top:8px; }
 .password-setup-signout { display:block; margin:18px auto 0; border:0; color:#71829d; background:transparent; font:inherit; font-size:13px; font-weight:850; cursor:pointer; }
+
+/* Public Play & Learn space */
+.play-learn-page .inner-content { max-width: 1240px; }
+.play-learn-card { padding: clamp(22px,4vw,48px); border: 1px solid rgba(255,255,255,.94); border-radius: 34px; background: linear-gradient(135deg,rgba(255,255,255,.9),rgba(239,249,255,.78)); box-shadow: 0 26px 70px rgba(41,87,145,.16); backdrop-filter: blur(20px) saturate(130%); }
+.play-learn-heading { max-width: 760px; margin: 0 auto 30px; text-align: center; }
+.play-learn-heading .eyebrow { justify-content: center; }
+.play-learn-heading h1 { margin: 10px 0 12px; color: #193e7d; font-size: clamp(42px,7vw,76px); font-weight: 1000; letter-spacing: -.055em; line-height: .98; }
+.play-learn-lead { margin: 0 auto; max-width: 680px; color: #57729a; font-size: clamp(16px,2vw,20px); font-weight: 750; line-height: 1.7; }
+.play-learn-game-card { display: grid; grid-template-columns: minmax(290px,.95fr) minmax(320px,1.05fr); overflow: hidden; border: 1px solid rgba(99,143,233,.24); border-radius: 28px; background: rgba(255,255,255,.8); box-shadow: 0 18px 42px rgba(49,86,147,.15); }
+.play-learn-art { min-height: 390px; background-color: #17468b; background-position: center; background-size: cover; position: relative; }
+.play-learn-art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg,rgba(20,58,131,.1),rgba(12,14,67,.38)); }
+.play-learn-copy { display: flex; flex-direction: column; justify-content: center; padding: clamp(26px,5vw,56px); }
+.play-learn-pills,.play-learn-meta { display: flex; flex-wrap: wrap; gap: 9px; }
+.play-learn-pills span,.play-learn-meta span { padding: 8px 12px; border: 1px solid #d4e3ff; border-radius: 999px; color: #3b6096; background: #f5f9ff; font-size: 12px; font-weight: 900; }
+.play-learn-pills .play-learn-new { color: #fff; border-color: transparent; background: linear-gradient(135deg,#ff6b8a,#9755e9); box-shadow: 0 8px 18px rgba(156,81,232,.27); animation: playLearnPulse 1.8s ease-in-out infinite; }
+.play-learn-copy h2 { margin: 17px 0 12px; color: #183b78; font-size: clamp(30px,4vw,48px); font-weight: 1000; line-height: 1.05; }
+.play-learn-copy p { margin: 0 0 22px; color: #60799d; font-size: 17px; font-weight: 700; line-height: 1.7; }
+.play-learn-meta { margin-bottom: 27px; }
+.play-learn-launch { display: inline-flex; align-items: center; justify-content: center; gap: 13px; width: min(100%,300px); min-height: 58px; border-radius: 18px; color: #fff; background: linear-gradient(120deg,#247cf4,#6557e8 58%,#8c53d9); box-shadow: 0 15px 28px rgba(65,96,223,.27); font-size: 17px; font-weight: 1000; text-decoration: none; transition: transform .2s ease,box-shadow .2s ease; }
+.play-learn-launch:hover { transform: translateY(-3px); box-shadow: 0 20px 34px rgba(65,96,223,.34); }
+.play-learn-launch b { font-size: 23px; line-height: 1; }
+@keyframes playLearnPulse { 0%,100% { transform: rotate(-3deg) scale(1); } 50% { transform: rotate(3deg) scale(1.09); } }
+@media (max-width: 760px) { .play-learn-card { padding: 17px; border-radius: 25px; }.play-learn-heading { margin-bottom: 22px; }.play-learn-game-card { grid-template-columns: 1fr; border-radius: 23px; }.play-learn-art { min-height: 235px; }.play-learn-copy { padding: 26px 22px 28px; }.play-learn-copy p { font-size: 15px; }.play-learn-launch { width: 100%; } }
+@media (prefers-reduced-motion: reduce) { .play-learn-pills .play-learn-new { animation: none; } }

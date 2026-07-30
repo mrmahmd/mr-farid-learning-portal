@@ -64,6 +64,7 @@ export function SiteHeader() {
         <a className="whats-new-nav" href={pageHref("/assessment-books")}><span>Assessment Books</span><i aria-hidden="true">New</i></a>
         <a href={pageHref("/booklets")}>Booklets</a>
         <a href={pageHref("/games")}>Games</a>
+        <a className="whats-new-nav" href={pageHref("/play-learn")}><span>Play & Learn</span><i aria-hidden="true">New</i></a>
         <a className="whats-new-nav" href={pageHref("/whats-new")}><span>What's New?</span><i aria-hidden="true">New</i></a>
         <a href={pageHref("/about")}>About the Portal</a>
       </nav>
@@ -97,6 +98,7 @@ export function SiteHeader() {
           <a className="whats-new-nav" href={pageHref("/assessment-books")}><span>Assessment Books</span><i aria-hidden="true">New</i></a>
           <a href={pageHref("/booklets")}>Booklets</a>
           <a href={pageHref("/games")}>Games</a>
+          <a className="whats-new-nav" href={pageHref("/play-learn")}><span>Play & Learn</span><i aria-hidden="true">New</i></a>
           <a className="whats-new-nav" href={pageHref("/whats-new")}><span>What's New?</span><i aria-hidden="true">New</i></a>
           <a href={pageHref("/about")}>About the Portal</a>
           {isSignedIn ? (

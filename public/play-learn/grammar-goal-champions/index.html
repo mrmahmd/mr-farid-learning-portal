@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#061a3a" />
+  <meta name="description" content="Grammar Goal Champions: an educational football game for Present Simple and Past Simple." />
+  <title>Grammar Goal Champions</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <noscript>This game needs JavaScript to run.</noscript>
+
+  <div id="app" class="app-shell">
+    <section id="startScreen" class="screen start-screen is-active" aria-labelledby="gameTitle">
+      <div class="background-image opening-bg" aria-hidden="true"></div>
+      <div class="screen-overlay" aria-hidden="true"></div>
+
+      <header class="brand-block">
+        <div class="brand-ball" aria-hidden="true">⚽</div>
+        <h1 id="gameTitle" class="game-title">
+          <span class="word grammar">Grammar</span>
+          <span class="word penalty">Penalty</span>
+          <span class="word champions">Champions</span>
+        </h1>
+        <p class="subtitle"><span>Present Simple</span> <b>vs</b> <span>Past Simple</span></p>
+        <p class="credit">Prepared and Designed by: <strong>Mr.Mohamed Farid</strong></p>
+      </header>
+
+      <main class="start-card glass-card">
+        <div class="start-grid">
+          <section class="player-setup">
+            <label class="field-label" for="playerName">Player Name</label>
+            <div class="name-field-wrap">
+              <span class="field-icon" aria-hidden="true">👤</span>
+              <input id="playerName" maxlength="18" autocomplete="name" placeholder="Enter your name" value="GrammarStar" />
+            </div>
+
+            <fieldset class="team-picker">
+              <legend>Choose Your Team</legend>
+              <button class="team-card madrid selected" type="button" data-team="madrid" aria-pressed="true">
+                <span class="team-crest generic-crest madrid-crest" aria-hidden="true"><span>MW</span></span>
+                <span class="team-name">Real Madrid</span>
+                <span class="team-tag">Madrid Whites</span>
+              </button>
+              <div class="versus" aria-hidden="true">VS</div>
+              <button class="team-card barcelona" type="button" data-team="barcelona" aria-pressed="false">
+                <span class="team-crest generic-crest barca-crest" aria-hidden="true"><span>BS</span></span>
+                <span class="team-name">Barcelona</span>
+                <span class="team-tag">Barcelona Stars</span>
+              </button>
+            </fieldset>
+
+            <div class="level-picker" role="group" aria-label="Select difficulty">
+              <button class="level-chip selected" type="button" data-level="rookie">Rookie</button>
+              <button class="level-chip" type="button" data-level="pro">Pro</button>
+              <button class="level-chip" type="button" data-level="champion">Champion</button>
+              <button class="level-chip" type="button" data-level="legend">Legend</button>
+            </div>
+
+            <button id="startButton" class="primary-button start-button" type="button">
+              <span aria-hidden="true">⚽</span> Start the Match
+            </button>
+
+            <div class="secondary-actions">
+              <button id="howToButton" class="secondary-button" type="button">📘 How to Play</button>
+              <button id="soundButtonStart" class="secondary-button" type="button" aria-pressed="true">🔊 Sound On</button>
+            </div>
+          </section>
+
+          <aside class="start-rewards" aria-label="Game rewards preview">
+            <div class="trophy-card">
+              <div class="trophy">🏆</div>
+              <h2>Become a Grammar Champion!</h2>
+              <p>Learn grammar. Score goals. Win the cup.</p>
+            </div>
+            <div class="mini-badges">
+              <div class="mini-badge"><span>🔥</span><div><strong>Goal Streak</strong><small>Score 3 in a row</small></div></div>
+              <div class="mini-badge"><span>📚</span><div><strong>Grammar Hero</strong><small>Master both tenses</small></div></div>
+              <div class="mini-badge"><span>⚡</span><div><strong>Fast Shooter</strong><small>Answer under 5 sec</small></div></div>
+            </div>
+            <div class="saved-summary" id="savedSummary" hidden>
+              <strong>Welcome back!</strong>
+              <span id="savedSummaryText"></span>
+            </div>
+          </aside>
+        </div>
+      </main>
+    </section>
+
+    <section id="gameScreen" class="screen game-screen" aria-label="Game screen">
+      <div class="background-image game-bg" aria-hidden="true"></div>
+      <div class="game-overlay" aria-hidden="true"></div>
+
+      <header class="game-hud">
+        <div class="profile-card hud-card">
+          <div class="avatar" id="avatar">GS</div>
+          <div class="profile-copy">
+            <strong id="hudPlayerName">GrammarStar</strong>
+            <span id="hudTeamName">Real Madrid</span>
+          </div>
+          <span class="level-pill" id="hudLevel">Rookie</span>
+        </div>
+
+        <div class="mini-logo" aria-label="Grammar Goal Champions">
+          <span>Grammar</span><b>Penalty</b><em>Champions</em>
+        </div>
+
+        <div class="currency-row">
+          <div class="currency hud-card" title="Coins"><span>🪙</span><strong id="coinCount">0</strong></div>
+          <div class="currency hud-card" title="Stars"><span>⭐</span><strong id="starCount">0</strong></div>
+          <div class="currency hud-card" title="Current streak"><span>🔥</span><strong id="streakCount">0</strong></div>
+          <button id="soundButtonGame" class="icon-button hud-card" type="button" aria-pressed="true" aria-label="Turn sound off">🔊</button>
+          <button id="pauseButton" class="icon-button hud-card" type="button" aria-label="Pause game">⏸</button>
+        </div>
+      </header>
+
+      <main class="game-layout">
+        <aside class="left-rail">
+          <div class="stat-card hud-card"><span class="stat-icon">⚽</span><div><small>Goals</small><strong><span id="goalsCount">0</span>/<span id="shotsTotal">10</span></strong></div></div>
+          <div class="stat-card hud-card"><span class="stat-icon">✅</span><div><small>Correct</small><strong id="correctCount">0</strong></div></div>
+          <div class="stat-card hud-card"><span class="stat-icon">🎯</span><div><small>Shot</small><strong><span id="shotNumber">1</span>/<span id="shotNumberTotal">10</span></strong></div></div>
+          <div class="timer-card hud-card" id="timerCard">
+            <svg class="timer-ring" viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="timer-track" cx="60" cy="60" r="52"></circle>
+              <circle class="timer-progress" id="timerProgress" cx="60" cy="60" r="52"></circle>
+            </svg>
+            <div class="timer-text"><strong id="timerValue">20</strong><small>SEC</small></div>
+          </div>
+          <div class="question-type-card hud-card">
+            <small>Question Type</small>
+            <strong id="questionTypeLabel">Multiple Choice</strong>
+            <div class="type-icons" aria-hidden="true"><span>▤</span><span>↔</span><span>123</span></div>
+          </div>
+        </aside>
+
+        <section class="center-stage">
+          <div class="question-card glass-card" id="questionCard">
+            <div class="question-topline">
+              <span class="tense-tag" id="tenseTag">Present Simple</span>
+              <span class="difficulty-tag" id="difficultyTag">Rookie</span>
+            </div>
+            <p class="question-instruction" id="questionInstruction">Choose the correct answer.</p>
+            <h2 class="question-stem" id="questionStem">He ____ to school every day.</h2>
+            <div id="answerArea" class="answer-area" aria-live="polite"></div>
+            <button id="shootButton" class="primary-button shoot-button" type="button" disabled><span>⚽</span> Shoot!</button>
+            <div id="feedbackBox" class="feedback-box" aria-live="assertive" hidden></div>
+          </div>
+
+          <section class="pitch" id="pitch" aria-label="Animated penalty kick scene">
+            <div class="stadium-sky" aria-hidden="true"></div>
+            <div class="floodlight floodlight-left" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="floodlight floodlight-right" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="stadium-crowd" aria-hidden="true">
+              <div class="crowd-row crowd-row-a"></div>
+              <div class="crowd-row crowd-row-b"></div>
+              <div class="crowd-row crowd-row-c"></div>
+            </div>
+            <div class="advert-board" aria-hidden="true"><span>PLAY • LEARN • SCORE • WIN</span></div>
+            <div class="field" aria-hidden="true">
+              <div class="field-stripes"></div>
+              <div class="penalty-box-lines"></div>
+              <div class="penalty-spot"></div>
+            </div>
+
+            <div class="goal-scene" aria-hidden="true">
+              <div class="goal-net" id="goalNet"></div>
+              <div class="goal-frame"><span class="post post-left"></span><span class="post post-right"></span><span class="crossbar"></span></div>
+
+              <div class="keeper-character" id="keeperCharacter">
+                <div class="keeper-shadow"></div>
+                <svg viewBox="0 0 190 230" role="img" aria-label="Animated goalkeeper">
+                  <defs>
+                    <linearGradient id="keeperJersey" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a8ff55"/><stop offset="0.52" stop-color="#2ecb35"/><stop offset="1" stop-color="#07832f"/></linearGradient>
+                    <linearGradient id="keeperShorts" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#152436"/><stop offset="1" stop-color="#070d17"/></linearGradient>
+                    <radialGradient id="keeperSkin"><stop offset="0" stop-color="#ffd1a4"/><stop offset="1" stop-color="#b96339"/></radialGradient>
+                    <filter id="keeperShadow"><feDropShadow dx="0" dy="4" stdDeviation="3" flood-opacity=".45"/></filter>
+                  </defs>
+                  <g class="keeper-body" filter="url(#keeperShadow)">
+                    <g class="keeper-head"><ellipse cx="95" cy="48" rx="25" ry="29" fill="url(#keeperSkin)"/><path d="M70 43Q73 13 99 14Q124 15 123 45Q110 32 92 31Q80 32 70 43Z" fill="#2d1a11"/><circle cx="86" cy="49" r="2.5"/><circle cx="104" cy="49" r="2.5"/><path d="M87 62Q95 68 104 61" fill="none" stroke="#7f372a" stroke-width="3" stroke-linecap="round"/></g>
+                    <g class="keeper-torso"><path d="M62 78Q95 63 128 78L136 142Q95 158 54 142Z" fill="url(#keeperJersey)"/><path d="M88 78L95 92L102 78" fill="none" stroke="#efffdb" stroke-width="5"/><text x="95" y="126" text-anchor="middle" font-size="34" font-family="Arial" font-weight="900" fill="#fff" opacity=".92">1</text></g>
+                    <g class="keeper-arm keeper-arm-left"><path d="M65 84Q38 91 20 113" fill="none" stroke="#39bd38" stroke-width="20" stroke-linecap="round"/><path d="M21 113L7 129" fill="none" stroke="#e6f3ff" stroke-width="17" stroke-linecap="round"/><path d="M14 120L3 113M17 125L6 132M21 129L13 140" stroke="#9ac7e5" stroke-width="5" stroke-linecap="round"/></g>
+                    <g class="keeper-arm keeper-arm-right"><path d="M125 84Q152 91 170 113" fill="none" stroke="#39bd38" stroke-width="20" stroke-linecap="round"/><path d="M169 113L183 129" fill="none" stroke="#e6f3ff" stroke-width="17" stroke-linecap="round"/><path d="M176 120L187 113M173 125L184 132M169 129L177 140" stroke="#9ac7e5" stroke-width="5" stroke-linecap="round"/></g>
+                    <g class="keeper-legs"><path class="keeper-leg keeper-leg-left" d="M76 140Q64 171 51 205" fill="none" stroke="url(#keeperShorts)" stroke-width="25" stroke-linecap="round"/><path d="M52 202L34 215" stroke="#d9f0ff" stroke-width="13" stroke-linecap="round"/><path class="keeper-leg keeper-leg-right" d="M114 140Q126 171 139 205" fill="none" stroke="url(#keeperShorts)" stroke-width="25" stroke-linecap="round"/><path d="M138 202L156 215" stroke="#d9f0ff" stroke-width="13" stroke-linecap="round"/></g>
+                  </g>
+                </svg>
+              </div>
+            </div>
+
+            <div class="kicker-character" id="kickerCharacter" aria-hidden="true">
+              <div class="kicker-shadow"></div>
+              <svg viewBox="0 0 220 330" role="img" aria-label="Animated football player">
+                <defs>
+                  <linearGradient id="blueJersey" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#46a8ff"/><stop offset="0.48" stop-color="#165ad1"/><stop offset="1" stop-color="#073080"/></linearGradient>
+                  <linearGradient id="whiteShorts" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#c9d8ed"/></linearGradient>
+                  <radialGradient id="playerSkin"><stop offset="0" stop-color="#ffd4aa"/><stop offset="1" stop-color="#b9673f"/></radialGradient>
+                  <filter id="playerShadow"><feDropShadow dx="0" dy="5" stdDeviation="4" flood-opacity=".5"/></filter>
+                </defs>
+                <g class="player-body" filter="url(#playerShadow)">
+                  <g class="player-head"><ellipse cx="116" cy="52" rx="30" ry="35" fill="url(#playerSkin)"/><path d="M85 52Q84 16 118 12Q148 14 148 51Q136 32 116 31Q96 34 85 52Z" fill="#251710"/><path d="M91 27Q107 2 137 15Q154 25 147 51Q134 28 112 31Z" fill="#352016"/><circle cx="106" cy="54" r="3"/><circle cx="127" cy="54" r="3"/><path d="M107 69Q117 76 129 67" fill="none" stroke="#7d3529" stroke-width="3.5" stroke-linecap="round"/></g>
+                  <g class="player-torso"><path d="M76 89Q112 70 151 91L160 180Q119 199 71 174Z" fill="url(#blueJersey)"/><path d="M87 88L116 111L143 89" fill="none" stroke="#ecf6ff" stroke-width="5"/><text x="116" y="157" text-anchor="middle" font-size="47" font-family="Arial" font-weight="900" fill="#fff">10</text></g>
+                  <g class="player-arm player-arm-left"><path d="M80 101Q49 116 31 145" fill="none" stroke="#2268d0" stroke-width="22" stroke-linecap="round"/><path d="M31 145Q19 167 9 185" fill="none" stroke="url(#playerSkin)" stroke-width="16" stroke-linecap="round"/></g>
+                  <g class="player-arm player-arm-right"><path d="M149 103Q178 117 193 146" fill="none" stroke="#2268d0" stroke-width="22" stroke-linecap="round"/><path d="M193 146Q202 163 208 178" fill="none" stroke="url(#playerSkin)" stroke-width="16" stroke-linecap="round"/></g>
+                  <g class="player-shorts"><path d="M73 171Q116 189 159 174L158 220L121 225L105 208L91 225L61 216Z" fill="url(#whiteShorts)"/><path d="M108 185L106 211" stroke="#b9cae3" stroke-width="4"/></g>
+                  <g class="player-leg player-leg-plant"><path d="M91 215Q72 257 62 300" fill="none" stroke="url(#playerSkin)" stroke-width="27" stroke-linecap="round"/><path d="M64 288L58 315" stroke="#f4f7ff" stroke-width="21" stroke-linecap="round"/><path d="M57 314Q39 318 28 307" fill="none" stroke="#18243c" stroke-width="14" stroke-linecap="round"/></g>
+                  <g class="player-leg player-leg-kick"><path d="M137 216Q158 256 174 292" fill="none" stroke="url(#playerSkin)" stroke-width="27" stroke-linecap="round"/><path d="M169 282L183 307" stroke="#f4f7ff" stroke-width="21" stroke-linecap="round"/><path d="M182 307Q199 313 213 300" fill="none" stroke="#18243c" stroke-width="14" stroke-linecap="round"/></g>
+                </g>
+              </svg>
+            </div>
+
+            <div class="ball-shadow" id="ballShadow" aria-hidden="true"></div>
+            <div class="ball" id="ball" aria-hidden="true">
+              <svg viewBox="0 0 100 100"><defs><radialGradient id="ballShade" cx="32%" cy="24%"><stop offset="0" stop-color="#fff"/><stop offset=".67" stop-color="#e7edf3"/><stop offset="1" stop-color="#98a5b2"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#ballShade)" stroke="#182331" stroke-width="3"/><path d="M50 24L66 36L60 56H40L34 36Z" fill="#17212c"/><path d="M50 24L42 8M66 36L88 31M60 56L73 76M40 56L26 76M34 36L13 31M42 8Q28 13 13 31M88 31Q75 14 58 8M73 76Q87 61 88 31M26 76Q13 60 13 31M26 76Q50 94 73 76" fill="none" stroke="#17212c" stroke-width="5" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="ball-trail" id="ballTrail" aria-hidden="true"></div>
+            <div class="goal-flash" id="goalFlash" aria-hidden="true"></div>
+            <div class="result-pop" id="resultPop" aria-live="polite"></div>
+            <canvas id="confettiCanvas" class="confetti-canvas" aria-hidden="true"></canvas>
+          </section>
+        </section>
+
+        <aside class="right-rail">
+          <div class="combo-card booster-card hud-card"><span class="booster-icon">🌟</span><div><strong id="comboLabel">Combo x0</strong><small id="comboText">Build a streak!</small></div></div>
+          <div class="booster-card hud-card"><span class="booster-icon">⚡</span><div><strong>Fast Answer</strong><small id="fastAnswerText">Answer under 5 sec</small></div></div>
+          <div class="booster-card hud-card"><span class="booster-icon">📖</span><div><strong>Grammar Hero</strong><small id="grammarHeroText">Keep learning!</small></div></div>
+          <div class="mastery-card hud-card">
+            <h3>Grammar Mastery</h3>
+            <div class="mastery-row"><span>Present Simple</span><b id="presentMasteryLabel">0%</b></div>
+            <div class="mastery-track"><div id="presentMasteryBar" class="mastery-fill present"></div></div>
+            <div class="mastery-row"><span>Past Simple</span><b id="pastMasteryLabel">0%</b></div>
+            <div class="mastery-track"><div id="pastMasteryBar" class="mastery-fill past"></div></div>
+          </div>
+          <div class="progress-card hud-card">
+            <div class="progress-copy"><span>Match Progress</span><b id="matchProgressLabel">0%</b></div>
+            <div class="progress-track"><div id="matchProgressBar"></div></div>
+          </div>
+        </aside>
+      </main>
+    </section>
+
+    <section id="resultScreen" class="screen result-screen" aria-labelledby="resultTitle">
+      <div class="background-image opening-bg" aria-hidden="true"></div>
+      <div class="screen-overlay" aria-hidden="true"></div>
+      <main class="result-card glass-card">
+        <div class="cup-wrap" aria-hidden="true"><div class="cup">🏆</div></div>
+        <p class="result-kicker" id="resultKicker">MATCH COMPLETE</p>
+        <h1 id="resultTitle">Great Match!</h1>
+        <p id="resultMessage" class="result-message"></p>
+
+        <div class="result-stats">
+          <div><span>⚽</span><small>Goals</small><strong id="resultGoals">0/10</strong></div>
+          <div><span>🎯</span><small>Accuracy</small><strong id="resultAccuracy">0%</strong></div>
+          <div><span>🔥</span><small>Best Streak</small><strong id="resultStreak">0</strong></div>
+          <div><span>🏅</span><small>Score</small><strong id="resultScore">0</strong></div>
+          <div><span>🪙</span><small>Coins Earned</small><strong id="resultCoins">0</strong></div>
+          <div><span>⭐</span><small>Stars Earned</small><strong id="resultStars">0</strong></div>
+        </div>
+
+        <section class="coach-note">
+          <h2>Coach’s Grammar Note</h2>
+          <p id="coachNote"></p>
+        </section>
+
+        <section id="badgeShelf" class="badge-shelf" aria-label="Badges earned"></section>
+
+        <div class="result-actions">
+          <button id="playAgainButton" class="primary-button" type="button">⚽ Play Again</button>
+          <button id="homeButton" class="secondary-button" type="button">🏠 Home</button>
+          <button id="resetProgressButton" class="danger-button" type="button">Reset Saved Progress</button>
+        </div>
+      </main>
+    </section>
+  </div>
+
+  <dialog id="howToDialog" class="modal">
+    <form method="dialog">
+      <button class="modal-close" value="close" aria-label="Close">×</button>
+      <h2>How to Play</h2>
+      <ol>
+        <li>Read the grammar question before the timer ends.</li>
+        <li>Choose, type, arrange, or drag the correct answer.</li>
+        <li>Press <strong>Shoot!</strong> to take the penalty.</li>
+        <li>A correct answer scores a goal. A wrong answer is saved by the goalkeeper or goes wide.</li>
+        <li>Build streaks, earn coins and stars, and improve your mastery.</li>
+      </ol>
+      <p class="safety-note">Tip: Word-order and drag-and-drop questions get extra time because they need more actions.</p>
+      <button class="primary-button" value="close">Let’s Play!</button>
+    </form>
+  </dialog>
+
+  <dialog id="pauseDialog" class="modal pause-modal">
+    <form method="dialog">
+      <h2>Game Paused</h2>
+      <p>Your timer is paused. Take a breath, then continue.</p>
+      <button id="resumeButton" class="primary-button" value="close">▶ Resume</button>
+      <button id="quitButton" class="danger-button" value="close">Quit to Home</button>
+    </form>
+  </dialog>
+
+  <template id="badgeTemplate">
+    <article class="earned-badge"><span></span><div><strong></strong><small></small></div></article>
+  </template>
+
+  <script src="questions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
