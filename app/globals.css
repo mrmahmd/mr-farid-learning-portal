@@ -1916,3 +1916,25 @@ body.portal-arabic .access-drawer-backdrop * {
 @keyframes playLearnPulse { 0%,100% { transform: rotate(-3deg) scale(1); } 50% { transform: rotate(3deg) scale(1.09); } }
 @media (max-width: 760px) { .play-learn-card { padding: 17px; border-radius: 25px; }.play-learn-heading { margin-bottom: 22px; }.play-learn-game-card { grid-template-columns: 1fr; border-radius: 23px; }.play-learn-art { min-height: 235px; }.play-learn-copy { padding: 26px 22px 28px; }.play-learn-copy p { font-size: 15px; }.play-learn-launch { width: 100%; } }
 @media (prefers-reduced-motion: reduce) { .play-learn-pills .play-learn-new { animation: none; } }
+
+/* Keep the expanded portal navigation comfortable in both languages. */
+.site-header { width: min(1800px, calc(100% - 40px)); grid-template-columns: 180px minmax(0, 1fr) auto; gap: 14px; }
+.desktop-nav { gap: 5px; }
+.desktop-nav a { padding: 9px 10px; font-size: 13px; }
+.header-actions { gap: 6px; }
+.header-actions a, .header-actions button { font-size: 13px; }
+@media (max-width: 1420px) and (min-width: 861px) {
+  .site-header { grid-template-columns: 155px minmax(0,1fr) auto; gap: 7px; padding-left: 10px; padding-right: 10px; }
+  .brand { gap: 8px; }
+  .brand-mark { width: 43px; height: 43px; }
+  .brand-name strong { font-size: 16px; }
+  .desktop-nav { gap: 3px; }
+  .desktop-nav a { padding: 8px 7px; font-size: 11px; }
+  .header-actions { gap: 4px; }
+  .language-toggle, .nav-login, .nav-create { min-height: 38px; padding-left: 8px; padding-right: 8px; font-size: 11px; }
+}
+@media (max-width: 1180px) {
+  .site-header { grid-template-columns: 1fr auto; }
+  .desktop-nav, .header-actions { display: none; }
+  .mobile-menu { display: block; justify-self: end; }
+}

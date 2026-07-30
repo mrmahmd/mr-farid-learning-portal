@@ -322,7 +322,10 @@ function applyLanguage(language: PortalLanguage) {
     // React can replace a header action after authentication (for example,
     // Sign In becomes Student Dashboard). Treat that rendered value as the
     // new English source instead of reusing the previous button label.
-    if (storedSource && currentValue !== expectedValue) {
+    // When changing Arabic back to English, the visible value is expected to
+    // be the Arabic translation. Keep the stored English source instead of
+    // accidentally promoting that translated value to the new source.
+    if (storedSource && currentValue !== expectedValue && currentValue !== translatedText(storedSource)) {
       source = currentValue;
       element.setAttribute("data-portal-en-text", source);
     }
@@ -364,7 +367,7 @@ function applyLanguage(language: PortalLanguage) {
         saved.set(attribute, source);
       } else if (value && source) {
         const expectedValue = language === "ar" ? placeholders[source] ?? translations[source] ?? source : source;
-        if (value !== expectedValue) {
+        if (value !== expectedValue && value !== (placeholders[source] ?? translations[source] ?? source)) {
           source = value;
           saved.set(attribute, source);
         }
