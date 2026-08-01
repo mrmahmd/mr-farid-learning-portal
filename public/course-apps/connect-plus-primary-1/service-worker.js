@@ -1,41 +1,42 @@
-const CACHE = 'connect-plus-p1-v2';
-const FILES = [
-  './',
-  './index.html',
-  './css/styles.css',
-  './js/data.js',
-  './js/app.js',
-  './js/portal-progress.js',
-  './manifest.webmanifest',
-  './assets/icons/app-icon.svg',
-  './assets/images/splash.png',
-  './assets/images/theme1.png',
-  './assets/images/theme2.png',
-  './assets/images/unit1.png',
-  './assets/images/unit2.png',
-  './assets/images/unit3.png',
-  './assets/images/unit4.png',
-  './assets/images/unit5.png',
-  './assets/images/unit6.png'
+const CACHE = "connect-plus-primary-1-stations-v1";
+const APP_SHELL = [
+  "./",
+  "./index.html",
+  "./styles.css",
+  "./course-data.js",
+  "./app.js",
+  "./js/portal-progress.js",
+  "./manifest.json",
+  "./assets/welcome.png",
+  "./assets/unit1.png",
+  "./assets/unit2.png",
+  "./assets/unit3.png",
+  "./assets/unit4.png",
+  "./assets/unit5.png",
+  "./assets/unit6.png",
 ];
 
-self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)));
+self.addEventListener("install", (event) => {
+  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(APP_SHELL)));
   self.skipWaiting();
 });
 
-self.addEventListener('activate', event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)))));
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key)))),
+  );
   self.clients.claim();
 });
 
-self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
+self.addEventListener("fetch", (event) => {
+  if (event.request.method !== "GET") return;
   event.respondWith(
-    caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
-      const copy = response.clone();
-      caches.open(CACHE).then(cache => cache.put(event.request, copy));
-      return response;
-    }).catch(() => caches.match('./index.html')))
+    fetch(event.request)
+      .then((response) => {
+        const copy = response.clone();
+        caches.open(CACHE).then((cache) => cache.put(event.request, copy));
+        return response;
+      })
+      .catch(() => caches.match(event.request).then((cached) => cached || caches.match("./index.html"))),
   );
 });

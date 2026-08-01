@@ -1,0 +1,9 @@
+{
+  "name": "Connect Plus Primary 1",
+  "short_name": "Connect Plus 1",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f8ff",
+  "theme_color": "#635bff",
+  "icons": []
+}

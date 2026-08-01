@@ -148,6 +148,7 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
 
   const embeddedApps: Record<string, string> = {
     "english-primary-1": "/course-apps/english-primary-1/index.html",
+    "connect-plus-primary-1": "/course-apps/connect-plus-primary-1/index.html",
     "english-primary-2": "/course-apps/english-primary-2/index.html",
     "english-primary-3": "/course-apps/english-primary-3/index.html",
     "connect-plus-primary-4": "/course-apps/connect-plus-primary-4/index.html",
@@ -160,7 +161,7 @@ export function AuthenticatedCourse({ curriculum }: { curriculum: Curriculum }) 
   const arabic = portalLanguage === "ar";
 
   if (embeddedApp) {
-    const cacheVersion = curriculum.slug === "english-primary-1" ? "&v=20260718-6" : curriculum.slug === "english-primary-2" ? "&v=20260729-2" : curriculum.slug === "english-primary-3" ? "&v=20260719-2" : curriculum.slug === "english-primary-4" ? "&v=20260717-12" : curriculum.slug === "english-primary-5" ? "&v=20260726-6" : curriculum.slug === "english-primary-6" ? "&v=20260729-1" : curriculum.slug === "connect-plus-primary-4" ? "&v=20260717-10" : "";
+    const cacheVersion = curriculum.slug === "english-primary-1" ? "&v=20260718-6" : curriculum.slug === "connect-plus-primary-1" ? "&v=20260801-1" : curriculum.slug === "english-primary-2" ? "&v=20260729-2" : curriculum.slug === "english-primary-3" ? "&v=20260719-2" : curriculum.slug === "english-primary-4" ? "&v=20260717-12" : curriculum.slug === "english-primary-5" ? "&v=20260726-6" : curriculum.slug === "english-primary-6" ? "&v=20260729-1" : curriculum.slug === "connect-plus-primary-4" ? "&v=20260717-10" : "";
     const appUrl = `${portalAsset(embeddedApp)}?student=${encodeURIComponent(studentName)}&studentId=${encodeURIComponent(sessionBridge.userId)}${cacheVersion}${shouldResume ? "&resume=1" : ""}${isSample ? "&sample=1" : ""}`;
 
     return (
