@@ -4,7 +4,9 @@
   const COURSE = window.COURSE_DATA;
   const APP_VERSION = window.APP_BUILD_VERSION || '2026.07.29.3';
   const params = new URLSearchParams(location.search);
-  const sampleMode = params.get('sample') === '1';
+  // Direct links are always a free sample. Full access is granted only by the
+  // signed-in portal frame, which passes sample=0 after it has checked access.
+  let sampleMode = params.get('sample') === '1' || window.parent === window;
   const student = { id: params.get('studentId') || 'guest', name: params.get('studentName') || 'Student', className: 'Primary 6' };
   let storageKey = `mrfarid-primary6-term1:${student.id}`;
   const reloadRouteKey = () => `mrfarid-primary6-reload-route:${student.id}`;
@@ -1148,6 +1150,25 @@
   };
   window.addEventListener('message', (event) => {
     if (event.data?.type === 'PLATFORM_STUDENT' && event.data.student) window.Primary6App.setStudent(event.data.student);
+    if (event.data?.type === 'mrfarid-course-entry') {
+      const isRefresh = performance.getEntriesByType('navigation')[0]?.type === 'reload';
+      if (event.data.destination === 'resume') {
+        route = reloadRoute || state.lastRoute || { name: 'dashboard' };
+      } else if (!isRefresh) {
+        // A normal portal visit always starts at the course dashboard. A browser
+        // refresh is handled separately so the learner stays on the same page.
+        route = { name: 'dashboard' };
+      }
+      if (state.started) render();
+    }
+    if (event.data?.type === 'mrfarid-course-access') {
+      sampleMode = event.data.mode === 'sample';
+      if (sampleMode && !isSampleRouteAllowed(route)) {
+        navigate({ name: 'dashboard' });
+      } else if (state.started) {
+        render();
+      }
+    }
   });
 
   updateChrome();
@@ -1183,5 +1204,5 @@
 })();
 
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20260729-3').then((registration) => registration.update()).catch(() => {}));
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20260801-1').then((registration) => registration.update()).catch(() => {}));
 }

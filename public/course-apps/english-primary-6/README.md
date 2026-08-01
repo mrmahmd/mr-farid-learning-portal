@@ -13,7 +13,7 @@ A complete static interactive learning website prepared and designed by **Mr.Moh
 - Single-word correction: one wrong word is highlighted in red and the student writes only its correct form.
 - Questions grouped by type inside every lesson and unit bank.
 - Wrong-answer feedback with the correct answer and a short explanation.
-- Points, progress percentages, badges, finished status, saved writing, and automatic local progress saving.
+- Points, progress percentages, badges, finished status, saved writing, automatic local progress saving, and cloud synchronisation when opened through Mr.Farid Learning Portal.
 - High-resolution 3D cinematic cover artwork for the main screen and every unit.
 - Responsive desktop, tablet, and mobile layout.
 - Mouse drag-and-drop plus tap-to-place support for touch devices.
@@ -76,3 +76,9 @@ Every one of the 30 lessons contains a full teaching sequence rather than a shor
 - Pronunciation and speaking guidance.
 - A detailed writing workshop with ordered steps, useful language, a model structure, a writing area, and a checklist.
 - A final key-points review before practice.
+
+## Complete Fixed Build
+
+This package is build **2026.07.29.3**. It includes the repaired interactive controls, a runtime data-integrity layer, cache-safe updates, and the included QA reports.
+
+When replacing an older hosted version, upload **all files together**, including `qa-fixes.js` and `sw.js`. Then refresh the site once. The new service worker removes the older cached build automatically.
