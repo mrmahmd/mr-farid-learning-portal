@@ -22,6 +22,13 @@ function progressPercent(course: Curriculum, row?: CourseRow) {
   return Math.max(0, Math.min(100, Math.round((count / 24) * 100)));
 }
 
+function savedActivity(state: Record<string, unknown> | undefined) {
+  if (!state) return undefined;
+  const nested = (state.progress && typeof state.progress === "object" ? state.progress : {}) as Record<string, unknown>;
+  const activity = state.portalLastActivity ?? state.lastActivity ?? nested.portalLastActivity ?? nested.lastActivity;
+  return activity && typeof activity === "object" ? activity as Record<string, unknown> : undefined;
+}
+
 export default function StudentDashboardPage() {
   const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [rows, setRows] = useState<CourseRow[]>([]);
@@ -39,7 +46,7 @@ export default function StudentDashboardPage() {
     async function load() {
       const { data: sessionData } = await supabase.auth.getSession();
       if (!sessionData.session) { router.replace("/login"); return; }
-      const [{ data: profileData }, { data: progressData }] = await Promise.all([
+      const [{ data: profileData }, { data: progressData, error: progressError }] = await Promise.all([
         supabase.from("profiles").select("id, full_name, username, role, created_at").eq("id", sessionData.session.user.id).single<StudentProfile>(),
         supabase.from("course_progress").select("app_id, state, updated_at").eq("user_id", sessionData.session.user.id).order("updated_at", { ascending: false }),
       ]);
@@ -48,7 +55,7 @@ export default function StudentDashboardPage() {
       setEditName(profileData?.full_name ?? "");
       setEditUsername(profileData?.username ?? "");
       setRows((progressData ?? []) as CourseRow[]);
-      setStatus(profileData ? "" : "We could not load your profile.");
+      setStatus(progressError ? `We could not load your saved progress: ${progressError.message}` : profileData ? "" : "We could not load your profile.");
     }
     void load();
     return () => { active = false; };
@@ -77,10 +84,9 @@ export default function StudentDashboardPage() {
 
   if (!profile || access.loading || access.mustChangePassword || access.grade === null) return <InnerPageShell className="student-dashboard-page"><section className="student-dashboard-loading"><span className="mini-logo">MF</span><h1>Student Dashboard</h1><p>{status}</p></section></InnerPageShell>;
 
-  const latest = rows[0];
+  const latest = rows.find((row) => savedActivity(row.state)) ?? rows[0];
   const latestCourse = latest ? courseFromAppId(latest.app_id) : null;
-  const latestState = (latest?.state?.progress ?? latest?.state) as Record<string, unknown> | undefined;
-  const latestActivity = (latestState?.portalLastActivity ?? latestState?.lastActivity) as Record<string, unknown> | undefined;
+  const latestActivity = savedActivity(latest?.state);
 
   return (
     <InnerPageShell className="student-dashboard-page">

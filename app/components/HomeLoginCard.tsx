@@ -207,6 +207,7 @@ export function HomeLoginCard() {
       const { data: progressRows } = await supabase
         .from("course_progress")
         .select("app_id, state, updated_at")
+        .eq("user_id", data.session.user.id)
         .order("updated_at", { ascending: false });
 
       if (!isActive) return;
