@@ -45,7 +45,7 @@ export default function PlayLearnPage() {
             className="play-learn-art"
             role="img"
             aria-label="Pronoun Blaster grammar galaxy game"
-            style={{ backgroundImage: `url(${portalAsset("/marketing/games.png")})` }}
+            style={{ backgroundImage: `url(${portalAsset("/play-learn/pronoun-blaster/game-cover.svg")})` }}
           />
           <div className="play-learn-copy">
             <div className="play-learn-pills">

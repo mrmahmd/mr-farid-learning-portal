@@ -1925,8 +1925,8 @@ body.portal-arabic .access-drawer-backdrop * {
 .play-learn-levels span { padding: 9px 8px; border: 1px solid rgba(112,132,233,.28); border-radius: 12px; color: #4e45bc; background: rgba(255,255,255,.74); font-size: 12px; font-weight: 1000; text-align: center; }
 .play-learn-levels span:nth-child(2) { color: #128c7e; }.play-learn-levels span:nth-child(3) { color: #c77b13; }.play-learn-levels span:nth-child(4) { color: #b94389; }
 .play-learn-timer { margin: auto 0 0; padding: 13px; border-radius: 15px; color: #3e5793; background: rgba(225,234,255,.78); font-size: 13px; font-weight: 950; line-height: 1.45; text-align: center; }
-.play-learn-showcase { grid-template-columns: 1fr; }
-.play-learn-howto { max-width: none; }
+.play-learn-showcase { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.play-learn-howto { grid-column: 1 / -1; max-width: none; }
 @keyframes playLearnPulse { 0%,100% { transform: rotate(-3deg) scale(1); } 50% { transform: rotate(3deg) scale(1.09); } }
 @media (max-width: 1040px) { .play-learn-showcase { grid-template-columns: 1fr; }.play-learn-howto { max-width: none; }.play-learn-howto ol { grid-template-columns: repeat(3,minmax(0,1fr)); }.play-learn-howto li { grid-template-columns: 1fr; }.play-learn-howto li b { margin: 0 auto; } }
 @media (max-width: 760px) { .play-learn-card { padding: 17px; border-radius: 25px; }.play-learn-heading { margin-bottom: 22px; }.play-learn-game-card { grid-template-columns: 1fr; border-radius: 23px; }.play-learn-art { min-height: 235px; }.play-learn-copy { padding: 26px 22px 28px; }.play-learn-copy p { font-size: 15px; }.play-learn-launch { width: 100%; }.play-learn-howto { padding: 25px 20px; border-radius: 23px; }.play-learn-howto ol { grid-template-columns: 1fr; }.play-learn-howto li { grid-template-columns: 30px 1fr; }.play-learn-howto li b { margin: 0; } }
