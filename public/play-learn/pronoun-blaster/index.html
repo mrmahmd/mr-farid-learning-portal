@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#eaf8ff" />
+  <title>Pronoun Blaster | Mr.Mohamed Farid</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-lockup" aria-label="Pronoun Blaster">
+        <span class="brand-orbit" aria-hidden="true">◎</span>
+        <div>
+          <strong>PRONOUN BLASTER</strong>
+          <small>Bright Grammar Galaxy</small>
+        </div>
+      </div>
+      <div class="teacher-credit">Prepared and Designed by: <b>Mr.Mohamed Farid</b></div>
+      <button id="soundToggle" class="icon-button" type="button" aria-label="Toggle sound" title="Toggle sound">🔊</button>
+    </header>
+
+    <main>
+      <section id="startScreen" class="screen active" aria-labelledby="startTitle">
+        <div class="start-grid">
+          <div class="hero-copy">
+            <span class="eyebrow">A SHOOTING GRAMMAR ADVENTURE</span>
+            <h1 id="startTitle">Save the galaxy with the right pronoun.</h1>
+            <p>Read the sentence, aim carefully, and blast the correct answer before time runs out.</p>
+
+            <div class="feature-row" aria-label="Game features">
+              <div><span>⚡</span><b>Fast missions</b><small>18-second questions</small></div>
+              <div><span>🎯</span><b>Smart practice</b><small>Subject and object pronouns</small></div>
+              <div><span>🏆</span><b>Rewards</b><small>Points, combos and badges</small></div>
+            </div>
+          </div>
+
+          <div class="start-card">
+            <div class="mascot-wrap" aria-hidden="true">
+              <svg viewBox="0 0 260 210" role="img" aria-label="Friendly space robot">
+                <defs>
+                  <linearGradient id="helmet" x1="0" x2="1">
+                    <stop stop-color="#6ee7ff" />
+                    <stop offset="1" stop-color="#7067ff" />
+                  </linearGradient>
+                </defs>
+                <ellipse cx="130" cy="188" rx="94" ry="15" fill="rgba(0,0,0,.25)" />
+                <path d="M62 112c0-48 31-84 68-84s68 36 68 84v58H62z" fill="url(#helmet)" />
+                <path d="M78 105c0-35 24-62 52-62s52 27 52 62v42H78z" fill="#0d1832" stroke="#b7f2ff" stroke-width="5" />
+                <circle cx="108" cy="101" r="10" fill="#a7f3d0" />
+                <circle cx="152" cy="101" r="10" fill="#a7f3d0" />
+                <path d="M108 126c13 10 31 10 44 0" fill="none" stroke="#a7f3d0" stroke-width="7" stroke-linecap="round" />
+                <rect x="95" y="153" width="70" height="35" rx="15" fill="#101b38" stroke="#fff" stroke-width="4" />
+                <circle cx="130" cy="170" r="8" fill="#fde68a" />
+              </svg>
+            </div>
+
+            <label for="playerName">Pilot name</label>
+            <input id="playerName" type="text" maxlength="18" autocomplete="name" placeholder="Enter your name" />
+
+            <fieldset>
+              <legend>Choose your pilot</legend>
+              <div class="avatar-grid">
+                <label class="avatar-option"><input type="radio" name="avatar" value="astro-boy" checked /><span>🧑‍🚀</span><small>Astro</small></label>
+                <label class="avatar-option"><input type="radio" name="avatar" value="astro-girl" /><span>👩‍🚀</span><small>Nova</small></label>
+                <label class="avatar-option"><input type="radio" name="avatar" value="robot" /><span>🤖</span><small>Byte</small></label>
+              </div>
+            </fieldset>
+
+            <button id="startButton" class="primary-button" type="button">Start Adventure <span>→</span></button>
+            <button id="howToButton" class="text-button" type="button">How to play</button>
+            <p id="nameError" class="form-error" role="alert"></p>
+          </div>
+        </div>
+      </section>
+
+      <section id="mapScreen" class="screen" aria-labelledby="mapTitle">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">MISSION MAP</span>
+            <h2 id="mapTitle">Choose your next planet</h2>
+            <p id="welcomeText"></p>
+          </div>
+          <div class="profile-pill"><span id="profileAvatar">🧑‍🚀</span><b id="profileName">Pilot</b><small id="totalStars">0 stars</small></div>
+        </div>
+
+        <div id="levelGrid" class="level-grid"></div>
+
+        <div class="map-actions">
+          <button id="resetProgress" class="danger-button" type="button">Reset progress</button>
+        </div>
+      </section>
+
+      <section id="gameScreen" class="screen" aria-labelledby="missionName">
+        <div class="game-hud">
+          <div class="hud-group">
+            <button id="backToMap" class="icon-button" type="button" aria-label="Back to mission map">←</button>
+            <div><small>Mission</small><b id="missionName">Subject Planet</b><span id="missionDifficulty" class="difficulty-pill">Starter</span></div>
+          </div>
+          <div class="hud-stats">
+            <div><small>Score</small><b id="scoreValue">0</b></div>
+            <div><small>Combo</small><b id="comboValue">x1</b></div>
+            <div><small>Lives</small><b id="livesValue">❤❤❤</b></div>
+          </div>
+        </div>
+
+        <div class="progress-track" aria-label="Mission progress"><span id="progressBar"></span></div>
+
+        <div class="sentence-panel">
+          <div class="question-meta"><span id="questionType">Choose the correct pronoun</span><span id="questionCount">1 / 12</span></div>
+          <p id="questionSentence">Sara is my friend. ___ is kind.</p>
+          <div class="timer-wrap" aria-label="Time remaining">
+            <span id="timerText">18</span>
+            <div class="timer-track"><span id="timerBar"></span></div>
+          </div>
+        </div>
+
+        <div id="playfield" class="playfield" role="application" aria-label="Pronoun shooting area">
+          <canvas id="gameCanvas" width="960" height="540"></canvas>
+          <div class="scan-lines" aria-hidden="true"></div>
+          <div id="comboToast" class="combo-toast" aria-live="polite"></div>
+        </div>
+
+        <div class="game-help">Tap the correct target. The blaster always stays visible on your screen.</div>
+      </section>
+
+      <section id="resultScreen" class="screen" aria-labelledby="resultTitle">
+        <div class="result-card">
+          <div id="resultMedal" class="result-medal">🏆</div>
+          <span class="eyebrow">MISSION COMPLETE</span>
+          <h2 id="resultTitle">Excellent work!</h2>
+          <p id="resultMessage"></p>
+
+          <div class="result-stats">
+            <div><small>Score</small><b id="finalScore">0</b></div>
+            <div><small>Accuracy</small><b id="finalAccuracy">0%</b></div>
+            <div><small>Best combo</small><b id="finalCombo">x1</b></div>
+          </div>
+
+          <div id="learningTip" class="learning-tip"></div>
+          <div class="result-actions">
+            <button id="playAgain" class="secondary-button" type="button">Play again</button>
+            <button id="nextMission" class="primary-button" type="button">Next mission <span>→</span></button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="howToDialog" class="game-dialog">
+    <form method="dialog">
+      <button class="dialog-close" aria-label="Close">×</button>
+      <span class="eyebrow">HOW TO PLAY</span>
+      <h2>Become a Pronoun Hero</h2>
+      <ol class="steps-list">
+        <li><span>1</span><div><b>Read the sentence</b><small>Find whether the missing word is a subject or an object.</small></div></li>
+        <li><span>2</span><div><b>Aim at the correct target</b><small>Tap or click the floating pronoun.</small></div></li>
+        <li><span>3</span><div><b>Build your combo</b><small>Correct answers in a row multiply your score.</small></div></li>
+      </ol>
+      <div class="rule-card"><b>Quick rule</b><p><strong>Subject:</strong> He plays. &nbsp; <strong>Object:</strong> I see him.</p></div>
+      <button class="primary-button" value="close">Ready!</button>
+    </form>
+  </dialog>
+
+  <dialog id="feedbackDialog" class="game-dialog feedback-dialog">
+    <div id="feedbackIcon" class="feedback-icon">💡</div>
+    <span id="feedbackLabel" class="eyebrow">LEARNING TIP</span>
+    <h2 id="feedbackTitle">Almost!</h2>
+    <p id="feedbackSentence"></p>
+    <div id="feedbackExplanation" class="rule-card"></div>
+    <button id="gotItButton" class="primary-button" type="button">Got it!</button>
+  </dialog>
+
+  <script src="game.js"></script>
+</body>
+</html>
