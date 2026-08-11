@@ -1,0 +1,25 @@
+CONNECT PLUS 2 – PIXAR VISUAL EDITION V3
+
+1. Upload the CONTENTS of this folder. Keep index.html at the repository/site root.
+2. The course opens directly on Dashboard. There is NO student-name entry screen.
+3. Student information can come from the parent platform. See PLATFORM_INTEGRATION.md.
+4. Keep the assets/ folder and all of its subfolders exactly as supplied.
+5. New V3 visuals:
+   - 6 unit covers in assets/covers/
+   - 229 picture vocabulary assets in assets/vocab/
+   - new lesson/special visuals in assets/lesson-media-new/
+6. For GitHub Pages, preserve the complete folder structure.
+7. For local testing, use a static HTTP server / Live Server.
+
+Course contents:
+- Let's Remember
+- 6 units / 18 core lessons
+- 30 questions per core lesson
+- 50-question bank per unit
+- Review 1 + Review 2
+- Animals in the Wild
+- The Gingerbread Man story
+- Local progress saving
+- Platform answer/completion events
+
+Prepared and Designed by: Mr.Mohamed Farid
