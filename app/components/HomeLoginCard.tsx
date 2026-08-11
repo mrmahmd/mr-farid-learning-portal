@@ -27,6 +27,10 @@ const COURSE_DETAILS: Record<string, { title: string; slug: string }> = {
     title: "English Primary 2 - First Term",
     slug: "english-primary-2",
   },
+  "connect-plus-primary-2-first-term": {
+    title: "Connect Plus Primary 2 - First Term",
+    slug: "connect-plus-primary-2",
+  },
   "connect-plus-primary-1-first-term": {
     title: "Connect Plus Primary 1 – First Term",
     slug: "connect-plus-primary-1",

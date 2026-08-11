@@ -1414,7 +1414,7 @@
 
   render();
   window.MrFaridCourseProgress?.connect({
-    courseId: 'connect-plus-primary-2',
+    courseId: 'connect-plus-primary-2-first-term',
     getState: () => progress,
     setState: next => { progress = next; saveProgress(); render(); },
     mergeState: mergeProgress,
