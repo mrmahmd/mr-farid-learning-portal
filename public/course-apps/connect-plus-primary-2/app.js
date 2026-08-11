@@ -175,7 +175,7 @@
     const unit = COURSE_DATA.units.find(item => item.id === route.unitId);
     const lesson = unit?.lessons.find(item => item.id === route.lessonId);
     const detail = route.view === 'dashboard' ? 'Dashboard' : route.view === 'lesson' ? `${unit?.title || 'Unit'} / ${lesson?.title || 'Lesson'}` : route.view === 'unit' ? `Unit ${unit?.number || ''}` : route.view === 'bank' ? `Unit ${unit?.number || ''} Question Bank` : route.view;
-    return { detail, path: { ...route }, title: 'Connect Plus Primary 2', unit: unit?.number || null, lesson: lesson?.title || null };
+    return { courseTitle: 'Connect Plus Primary 2 - First Term', detail, path: { ...route }, title: 'Connect Plus Primary 2', unit: unit?.number || null, lesson: lesson?.title || null };
   }
 
   function emitPlatformEvent(type, payload = {}) {
@@ -1267,6 +1267,13 @@
     }
 
     progress.answers[question.id] = { answer, correct: isCorrect, timestamp: new Date().toISOString() };
+    const activity = currentActivity();
+    progress.portalLastActivity = {
+      ...activity,
+      detail: `${activity.detail} / Practice question ${(route.qIndex || 0) + 1}`,
+      questionId: question.id,
+      contentId,
+    };
     if (isCorrect) {
       progress.points += 10;
       confettiBurst();
