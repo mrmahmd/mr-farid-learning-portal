@@ -39,6 +39,11 @@ jobs:
       - name: Build static portal
         run: npm run build:github-pages
 
+      # Keep this standalone curriculum application in the Pages artifact.
+      # Next's static exporter can omit newly added public subdirectories.
+      - name: Copy Connect Plus Primary 2 application
+        run: mkdir -p out/course-apps && cp -R public/course-apps/connect-plus-primary-2 out/course-apps/
+
       - name: Disable Jekyll processing
         run: touch out/.nojekyll
 
