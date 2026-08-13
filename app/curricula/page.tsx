@@ -5,6 +5,7 @@ import { InnerPageShell } from "../components/InnerPageShell";
 import { CurriculumCover } from "../components/CurriculumCover";
 import { SubscriptionNotice } from "../components/SubscriptionNotice";
 import { canOpenCurriculum, canOpenGrade, isSampleAllAccess, useStudentAccess } from "../lib/useStudentAccess";
+import { curricula } from "../data/curricula";
 
 const grades = [1, 2, 3, 4, 5, 6];
 
@@ -47,7 +48,9 @@ export default function CurriculaPage() {
         </div>
 
         <div className="grade-grid stage-centered-grid">
-          {visibleGrades.map((grade) => (
+          {visibleGrades.map((grade) => {
+            const englishCourse = curricula.find((course) => course.grade === grade && course.type === "english");
+            return (
             <article className={`grade-card${canOpenGrade(grade, access) ? " grade-subscription-open" : " grade-subscription-locked"}`} key={grade}>
               <header>
                 <span className="grade-number">P{grade}</span>
@@ -65,7 +68,7 @@ export default function CurriculaPage() {
                     <strong>English Primary {grade}</strong>
                     <small>English Curriculum</small>
                     <div className="curriculum-terms" aria-label="Available terms">
-                      <div className="curriculum-term"><strong>First Term</strong>{[1, 2, 3, 4, 5, 6].includes(grade) && (canOpenCurriculum(`english-primary-${grade}`, grade, access) ? <Link className="new-curriculum-entry" href={`/courses/english-primary-${grade}`}>Enter</Link> : <button className="curriculum-locked-entry" type="button" disabled>🔒 Locked</button>)}</div>
+                      <div className="curriculum-term"><strong>First Term</strong>{englishCourse?.availability === "available" ? (canOpenCurriculum(englishCourse.slug, grade, access) ? <Link className="new-curriculum-entry" href={`/courses/${englishCourse.slug}`}>Enter</Link> : <button className="curriculum-locked-entry" type="button" disabled>🔒 Locked</button>) : <span>Coming soon</span>}</div>
                       <div className="curriculum-term unavailable"><strong>Second Term</strong><span>Coming soon</span></div>
                     </div>
                   </div>
@@ -82,7 +85,7 @@ export default function CurriculaPage() {
                 </div>
               </div>
             </article>
-          ))}
+          )})}
         </div>
       </section>
     </InnerPageShell>

@@ -1,5 +1,9 @@
 import { portalAsset } from "../asset-path";
 import { InnerPageShell } from "../components/InnerPageShell";
+import { getContentBySlug } from "../lib/content-registry";
+
+const grammarGoalGame = getContentBySlug("grammar-goal-champions", "free-game");
+const pronounBlasterGame = getContentBySlug("pronoun-blaster", "free-game");
 
 export default function PlayLearnPage() {
   return (
@@ -19,14 +23,14 @@ export default function PlayLearnPage() {
             className="play-learn-art"
             role="img"
             aria-label="Children playing football in an English learning game"
-            style={{ backgroundImage: `url(${portalAsset("/play-learn/grammar-goal-champions/assets/opening-bg.webp")})` }}
+            style={{ backgroundImage: `url(${portalAsset(grammarGoalGame?.artworkPath ?? "")})` }}
           />
           <div className="play-learn-copy">
             <div className="play-learn-pills">
               <span className="play-learn-new">New</span>
               <span>Free for everyone</span>
             </div>
-            <h2>Grammar Goal Champions</h2>
+            <h2>{grammarGoalGame?.title.en ?? "Grammar Goal Champions"}</h2>
             <p>
               Take the perfect penalty kick! Practise Present Simple and Past Simple through quick grammar challenges,
               goal celebrations, and friendly competition.
@@ -36,7 +40,7 @@ export default function PlayLearnPage() {
               <span>Past Simple</span>
               <span>Primary 3–6</span>
             </div>
-            <a className="play-learn-launch" href={portalAsset("/play-learn/grammar-goal-champions/")}>Open Game <b aria-hidden="true">→</b></a>
+            <a className="play-learn-launch" href={portalAsset(grammarGoalGame?.route ?? "#")}>Open Game <b aria-hidden="true">→</b></a>
           </div>
         </article>
 
@@ -45,14 +49,14 @@ export default function PlayLearnPage() {
             className="play-learn-art"
             role="img"
             aria-label="Pronoun Blaster grammar galaxy game"
-            style={{ backgroundImage: `url(${portalAsset("/play-learn/pronoun-blaster/game-cover.svg")})` }}
+            style={{ backgroundImage: `url(${portalAsset(pronounBlasterGame?.artworkPath ?? "")})` }}
           />
           <div className="play-learn-copy">
             <div className="play-learn-pills">
               <span className="play-learn-new">New</span>
               <span>Free for everyone</span>
             </div>
-            <h2>Pronoun Blaster: Grammar Galaxy</h2>
+            <h2>{pronounBlasterGame?.title.en ?? "Pronoun Blaster: Grammar Galaxy"}</h2>
             <p>
               Blast the correct pronoun and save the galaxy! Practise subject and object pronouns through colourful missions, quick decisions, and rewarding combos.
             </p>
@@ -61,7 +65,7 @@ export default function PlayLearnPage() {
               <span>Object pronouns</span>
               <span>All primary grades</span>
             </div>
-            <a className="play-learn-launch" href={portalAsset("/play-learn/pronoun-blaster/")}>Open Game <b aria-hidden="true">→</b></a>
+            <a className="play-learn-launch" href={portalAsset(pronounBlasterGame?.route ?? "#")}>Open Game <b aria-hidden="true">→</b></a>
           </div>
         </article>
 

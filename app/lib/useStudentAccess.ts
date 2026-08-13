@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { getCurriculumContent } from "./content-registry";
 import { getSupabaseBrowserClient } from "./supabase";
 
 export type StudentAccessState = {
@@ -85,8 +86,16 @@ export function canOpenGrade(grade: number, access: StudentAccessState) {
 }
 
 export function canOpenCurriculum(slug: string, grade: number, access: StudentAccessState) {
+  const curriculum = getCurriculumContent(slug);
+  if (!curriculum || curriculum.availability !== "available" || curriculum.grade !== grade) {
+    return false;
+  }
+
   return canOpenGrade(grade, access)
-    || (access.signedIn && !access.suspended && access.accessMode === "custom" && access.allowedCurricula.includes(slug));
+    || (access.signedIn
+      && !access.suspended
+      && access.accessMode === "custom"
+      && access.allowedCurricula.includes(curriculum.slug));
 }
 
 export function isSampleAccess(grade: number, access: StudentAccessState) {

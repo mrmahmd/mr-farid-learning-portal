@@ -5,17 +5,15 @@ import { InnerPageShell } from "../components/InnerPageShell";
 import { CurriculumCover } from "../components/CurriculumCover";
 import { SubscriptionNotice } from "../components/SubscriptionNotice";
 import { canDownloadBooklets, canOpenCurriculum, canOpenGrade, useStudentAccess } from "../lib/useStudentAccess";
+import { getAvailableContentByKind } from "../lib/content-registry";
 
 const grades = [1, 2, 3, 4, 5, 6];
 const terms = ["First Term", "Second Term"];
-const ENGLISH_FIRST_TERM_BOOKLETS: Record<number, string> = {
-  1: "https://ia600604.us.archive.org/10/items/booklets2026-2027/Primary%201%20first%20term%202027%20Mr.%20Mohamed%20Farid.pdf",
-  2: "https://ia600604.us.archive.org/10/items/booklets2026-2027/Primary%202%20first%20term%202027%20Mr.%20Mohamed%20Farid.pdf",
-  3: "https://ia600604.us.archive.org/10/items/booklets2026-2027/Primary%203%20first%20term%202027%202.pdf",
-  4: "https://ia600604.us.archive.org/10/items/booklets2026-2027/Primary%204%20first%20term%202027%20Mr.%20Mohamed%20Farid.pdf",
-  5: "https://ia600604.us.archive.org/10/items/booklets2026-2027/primary%205%20first%20term%202027%20Mr.%20Mohamed%20Farid.pdf",
-  6: "https://ia600604.us.archive.org/10/items/booklets2026-2027/primary%206%20first%20term%202027%20Mr.%20Mohamed%20Farid.pdf",
-};
+const englishFirstTermBooklets = new Map(
+  getAvailableContentByKind("booklet")
+    .filter((item) => item.track === "english" && item.term === 1 && item.grade !== null && item.downloadUrl)
+    .map((item) => [item.grade as number, item.downloadUrl as string]),
+);
 
 export default function BookletsPage() {
   const access = useStudentAccess();
@@ -31,10 +29,11 @@ export default function BookletsPage() {
       const gradeAvailable = canOpenGrade(grade, access);
       const englishAvailable = canOpenCurriculum(`english-primary-${grade}`, grade, access) && canDownloadBooklets(access);
       const connectAvailable = canOpenCurriculum(`connect-plus-primary-${grade}`, grade, access) && canDownloadBooklets(access);
+      const englishBookletUrl = englishFirstTermBooklets.get(grade);
       return <article className={`booklet-grade-card${gradeAvailable ? " grade-accessible" : " grade-locked"}`} key={grade}>
         <header><span className="grade-number">0{grade}</span><div><small>PRIMARY GRADE</small><h2>Primary {grade}</h2></div>{!gradeAvailable && <span className="grade-lock-badge">🔒 Locked</span>}</header>
         <div className="booklet-resources">
-          <section className="booklet-resource english-booklet"><CurriculumCover type="english" grade={grade} /><div><h3>English Primary {grade}</h3><p>Explanations and printable booklets</p><div className="booklet-term-options">{terms.map((term) => <div className="booklet-term-option" key={term}><strong>{term}</strong>{englishAvailable && term === "First Term" && ENGLISH_FIRST_TERM_BOOKLETS[grade] ? <a className="booklet-download-button" href={ENGLISH_FIRST_TERM_BOOKLETS[grade]} target="_blank" rel="noreferrer">Download PDF ↗</a> : <button type="button" disabled>{englishAvailable ? "Soon" : "Locked"}</button>}</div>)}</div></div></section>
+          <section className="booklet-resource english-booklet"><CurriculumCover type="english" grade={grade} /><div><h3>English Primary {grade}</h3><p>Explanations and printable booklets</p><div className="booklet-term-options">{terms.map((term) => <div className="booklet-term-option" key={term}><strong>{term}</strong>{englishAvailable && term === "First Term" && englishBookletUrl ? <a className="booklet-download-button" href={englishBookletUrl} target="_blank" rel="noreferrer">Download PDF ↗</a> : <button type="button" disabled>{englishAvailable ? "Soon" : "Locked"}</button>}</div>)}</div></div></section>
           <section className="booklet-resource connect-booklet"><CurriculumCover type="connect" grade={grade} /><div><h3>Connect Plus Primary {grade}</h3><p>Explanations and printable booklets</p><div className="booklet-term-options">{terms.map((term) => <div className="booklet-term-option" key={term}><strong>{term}</strong><button type="button" disabled>{connectAvailable ? "Soon" : "Locked"}</button></div>)}</div></div></section>
         </div>
       </article>;

@@ -10,6 +10,7 @@ import {
   isValidUsername,
   usernameToStudentEmail,
 } from "../lib/supabase";
+import { getContentByAppId } from "../lib/content-registry";
 
 type ResumeActivity = {
   courseTitle: string;
@@ -77,8 +78,14 @@ function pageLabel(value: unknown) {
 }
 
 function describeLastActivity(appId: string, rawState: unknown): ResumeActivity | null {
-  const course = COURSE_DETAILS[appId];
+  const registeredContent = getContentByAppId(appId);
+  const course = registeredContent
+    ? { title: registeredContent.title.en, slug: registeredContent.slug }
+    : COURSE_DETAILS[appId];
   if (!course) return null;
+  const resumeHref = registeredContent
+    ? `${portalAsset(registeredContent.route)}${registeredContent.route.includes("?") ? "&" : "?"}resume=1`
+    : `${portalAsset(`/courses/${course.slug}/`)}?resume=1`;
   const state = record(rawState);
   const nestedProgress = record(state.progress);
   const savedActivity = record(
@@ -88,13 +95,13 @@ function describeLastActivity(appId: string, rawState: unknown): ResumeActivity 
     return {
       courseTitle: typeof savedActivity.courseTitle === "string" ? savedActivity.courseTitle : course.title,
       detail: savedActivity.detail,
-      href: `${portalAsset(`/courses/${course.slug}/`)}?resume=1`,
+      href: resumeHref,
       updatedAt: typeof savedActivity.updatedAt === "string" ? savedActivity.updatedAt : undefined,
     };
   }
   let detail = "";
 
-  if (appId === "connect-plus-primary-4-first-term") {
+  if (course.slug === "connect-plus-primary-4") {
     const question = record(state.lastQuestion);
     const page = record(state.lastPage);
     const target = Object.keys(question).length ? question : page;
@@ -114,7 +121,7 @@ function describeLastActivity(appId: string, rawState: unknown): ResumeActivity 
     detail = parts.join(" • ");
   }
 
-  if (appId === "english-primary-4-first-term") {
+  if (course.slug === "english-primary-4") {
     const route = record(state.lastRoute);
     if (!route.type || route.type === "dashboard") return null;
     const activityId = String(route.activityId ?? route.lessonId ?? "");
@@ -140,7 +147,7 @@ function describeLastActivity(appId: string, rawState: unknown): ResumeActivity 
     detail = parts.join(" • ");
   }
 
-  if (appId === "english-primary-1-first-term") {
+  if (course.slug === "english-primary-1") {
     const activity = record(state.lastActivity ?? nestedProgress.lastActivity);
     if (!activity.unitId) return null;
     const parts = [unitLabel(activity.unitId)];
@@ -150,7 +157,7 @@ function describeLastActivity(appId: string, rawState: unknown): ResumeActivity 
     detail = parts.join(" • ");
   }
 
-  if (appId === "connect-plus-primary-1-first-term") {
+  if (course.slug === "connect-plus-primary-1") {
     const last = record(state.lastView);
     const question = record(state.lastQuestion);
     if (Object.keys(question).length && typeof question.setId === "string") {
@@ -163,7 +170,7 @@ function describeLastActivity(appId: string, rawState: unknown): ResumeActivity 
   }
 
   return detail
-    ? { courseTitle: course.title, detail, href: `${portalAsset(`/courses/${course.slug}/`)}?resume=1` }
+    ? { courseTitle: course.title, detail, href: resumeHref }
     : null;
 }
 

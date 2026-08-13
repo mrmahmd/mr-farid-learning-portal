@@ -7,8 +7,12 @@ import { CurriculumCover } from "../components/CurriculumCover";
 import { portalAsset } from "../asset-path";
 import { getSupabaseBrowserClient } from "../lib/supabase";
 import { SubscriptionNotice } from "../components/SubscriptionNotice";
+import { getAvailableContentByKind } from "../lib/content-registry";
 
 const grades = [1, 2, 3, 4, 5, 6];
+const englishAssessmentBooks = getAvailableContentByKind("assessment-book").filter(
+  (item) => item.track === "english" && item.grade !== null,
+);
 
 export default function AssessmentBooksPage() {
   const [access, setAccess] = useState<{ checked: boolean; session: boolean; allowed: boolean; sample: boolean; grade?: number | null; mode?: string; curricula: string[]; userId?: string; studentName?: string }>({ checked: false, session: false, allowed: false, sample: false, curricula: [] });
@@ -43,7 +47,8 @@ export default function AssessmentBooksPage() {
   };
 
   const bookHref = (grade: number) => {
-    const base = portalAsset(`/assessment-books/english-primary-${grade}/`);
+    const registeredBook = englishAssessmentBooks.find((item) => item.grade === grade);
+    const base = portalAsset(registeredBook?.route ?? "#");
     if (!access.userId) return base;
     const query = new URLSearchParams({ studentId: access.userId, studentName: access.studentName ?? "Star Learner", className: `Primary ${grade}` });
     if (access.sample && (access.curricula.includes("__sample_all__") || access.grade === grade)) query.set("sample", "1");
@@ -62,7 +67,7 @@ export default function AssessmentBooksPage() {
         {!access.allowed && <SubscriptionNotice showSignIn={!access.session} />}
         <div className="grade-grid">
           {((access.allowed || access.sample) ? (access.mode === "all" || access.curricula.includes("__sample_all__") ? grades : access.grade ? [access.grade] : []) : []).map((grade) => {
-            const available = grade === 1 || grade === 2 || grade === 4;
+            const available = englishAssessmentBooks.some((item) => item.grade === grade);
             const open = available && canOpen(grade);
             const connectAvailable = false;
             return (

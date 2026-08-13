@@ -5,13 +5,14 @@ import { InnerPageShell } from "../components/InnerPageShell";
 import { portalAsset } from "../asset-path";
 import { canOpenCurriculum, canOpenGrade, isSampleAllAccess, useStudentAccess } from "../lib/useStudentAccess";
 import { SubscriptionNotice } from "../components/SubscriptionNotice";
+import { getAvailableContentByKind } from "../lib/content-registry";
 
 const grades = [1, 2, 3, 4, 5, 6];
-const englishGameWorlds: Record<number, string> = {
-  1: "/games/english-primary-1-game-world/",
-  3: "/games/english-primary-3-games/",
-  4: "/games/english-primary-4-games/",
-};
+const englishGameWorlds = new Map(
+  getAvailableContentByKind("curriculum-game")
+    .filter((item) => item.track === "english" && item.grade !== null)
+    .map((item) => [item.grade as number, item.route]),
+);
 
 export default function GamesPage() {
   const access = useStudentAccess();
@@ -71,7 +72,7 @@ export default function GamesPage() {
             const gradeAvailable = canOpenGrade(grade, access);
             const englishAvailable = canOpenCurriculum(`english-primary-${grade}`, grade, access);
             const connectAvailable = canOpenCurriculum(`connect-plus-primary-${grade}`, grade, access);
-            const englishGames = englishGameWorlds[grade];
+            const englishGames = englishGameWorlds.get(grade);
             return (
               <article className={`game-grade-card${gradeAvailable ? " grade-accessible" : " grade-locked"}`} key={grade}>
                 <header>

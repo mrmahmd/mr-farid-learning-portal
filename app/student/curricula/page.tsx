@@ -119,7 +119,9 @@ export default function StudentCurriculaPage() {
         {access.accessMode !== "grade" && access.accessMode !== "all" && <SubscriptionNotice />}
         <div className="student-grade-grid">
           {visibleGrades.map((grade) => {
-            const gradeAvailable = curricula.filter((curriculum) => curriculum.grade === grade).some((curriculum) => canOpenCurriculum(curriculum.slug, grade, access));
+            const gradeAvailable = curricula
+              .filter((curriculum) => curriculum.grade === grade && curriculum.availability === "available")
+              .some((curriculum) => canOpenCurriculum(curriculum.slug, grade, access));
             return (
             <article className={`student-grade-card${gradeAvailable ? " grade-accessible" : " grade-locked"}`} key={grade}>
               <div className="student-grade-card-hero">
@@ -136,22 +138,25 @@ export default function StudentCurriculaPage() {
               </header>
 
                 <div className="student-course-options">
-                  {curricula.filter((curriculum) => curriculum.grade === grade).map((curriculum) => (
-                    <section className={`student-course-group ${curriculum.type}-course-group${canOpenCurriculum(curriculum.slug, grade, access) ? "" : " course-locked"}`} key={curriculum.slug}>
+                  {curricula.filter((curriculum) => curriculum.grade === grade).map((curriculum) => {
+                    const curriculumAvailable = curriculum.availability === "available";
+                    const curriculumOpen = curriculumAvailable && canOpenCurriculum(curriculum.slug, grade, access);
+                    return (
+                    <section className={`student-course-group ${curriculum.type}-course-group${curriculumOpen ? "" : " course-locked"}`} key={curriculum.slug}>
                       <div className="student-course-group-title">
                         <CurriculumIcon type={curriculum.type} grade={grade} compact />
                         <strong>{curriculum.title}</strong>
                       </div>
                       <div className="term-entry-options">
-                        {canOpenCurriculum(curriculum.slug, grade, access) ? <Link className="term-entry first-term-entry" href={`/courses/${curriculum.slug}`}>
+                        {curriculumOpen ? <Link className="term-entry first-term-entry" href={`/courses/${curriculum.slug}`}>
                           <span>First Term</span><small>{access.accessMode === "sample" ? "Open sample →" : "Open →"}</small>
-                        </Link> : <span className="term-entry first-term-entry locked-entry" aria-disabled="true"><span>First Term</span><small>🔒 Locked</small></span>}
+                        </Link> : <span className="term-entry first-term-entry locked-entry" aria-disabled="true"><span>First Term</span><small>{curriculumAvailable ? "🔒 Locked" : "Coming soon"}</small></span>}
                         <span className="term-entry second-term-entry" aria-label="Second Term will be available soon">
                           <span>Second Term</span><small>Coming soon</small>
                         </span>
                       </div>
                     </section>
-                  ))}
+                  )})}
                 </div>
             </article>
           )})}
