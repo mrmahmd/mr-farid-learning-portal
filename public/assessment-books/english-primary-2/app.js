@@ -6,6 +6,8 @@
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
   const STORAGE_KEY = 'grade2EnglishInteractiveFullV1';
+  const SAMPLE_PAGE = 4;
+  const sampleMode = new URLSearchParams(location.search).get('sample') === '1';
   const defaultState = {
     lastPage: 4,
     points: 0,
@@ -26,7 +28,8 @@
   state.answers ||= {};
   state.rewarded ||= {};
   state.soundEnabled = state.soundEnabled !== false;
-  state.lastPage = book.pages.some(p => p.number === Number(state.lastPage)) ? Number(state.lastPage) : 4;
+  state.lastPage = book.pages.some(p => p.number === Number(state.lastPage)) ? Number(state.lastPage) : SAMPLE_PAGE;
+  if (sampleMode) state.lastPage = SAMPLE_PAGE;
 
   let currentPage = state.lastPage;
   let currentView = 'interactive';
@@ -35,6 +38,7 @@
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch { /* App still works when storage is unavailable. */ }
     window.MrFaridCourseProgress?.queueSave();
   };
+  const isLockedInSample = pageNumber => sampleMode && Number(pageNumber) !== SAMPLE_PAGE;
   const visibleIndex = printedPage => book.pages.findIndex(p => p.number === Number(printedPage));
   const activityKey = (pageNumber, activityIndex) => `p${pageNumber}-a${activityIndex}`;
 
@@ -43,6 +47,7 @@
     lookWrite:{icon:'👀',label:'Look & Write',color:'#6d3be8'},
     listenChoose:{icon:'🎧',label:'Listen & Choose',color:'#1687e8'},
     listenMissing:{icon:'🔊',label:'Listen & Write',color:'#0aa89a'},
+    listenFill:{icon:'🎧',label:'Listen & Complete',color:'#1687e8'},
     fillBank:{icon:'🧩',label:'Complete',color:'#7a54d8'},
     choose:{icon:'✅',label:'Choose',color:'#ef5d8a'},
     pictureChoice:{icon:'🖼️',label:'Choose the Picture',color:'#1687e8'},
@@ -173,7 +178,8 @@
       const progress = chapterProgress(chapter);
       const button = document.createElement('button');
       button.type = 'button';
-      button.className = 'chapter-card';
+      const locked = sampleMode && chapter.id !== 'u1';
+      button.className = `chapter-card${locked ? ' sample-locked' : ''}`;
       button.style.setProperty('--chapter-accent', chapterColors[book.chapters.indexOf(chapter) % chapterColors.length]);
       button.innerHTML = `
         <span class="chapter-icon" aria-hidden="true">${chapter.icon || '📖'}</span>
@@ -182,7 +188,7 @@
         <small>${progress.done} of ${progress.total} pages finished</small>
         <div class="mini-progress"><span style="width:${progress.pct}%"></span></div>
       `;
-      button.addEventListener('click', () => openPage(chapter.start));
+      button.addEventListener('click', () => openPage(locked ? SAMPLE_PAGE : chapter.start));
       grid.append(button);
     });
     updateStats();
@@ -202,9 +208,11 @@
         .forEach(page => {
           const button = document.createElement('button');
           button.type = 'button';
-          button.className = `page-link${page.number === currentPage ? ' active' : ''}${state.completed[page.number] ? ' done' : ''}`;
+          const locked = isLockedInSample(page.number);
+          button.className = `page-link${page.number === currentPage ? ' active' : ''}${state.completed[page.number] ? ' done' : ''}${locked ? ' sample-locked' : ''}`;
           button.innerHTML = `<span>${visibleIndex(page.number) + 1}</span><span>${page.title}</span>`;
           button.addEventListener('click', () => {
+            if (locked) { feedback('Free sample: Unit 1, Lesson 1 only.', false); return; }
             openPage(page.number);
             $('#sidebar').classList.remove('open');
           });
@@ -229,13 +237,16 @@
   function openPage(pageNumber) {
     const page = book.pages.find(p => p.number === Number(pageNumber));
     if (!page) return;
+    if (isLockedInSample(page.number)) { feedback('Free sample: Unit 1, Lesson 1 only.', false); return; }
 
     currentPage = page.number;
     state.lastPage = page.number;
     state.portalLastActivity = {
-      detail: `English Primary 2 · Interactive assessment page ${page.number}: ${page.title}`,
-      path: `page-${page.number}`,
-      courseTitle: 'English Primary 2 - First Term',
+      detail: `English Primary 2 Assessment Book · Page ${page.number}: ${page.title}`,
+      path: `?page=${page.number}${sampleMode ? '&sample=1' : ''}`,
+      courseTitle: 'English Primary 2 Assessment Book - First Term',
+      unit: page.chapterTitle || 'Unit One',
+      lesson: page.title,
     };
     save();
 
@@ -270,15 +281,33 @@
     });
   }
 
-  function makeVisual(value, small = false) {
+  function makeVisual(value, small = false, alt = '') {
     const visual = document.createElement('div');
     visual.className = `visual${small ? ' small' : ''}`;
-    visual.setAttribute('aria-hidden', 'true');
-    const emoji = document.createElement('span');
-    emoji.className = 'visual-emoji';
-    emoji.textContent = value || '❓';
-    visual.append(emoji);
+    const asset = window.VISUAL_ASSETS?.[value];
+    if (asset) {
+      const img = document.createElement('img');
+      img.className = 'visual-image';
+      img.src = asset;
+      img.alt = alt || '';
+      if (!alt) img.setAttribute('aria-hidden', 'true');
+      visual.append(img);
+    } else {
+      const fallback = document.createElement('span');
+      fallback.className = 'visual-fallback';
+      fallback.textContent = value || '❓';
+      fallback.setAttribute('aria-hidden', 'true');
+      visual.append(fallback);
+    }
     return visual;
+  }
+
+  function appendActivityVisuals(card, activity) {
+    if (!activity.visuals?.length) return;
+    const gallery = document.createElement('div');
+    gallery.className = 'support-visuals';
+    activity.visuals.forEach((value, i) => gallery.append(makeVisual(value, false, `Supporting picture ${i + 1}`)));
+    card.append(gallery);
   }
 
   function makeAnswerHint(text) {
@@ -363,6 +392,7 @@
       note.textContent = activity.note;
       card.append(note);
     }
+    appendActivityVisuals(card, activity);
 
     const key = activityKey(page.number, index);
     const saved = state.answers[key];
@@ -371,6 +401,7 @@
       case 'lookWrite': renderLookWrite(card, activity, key, saved); break;
       case 'listenChoose': renderListenChoose(card, activity, key, saved); break;
       case 'listenMissing': renderListenMissing(card, activity, key, saved); break;
+      case 'listenFill': renderListenFill(card, activity, key, saved); break;
       case 'fillBank': renderFillBank(card, activity, key, saved); break;
       case 'choose': renderChoose(card, activity, key, saved); break;
       case 'pictureChoice': renderPictureChoice(card, activity, key, saved); break;
@@ -550,6 +581,52 @@
     });
   }
 
+  function renderListenFill(card, activity, key, saved) {
+    const helper = document.createElement('div');
+    helper.className = 'fill-note';
+    helper.textContent = 'Listen carefully, then type the missing word. No answer bank is shown because the printed exercise is a listening task.';
+    card.append(helper);
+    const list = document.createElement('div');
+    list.className = 'listen-fill-list';
+    activity.items.forEach((item, itemIndex) => {
+      const row = document.createElement('div');
+      row.className = 'listen-fill-row';
+      const listen = document.createElement('button');
+      listen.type = 'button';
+      listen.className = 'listen-btn';
+      listen.textContent = '🔊 Listen';
+      listen.addEventListener('click', () => speak(item.audio || item.answer));
+      const sentence = document.createElement('div');
+      sentence.className = 'listen-fill-sentence';
+      const parts = item.text.split('{0}');
+      sentence.append(document.createTextNode(parts[0] || ''));
+      const wrap = document.createElement('span');
+      const input = document.createElement('input');
+      input.className = 'answer-input listen-fill-input';
+      input.value = saved?.[itemIndex] || '';
+      input.placeholder = 'Type the word';
+      wrap.append(input, makeAnswerHint(''));
+      sentence.append(wrap, document.createTextNode(parts[1] || ''));
+      row.append(listen, sentence);
+      list.append(row);
+    });
+    card.append(list);
+    addCheckButton(card, key, () => {
+      const inputs = $$('.listen-fill-input', list);
+      const values = [];
+      let correct = 0;
+      inputs.forEach((input, i) => {
+        const item = activity.items[i];
+        const ok = isAccepted(input.value, item.answer, item.accepted, true);
+        values[i] = input.value;
+        markInput(input, ok, item.answer);
+        if (ok) correct++;
+      });
+      state.answers[key] = values;
+      return { ok: correct === inputs.length, message: `${correct} of ${inputs.length} correct.` };
+    });
+  }
+
   function renderFillBank(card, activity, key, saved) {
     const openIndices = new Set(activity.openIndices || []);
     let selectedWord = '';
@@ -692,12 +769,15 @@
         button.className = 'picture-option';
         button.dataset.index = optionIndex;
         button.setAttribute('aria-label', `Picture option ${String.fromCharCode(65 + optionIndex)}`);
-        button.innerHTML = `
-          <span class="option-badge" aria-hidden="true">${String.fromCharCode(65 + optionIndex)}</span>
-          <span class="option-check" aria-hidden="true">✓</span>
-          <span class="option-visual" aria-hidden="true">${option.visual}</span>
-          <span class="sr-only">${option.label}</span>
-        `;
+        const badge = document.createElement('span');
+        badge.className = 'option-badge';
+        badge.setAttribute('aria-hidden', 'true');
+        badge.textContent = String.fromCharCode(65 + optionIndex);
+        const check = document.createElement('span');
+        check.className = 'option-check';
+        check.setAttribute('aria-hidden', 'true');
+        check.textContent = '✓';
+        button.append(badge, check, makeVisual(option.visual, false, `Picture option ${String.fromCharCode(65 + optionIndex)}`));
         if (Number(saved?.[itemIndex]) === optionIndex) button.classList.add('selected');
         button.addEventListener('click', () => {
           $$('.picture-option', zone).forEach(b => b.classList.remove('selected'));
@@ -827,6 +907,19 @@
   }
 
   function renderMatch(card, activity, key, saved) {
+    const gallery = document.createElement('div');
+    gallery.className = 'match-gallery';
+    activity.right.forEach((right, rightIndex) => {
+      const item = document.createElement('div');
+      item.className = 'match-picture';
+      const badge = document.createElement('span');
+      badge.className = 'match-letter';
+      badge.textContent = String.fromCharCode(65 + rightIndex);
+      item.append(badge, makeVisual(right.visual || '❓', true, `Picture ${String.fromCharCode(65 + rightIndex)}`));
+      gallery.append(item);
+    });
+    card.append(gallery);
+
     activity.left.forEach((leftText, itemIndex) => {
       const row = document.createElement('label');
       row.className = 'match-row';
@@ -834,11 +927,11 @@
       text.textContent = leftText;
       const select = document.createElement('select');
       select.dataset.index = itemIndex;
-      select.innerHTML = '<option value="">Choose…</option>';
+      select.innerHTML = '<option value="">Choose picture…</option>';
       activity.right.forEach((right, rightIndex) => {
         const option = document.createElement('option');
         option.value = String(rightIndex);
-        option.textContent = `${right.visual || ''} ${right.label || right}`.trim();
+        option.textContent = String.fromCharCode(65 + rightIndex);
         if (String(saved?.[itemIndex]) === String(rightIndex)) option.selected = true;
         select.append(option);
       });
@@ -854,8 +947,8 @@
         const value = select.value;
         values[i] = value;
         const ok = Number(value) === activity.answers[i];
-        const right = activity.right[activity.answers[i]];
-        markInput(select, ok, right.label || right);
+        const letter = String.fromCharCode(65 + activity.answers[i]);
+        markInput(select, ok, `Picture ${letter}`);
         if (ok) correct++;
       });
       state.answers[key] = values;
@@ -869,9 +962,8 @@
     activity.items.forEach((item, itemIndex) => {
       const box = document.createElement('div');
       box.className = 'item-card';
-      const visual = document.createElement('div');
-      visual.className = 'count-visual';
-      visual.textContent = item.visual;
+      const visual = makeVisual(item.visual, false, `Objects to count for question ${itemIndex + 1}`);
+      visual.classList.add('count-visual');
       const prompt = document.createElement('span');
       prompt.className = 'prompt';
       prompt.textContent = item.prompt;
@@ -1156,6 +1248,22 @@
   }
 
   function renderClassify(card, activity, key, saved) {
+    if (activity.groupVisuals?.length) {
+      const groups = document.createElement('div');
+      groups.className = 'classify-groups';
+      activity.groups.forEach((group, i) => {
+        const panel = document.createElement('div');
+        panel.className = 'classify-group-card';
+        const badge = document.createElement('span');
+        badge.className = 'match-letter';
+        badge.textContent = group.charAt(0).toUpperCase();
+        const title = document.createElement('strong');
+        title.textContent = group.replace(/^.[ —-]*/, '');
+        panel.append(badge, makeVisual(activity.groupVisuals[i], false, group), title);
+        groups.append(panel);
+      });
+      card.append(groups);
+    }
     activity.items.forEach((item, itemIndex) => {
       const row = document.createElement('label');
       row.className = 'classify-row';
@@ -1168,7 +1276,7 @@
         const value = group.charAt(0).toUpperCase();
         const option = document.createElement('option');
         option.value = value;
-        option.textContent = group;
+        option.textContent = value;
         if (saved?.[itemIndex] === value) option.selected = true;
         select.append(option);
       });
@@ -1247,21 +1355,20 @@
 
   window.Grade2AssessmentStore = {
     getState: () => state,
-    replaceState: (next) => {
+    replaceState: next => {
       if (!next) return;
       Object.assign(state, next, {
         completed: { ...(state.completed || {}), ...(next.completed || {}) },
         answers: { ...(state.answers || {}), ...(next.answers || {}) },
         rewarded: { ...(state.rewarded || {}), ...(next.rewarded || {}) },
       });
-      state.lastPage = book.pages.some(p => p.number === Number(state.lastPage)) ? Number(state.lastPage) : book.pages[0].number;
+      state.lastPage = sampleMode ? SAMPLE_PAGE : (book.pages.some(p => p.number === Number(state.lastPage)) ? Number(state.lastPage) : SAMPLE_PAGE);
       currentPage = state.lastPage;
       save();
       buildDashboard();
     },
     mergeState: (local, remote) => ({
-      ...local,
-      ...remote,
+      ...local, ...remote,
       completed: { ...(local?.completed || {}), ...(remote?.completed || {}) },
       answers: { ...(local?.answers || {}), ...(remote?.answers || {}) },
       rewarded: { ...(local?.rewarded || {}), ...(remote?.rewarded || {}) },
@@ -1282,6 +1389,11 @@
   });
 
   updateSoundButtons();
-  buildDashboard();
-  updateStats();
+  const requestedPage = Number(new URLSearchParams(location.search).get('page'));
+  if (requestedPage && book.pages.some(p => p.number === requestedPage) && !isLockedInSample(requestedPage)) {
+    openPage(requestedPage);
+  } else {
+    buildDashboard();
+    updateStats();
+  }
 })();
